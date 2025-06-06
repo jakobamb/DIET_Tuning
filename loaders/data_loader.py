@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, Subset
 from PIL import Image
 from tqdm.notebook import tqdm
+from torchvision.transforms import v2
 
 # Try to import MedMNIST
 try:
@@ -577,16 +578,27 @@ def calculate_dataset_stats(dataset, batch_size=64, max_samples=10000):
 def create_transforms(mean, std, input_size, is_rgb=True, da_strength=1):
     """Create training and testing transforms based on statistics and data augmentation strength"""
     
-    # Basic test transform - just normalize
-    test_transform = transforms.Compose([
+    # Always use 224x224 as the standard size
+    standard_size = 224
+    
+    # Create base transform list starting with RGB conversion
+    base_transforms = [
+        # First step: Convert to RGB using proper torchvision v2 transform
+        v2.RGB(),
+        # Resize to standard 224x224 size
+        transforms.Resize((standard_size, standard_size), antialias=True),
+    ]
+    
+    # Basic test transform - RGB conversion, resize, normalize
+    test_transform = transforms.Compose(base_transforms + [
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
     ])
     
     # Create training transform with augmentations based on strength
     if da_strength > 0:
-        aug_list = [
-            transforms.RandomResizedCrop(input_size, antialias=True),
+        aug_list = base_transforms + [
+            transforms.RandomResizedCrop(standard_size, antialias=True),
             transforms.RandomHorizontalFlip(),
         ]
         
