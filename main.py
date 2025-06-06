@@ -29,6 +29,8 @@ from models.mae import get_mae_model
 from models.ijepa import get_ijepa_model
 from models.mambavision import get_mambavision_model
 from models.aim import get_aim_model
+from models.resnet50 import get_resnet50_model
+from models.simclr import get_simclr_model  # Add SimCLR import
 from utils.sanity_check import unified_sanity_check
 from config.params import (
     BACKBONE_TYPE, MODEL_SIZE, DATASET_NAME, LIMIT_DATA,
@@ -50,22 +52,7 @@ def get_model(backbone_type, model_size):
 
     
     if backbone_type == "resnet50":
-        from torchvision.models import resnet50, ResNet50_Weights
-        import torch.nn as nn
-        
-        # Original ResNet50 code
-        print("Creating ResNet50 model with ImageNet pre-training...")
-        net = resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
-        
-        # Modify for small input images
-        print("Adapting ResNet50 for small input images...")
-        net.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
-        net.maxpool = nn.Identity()
-        embedding_dim = net.fc.in_features
-        net.fc = nn.Identity()
-        net = net.to(DEVICE)
-        
-        return net, embedding_dim
+        return get_resnet50_model(DEVICE, model_size=model_size)
     
     elif backbone_type == "dinov2":
         return get_dinov2_model(DEVICE, model_size=model_size)
@@ -81,6 +68,9 @@ def get_model(backbone_type, model_size):
     
     elif backbone_type == "aim":
         return get_aim_model(DEVICE, model_size=model_size)
+    
+    elif backbone_type == "simclr":
+        return get_simclr_model(DEVICE, model_size=model_size)
     
     else:
         raise ValueError(f"Unknown backbone type: {backbone_type}")

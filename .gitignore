@@ -1,0 +1,76 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Data files (too large for git)
+data/
+*.npz
+*.tar.gz
+*.zip
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Model checkpoints (too large for git)
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Weights and Biases (wandb) logs
+wandb/
+*.wandb
+
+# Results and outputs
+results/
+logs/
+outputs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code settings
+.vscode/
+
+# Environment variables
+.env
+.env.*
+
+# Cache directories
+.cache/
+cache/
+
+# Hugging Face cache
+.huggingface/
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp

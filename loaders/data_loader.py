@@ -149,6 +149,24 @@ def get_dataset(dataset_name="cifar10", root='./data'):
             "input_size": 32,
             "is_rgb": True
         },
+        "cifar100": {
+            "mean": (0.5071, 0.4867, 0.4408),
+            "std": (0.2675, 0.2565, 0.2761),
+            "input_size": 32,
+            "is_rgb": True
+        },
+        "food101": {
+            "mean": (0.485, 0.456, 0.406),  # ImageNet stats - good baseline for natural food images
+            "std": (0.229, 0.224, 0.225),   # Food images have similar distribution to ImageNet
+            "input_size": 224,  # Standard size for food classification (rescaled from 512)
+            "is_rgb": True
+        },
+        "fgvc_aircraft": {
+            "mean": (0.485, 0.456, 0.406),  # ImageNet stats - good baseline for aircraft images
+            "std": (0.229, 0.224, 0.225),   # Aircraft images are natural outdoor scenes similar to ImageNet
+            "input_size": 224,  # Standard size for fine-grained classification
+            "is_rgb": True
+        },
         "pathmnist": {
             "mean": (0.5, 0.5, 0.5),
             "std": (0.5, 0.5, 0.5),
@@ -205,6 +223,135 @@ def get_dataset(dataset_name="cifar10", root='./data'):
         train_dataset = datasets.CIFAR10(root=root, train=True, download=True)
         test_dataset = datasets.CIFAR10(root=root, train=False, download=True)
         num_classes = 10
+        
+    elif dataset_name.lower() == "cifar100":
+        # Option 1: Use PyTorch's built-in CIFAR-100
+        try:
+            train_dataset = datasets.CIFAR100(root=root, train=True, download=True)
+            test_dataset = datasets.CIFAR100(root=root, train=False, download=True)
+            num_classes = 100
+            print("CIFAR-100 loaded from PyTorch datasets")
+            print("Dataset: 60,000 32x32 color images in 100 classes")
+            print("Training samples: 50,000, Test samples: 10,000")
+            print("Classes grouped into 20 superclasses with 5 classes each")
+        except Exception as e:
+            # Option 2: Fallback to HuggingFace dataset
+            print(f"PyTorch CIFAR-100 failed ({e}), trying HuggingFace dataset...")
+            try:
+                from datasets import load_dataset
+                
+                print("Loading CIFAR-100 dataset from HuggingFace (randall-lab/cifar100)...")
+                
+                # Load the dataset
+                dataset = load_dataset("randall-lab/cifar100", trust_remote_code=True)
+                
+                num_classes = 100
+                input_size = dataset_stats["cifar100"]["input_size"]
+                
+                # Create train and test datasets
+                train_dataset = HFImageDataset(dataset['train'], input_size=input_size)
+                test_dataset = HFImageDataset(dataset['test'], input_size=input_size)
+                
+                print(f"CIFAR-100 loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples")
+                print(f"Number of classes: {num_classes}")
+                print("Dataset contains 100 classes grouped into 20 superclasses:")
+                print("- Examples: apple, aquarium fish, baby, bear, beaver, bed, bee, etc.")
+                
+            except ImportError:
+                raise ImportError("HuggingFace datasets library is required for CIFAR-100 fallback. Install with 'pip install datasets'")
+            except Exception as e:
+                raise ValueError(f"Error loading CIFAR-100 dataset from both PyTorch and HuggingFace: {e}")
+    
+    elif dataset_name.lower() == "food101":
+        # Food-101 dataset from HuggingFace with robust error handling
+        try:
+            from datasets import load_dataset
+            import os
+            
+            print("Loading Food-101 dataset from HuggingFace (randall-lab/food101)...")
+            print("Note: Food-101 is a large dataset (~5GB). This may take a while to download.")
+            
+            # Try to load with increased timeout and retry settings
+            try:
+                # Load the dataset with custom download configuration
+                dataset = load_dataset(
+                    "randall-lab/food101", 
+                    trust_remote_code=True,
+                    # Add download configuration for better reliability
+                    download_config={
+                        'resume_download': True,  # Resume interrupted downloads
+                        'max_retries': 3,         # Retry failed downloads
+                    }
+                )
+                
+                num_classes = 101
+                input_size = dataset_stats["food101"]["input_size"]
+                
+                # Create train and test datasets
+                train_dataset = HFImageDataset(dataset['train'], input_size=input_size)
+                test_dataset = HFImageDataset(dataset['test'], input_size=input_size)
+                
+                print(f"Food-101 loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples")
+                print(f"Number of classes: {num_classes}")
+                print("Dataset: 101,000 images of food in 101 categories")
+                print("Training samples: 75,750, Test samples: 25,250")
+                print("Examples: apple_pie, baby_back_ribs, baklava, beef_carpaccio, etc.")
+                print(f"Images resized to {input_size}x{input_size} (from max 512px)")
+                
+            except Exception as download_error:
+                print(f"HuggingFace download failed: {download_error}")
+                print("\nAlternative solutions:")
+                print("1. Try again later (network issues)")
+                print("2. Use a different dataset (cifar100, fgvc_aircraft)")
+                print("3. Manually download Food-101 from: https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/")
+                print("\nFor now, falling back to CIFAR-100...")
+                
+                # Fallback to CIFAR-100 for immediate testing
+                try:
+                    train_dataset = datasets.CIFAR100(root=root, train=True, download=True)
+                    test_dataset = datasets.CIFAR100(root=root, train=False, download=True)
+                    num_classes = 100
+                    print("Successfully loaded CIFAR-100 as fallback")
+                    print("Dataset: 60,000 32x32 color images in 100 classes")
+                    print("Training samples: 50,000, Test samples: 10,000")
+                except Exception as fallback_error:
+                    raise ValueError(f"Both Food-101 and CIFAR-100 fallback failed: {fallback_error}")
+            
+        except ImportError:
+            raise ImportError("HuggingFace datasets library is required for Food-101. Install with 'pip install datasets'")
+        except Exception as e:
+            print(f"Food-101 loading failed: {e}")
+            raise ValueError(f"Error loading Food-101 dataset: {e}")
+        
+    elif dataset_name.lower() == "fgvc_aircraft":
+        # FGVC-Aircraft dataset from HuggingFace
+        try:
+            from datasets import load_dataset
+            
+            print("Loading FGVC-Aircraft dataset from HuggingFace (randall-lab/fgvc-aircraft)...")
+            
+            # Load the dataset
+            dataset = load_dataset("randall-lab/fgvc-aircraft", trust_remote_code=True)
+            
+            num_classes = 100
+            input_size = dataset_stats["fgvc_aircraft"]["input_size"]
+            
+            # Create train and test datasets - use validation as test since it has 3-way split
+            train_dataset = HFImageDataset(dataset['train'], input_size=input_size)
+            # Use validation split as test set (both val and test have 3,333 samples each)
+            test_dataset = HFImageDataset(dataset['validation'], input_size=input_size)
+            
+            print(f"FGVC-Aircraft loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples")
+            print(f"Number of classes: {num_classes}")
+            print("Dataset: 10,000 images of aircraft in 100 fine-grained model variants")
+            print("Training samples: 3,334, Validation/Test samples: 3,333 each")
+            print("Fine-grained classification: different aircraft models (not just types)")
+            print(f"Images resized to {input_size}x{input_size} (from variable resolution)")
+            
+        except ImportError:
+            raise ImportError("HuggingFace datasets library is required for FGVC-Aircraft. Install with 'pip install datasets'")
+        except Exception as e:
+            raise ValueError(f"Error loading FGVC-Aircraft dataset: {e}")
         
     elif MEDMNIST_AVAILABLE and dataset_name.lower() in INFO.keys():
         data_flag = dataset_name.lower()
