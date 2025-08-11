@@ -1,0 +1,88 @@
+WandB initialized: DIET_dinov2_small_crop14_balance_20250414_003653
+
+==========================
+Starting epoch 1/30 at 00:36:54
+==========================
+
+Initializing training loop...
+Batch 0: grad_norm=340.1099 across 218 trainable params
+Batch 10: grad_norm=16.4740 across 218 trainable params
+Batch 20: grad_norm=8.2083 across 218 trainable params
+Batch 30: grad_norm=7.0210 across 218 trainable params
+Batch 40: grad_norm=6.9330 across 218 trainable params
+
+Epoch 1 completed in 84.58s
+
+Learning rate updated to: 0.000499
+Epoch 1 Metrics - DIET Loss: 2.3029e+00, Probe Loss: 3.3975e+00, Accuracy: 0.0660
+Epoch 1/30 summary:
+  Train - DIET loss: 2.3029e+00, Probe loss: 3.3975e+00, Acc: 0.0660
+  Test  - Acc: 0.0759
+
+==========================
+Starting epoch 2/30 at 00:41:01
+==========================
+
+Initializing training loop...
+Batch 0: grad_norm=7.2689 across 218 trainable params
+Batch 10: grad_norm=8.4720 across 218 trainable params
+Batch 20: grad_norm=7.8134 across 218 trainable params
+Batch 30: grad_norm=9.0188 across 218 trainable params
+Batch 40: grad_norm=7.9802 across 218 trainable params
+
+Epoch 2 completed in 83.04s
+
+Learning rate updated to: 0.000495
+Epoch 2 Metrics - DIET Loss: 2.3017e+00, Probe Loss: 2.7790e+00, Accuracy: 0.0670
+Epoch 2/30 summary:
+  Train - DIET loss: 2.3017e+00, Probe loss: 2.7790e+00, Acc: 0.0670
+  Test  - Acc: 0.0708
+
+==========================
+Starting epoch 3/30 at 00:45:06
+==========================
+
+Initializing training loop...
+Batch 0: grad_norm=6.1601 across 218 trainable params
+Batch 10: grad_norm=6.3449 across 218 trainable params
+Batch 20: grad_norm=6.0325 across 218 trainable params
+Batch 30: grad_norm=5.3642 across 218 trainable params
+Batch 40: grad_norm=7.3107 across 218 trainable params
+
+Epoch 3 completed in 78.85s
+
+Learning rate updated to: 0.000488
+Epoch 3 Metrics - DIET Loss: 2.3047e+00, Probe Loss: 2.7296e+00, Accuracy: 0.0590
+Epoch 3/30 summary:
+  Train - DIET loss: 2.3047e+00, Probe loss: 2.7296e+00, Acc: 0.0590
+  Test  - Acc: 0.0896
+
+==========================
+Starting epoch 4/30 at 00:49:06
+==========================
+
+Initializing training loop...
+Batch 0: grad_norm=5.7687 across 218 trainable params
+Batch 10: grad_norm=5.7754 across 218 trainable params
+Batch 20: grad_norm=5.0567 across 218 trainable params
+Batch 30: grad_norm=8.4907 across 218 trainable params
+Batch 40: grad_norm=7.1313 across 218 trainable params
+
+Epoch 4 completed in 81.20s
+
+Learning rate updated to: 0.000479
+Epoch 4 Metrics - DIET Loss: 2.3107e+00, Probe Loss: 2.5967e+00, Accuracy: 0.1170
+Epoch 4/30 summary:
+  Train - DIET loss: 2.3107e+00, Probe loss: 2.5967e+00, Acc: 0.1170
+  Test  - Acc: 0.1344
+
+==========================
+Starting epoch 5/30 at 00:53:13
+==========================
+
+Initializing training loop...
+Batch 0: grad_norm=4.8200 across 218 trainable params
+Batch 10: grad_norm=11.5803 across 218 trainable params
+Batch 20: grad_norm=7.4137 across 218 trainable params
+Batch 30: grad_norm=6.4244 across 218 trainable params
+Batch 40: grad_norm=7.1929 across 218 trainable params

@@ -1,0 +1,16 @@
+{"time":"2025-04-18T00:21:35.354399-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\Bryan\\Desktop\\ResearchAI\\wandb\\run-20250418_002135-ksu7i383\\logs\\debug-core.log"}
+{"time":"2025-04-18T00:21:35.4674147-04:00","level":"INFO","msg":"created new stream","id":"ksu7i383"}
+{"time":"2025-04-18T00:21:35.4674147-04:00","level":"INFO","msg":"stream: started","id":"ksu7i383"}
+{"time":"2025-04-18T00:21:35.4674147-04:00","level":"INFO","msg":"handler: started","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:21:35.4674147-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:21:35.4674147-04:00","level":"INFO","msg":"sender: started","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:21:35.6335726-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-18T00:21:35.6345724-04:00","level":"ERROR","msg":"git repo not found","error":"repository does not exist"}
+{"time":"2025-04-18T00:39:14.9371185-04:00","level":"INFO","msg":"stream: closing","id":"ksu7i383"}
+{"time":"2025-04-18T00:39:14.9371185-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-18T00:39:14.9386192-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-18T00:39:15.2644391-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-04-18T00:39:15.4062935-04:00","level":"INFO","msg":"handler: closed","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:39:15.4062935-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:39:15.4066146-04:00","level":"INFO","msg":"sender: closed","stream_id":"ksu7i383"}
+{"time":"2025-04-18T00:39:15.4066146-04:00","level":"INFO","msg":"stream: closed","id":"ksu7i383"}

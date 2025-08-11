@@ -1,0 +1,1 @@
+{"columns": ["model", "method", "best_accuracy", "best_k", "threshold", "passed_check"], "data": [["dinov2", "k-NN", 94.49, 20, 91.0, "\u2713"]]}

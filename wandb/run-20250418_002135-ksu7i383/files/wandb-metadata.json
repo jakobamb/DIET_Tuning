@@ -1,0 +1,38 @@
+{
+  "os":  "Windows-11-10.0.22000-SP0",
+  "python":  "CPython 3.12.9",
+  "startedAt":  "2025-04-18T04:21:35.352898Z",
+  "program":  "c:\\Users\\Bryan\\Desktop\\ResearchAI\\main.py",
+  "codePath":  "main.py",
+  "email":  "brodas1@fordham.edu",
+  "root":  "C:\\Users\\Bryan\\Desktop\\ResearchAI",
+  "host":  "DESKTOP-GCPNKCV",
+  "executable":  "C:\\Users\\Bryan\\miniconda3\\envs\\research\\python.exe",
+  "codePathLocal":  "main.py",
+  "cpu_count":  12,
+  "cpu_count_logical":  24,
+  "gpu":  "NVIDIA GeForce RTX 3070",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "1998963339264",
+      "used":  "1940770721792"
+    }
+  },
+  "memory":  {
+    "total":  "34271035392"
+  },
+  "cpu":  {
+    "count":  12,
+    "countLogical":  24
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 3070",
+      "memoryTotal":  "8589934592",
+      "cudaCores":  5888,
+      "architecture":  "Ampere"
+    }
+  ],
+  "cudaVersion":  "12.6"
+}

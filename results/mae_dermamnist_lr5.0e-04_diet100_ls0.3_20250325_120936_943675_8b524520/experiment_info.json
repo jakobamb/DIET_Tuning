@@ -1,0 +1,18 @@
+{
+  "model": "mae",
+  "dataset": "dermamnist",
+  "experiment_id": "20250325_120936_943675_8b524520",
+  "timestamp": "20250325_120936_943675",
+  "hyperparameters": {
+    "num_epoch": 30,
+    "batch_size": 128,
+    "da_strength": 1,
+    "lr": 0.0005,
+    "weight_decay": 0.05,
+    "label_smoothing": 0.3,
+    "num_diet_classes": 100,
+    "temperature": 0.1,
+    "model_size": "n/a",
+    "freezing_layers": "n/a"
+  }
+}

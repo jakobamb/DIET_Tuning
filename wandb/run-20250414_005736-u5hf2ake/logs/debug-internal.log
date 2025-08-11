@@ -1,0 +1,7 @@
+{"time":"2025-04-14T00:57:36.6981077-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"c:\\Users\\Bryan\\Desktop\\ResearchAI\\wandb\\run-20250414_005736-u5hf2ake\\logs\\debug-core.log"}
+{"time":"2025-04-14T00:57:36.8151961-04:00","level":"INFO","msg":"created new stream","id":"u5hf2ake"}
+{"time":"2025-04-14T00:57:36.8151961-04:00","level":"INFO","msg":"stream: started","id":"u5hf2ake"}
+{"time":"2025-04-14T00:57:36.8151961-04:00","level":"INFO","msg":"handler: started","stream_id":"u5hf2ake"}
+{"time":"2025-04-14T00:57:36.8151961-04:00","level":"INFO","msg":"sender: started","stream_id":"u5hf2ake"}
+{"time":"2025-04-14T00:57:36.8151961-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"u5hf2ake"}
+{"time":"2025-04-14T00:57:37.0130621-04:00","level":"INFO","msg":"Starting system monitor"}
