@@ -39,7 +39,7 @@ python main.py \
     --model-size small \
     --training-mode diet_only \
     --label-smoothing 0.2 \
-    --dataset dermamnist \
+    --dataset chestmnist \
     --data-root /dtu/p1/jakambs/diet/data
     --wandb-dir /dtu/p1/jakambs/diet/wandb
     --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints
