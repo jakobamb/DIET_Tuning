@@ -58,6 +58,7 @@ outputs/
 .env
 .env.*
 .venv
+.python-version
 
 # Cache directories
 .cache/

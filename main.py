@@ -92,6 +92,7 @@ def train(args):
         num_diet_classes=args.num_diet_classes,
         da_strength=args.da_strength,
         limit_data=args.limit_data,
+        root=args.data_root,
     )
 
     num_classes = dataset_info["num_classes"]
@@ -240,6 +241,12 @@ def parse_args():
     # Dataset arguments
     parser.add_argument(
         "--dataset", type=str, default=DEFAULT_PARAMS.dataset_name, help="Dataset name"
+    )
+    parser.add_argument(
+        "--data-root",
+        type=str,
+        default="./data",
+        help="Directory to store dataset files.",
     )
     parser.add_argument(
         "--limit-data",
