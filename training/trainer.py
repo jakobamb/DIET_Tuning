@@ -90,9 +90,6 @@ class DIETTrainer:
             "zero_shot_metrics": {},
         }
 
-        # Create directories
-        os.makedirs(checkpoint_dir, exist_ok=True)
-
     def train(
         self,
         train_loader,

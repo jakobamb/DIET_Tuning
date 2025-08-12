@@ -12,7 +12,6 @@ import torch
 # Configuration imports
 from config import create_experiment_config, create_trainer_config
 from config.training_config import DEVICE
-from config.params import DEFAULT_PARAMS
 
 # Data loading
 from loaders.data_loader import prepare_data_loaders
@@ -227,21 +226,19 @@ def parse_args():
     parser.add_argument(
         "--backbone",
         type=str,
-        default=DEFAULT_PARAMS.backbone_type,
+        default="simclr",
         choices=["resnet50", "dinov2", "mae", "mambavision", "ijepa", "aim"],
         help="Backbone model type",
     )
     parser.add_argument(
         "--model-size",
         type=str,
-        default=DEFAULT_PARAMS.model_size,
+        default="resnet50-1x",
         help="Model size (depends on backbone type)",
     )
 
     # Dataset arguments
-    parser.add_argument(
-        "--dataset", type=str, default=DEFAULT_PARAMS.dataset_name, help="Dataset name"
-    )
+    parser.add_argument("--dataset", type=str, default="cifar10", help="Dataset name")
     parser.add_argument(
         "--data-root",
         type=str,
@@ -251,7 +248,7 @@ def parse_args():
     parser.add_argument(
         "--limit-data",
         type=int,
-        default=DEFAULT_PARAMS.limit_data,
+        default=1000,
         help="Maximum number of training samples",
     )
 
@@ -259,37 +256,33 @@ def parse_args():
     parser.add_argument(
         "--num-epochs",
         type=int,
-        default=DEFAULT_PARAMS.num_epochs,
+        default=30,
         help="Number of training epochs",
     )
-    parser.add_argument(
-        "--batch-size", type=int, default=DEFAULT_PARAMS.batch_size, help="Batch size"
-    )
-    parser.add_argument(
-        "--lr", type=float, default=DEFAULT_PARAMS.learning_rate, help="Learning rate"
-    )
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
+    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     parser.add_argument(
         "--weight-decay",
         type=float,
-        default=DEFAULT_PARAMS.weight_decay,
+        default=0.05,
         help="Weight decay",
     )
     parser.add_argument(
         "--da-strength",
         type=int,
-        default=DEFAULT_PARAMS.da_strength,
+        default=1,
         help="Data augmentation strength (0-3)",
     )
     parser.add_argument(
         "--resume-from",
         type=str,
-        default=DEFAULT_PARAMS.resume_from,
+        default=None,
         help="Resume training from a checkpoint file (e.g., checkpoint_epoch_25.pt)",
     )
     parser.add_argument(
         "--training-mode",
         type=str,
-        default=DEFAULT_PARAMS.training_mode,
+        default="combined",
         choices=["combined", "diet_only", "probe_only"],
         help="Training mode",
     )
@@ -298,19 +291,19 @@ def parse_args():
     parser.add_argument(
         "--label-smoothing",
         type=float,
-        default=DEFAULT_PARAMS.label_smoothing,
+        default=0.3,
         help="Label smoothing strength (0 to disable DIET)",
     )
     parser.add_argument(
         "--num-diet-classes",
         type=int,
-        default=DEFAULT_PARAMS.num_diet_classes,
+        default=100,
         help="Number of random classes for DIET method",
     )
     parser.add_argument(
         "--projection-dim",
         type=int,
-        default=DEFAULT_PARAMS.projection_dim,
+        default=256,
         help="Projection head output dimension",
     )
 
@@ -324,12 +317,6 @@ def parse_args():
 
     # Logging and saving arguments
     parser.add_argument(
-        "--use-wandb",
-        action="store_true",
-        default=True,
-        help="Enable Weights & Biases logging",
-    )
-    parser.add_argument(
         "--checkpoint-dir",
         type=str,
         default="checkpoints",
@@ -341,6 +328,12 @@ def parse_args():
         action="store_false",
         help="Disable Weights & Biases logging",
     )
+    parser.add_argument(
+        "--wandb-dir",
+        type=str,
+        default="wandb",
+        help="Directory to save wandb logs",
+    )
 
     return parser.parse_args()
 
@@ -351,6 +344,8 @@ def main():
 
     # Create checkpoint directory if it doesn't exist
     os.makedirs(args.checkpoint_dir, exist_ok=True)
+    os.makedirs(args.wandb_dir, exist_ok=True)
+    os.makedirs(args.data_root, exist_ok=True)
 
     # Run the training
     train(args)

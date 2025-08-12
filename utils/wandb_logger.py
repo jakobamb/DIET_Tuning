@@ -33,6 +33,7 @@ def init_wandb(args):
         name=experiment_name,
         config=args,
         settings=wandb.Settings(start_method="thread"),
+        dir=args.get("wandb_dir"),
         tags=[
             args["backbone_type"],
             args["model_size"],
@@ -145,8 +146,6 @@ def save_model_checkpoint(
         metrics: Metrics to determine if this is a best checkpoint
         save_dir: Directory to save checkpoints locally
     """
-    # Create checkpoint directory if it doesn't exist
-    os.makedirs(save_dir, exist_ok=True)
 
     # Determine if this is the best checkpoint based on test accuracy
     test_acc = metrics.get("test_acc", 0)

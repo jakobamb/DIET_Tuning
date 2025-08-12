@@ -40,5 +40,6 @@ python main.py \
     --training-mode diet_only \
     --label-smoothing 0.3 \
     --dataset dermamnist \
-    --data-root /dtu/p1/jakambs/diet
-    --use-wandb
+    --data-root /dtu/p1/jakambs/diet/data
+    --wandb-dir /dtu/p1/jakambs/diet/wandb
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints
