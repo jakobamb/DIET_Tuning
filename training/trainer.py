@@ -36,6 +36,7 @@ class DIETTrainer:
         scheduler=None,
         label_smoothing=0.0,
         checkpoint_dir="checkpoints",
+        checkpoint_freq=10,
         training_mode="combined",
         config=None,
     ):
@@ -52,6 +53,7 @@ class DIETTrainer:
             scheduler: Optional learning rate scheduler
             label_smoothing: Label smoothing value for DIET loss
             checkpoint_dir: Directory to save checkpoints
+            checkpoint_freq: Frequency of saving checkpoints
             training_mode: Training mode to use:
                 - "combined": Uses weighted combination of DIET and probe losses
                 - "diet_only": Uses only the DIET loss (requires n)
@@ -68,6 +70,7 @@ class DIETTrainer:
         self.scheduler = scheduler
         self.is_diet_active = label_smoothing > 0
         self.checkpoint_dir = checkpoint_dir
+        self.checkpoint_freq = checkpoint_freq
         self.training_mode = training_mode
         self.config = config
 
@@ -415,7 +418,7 @@ class DIETTrainer:
                     print(f"Error in zero-shot evaluation: {e}")
 
             # Save checkpoint
-            if run is not None:
+            if run is not None and (epoch + 1) % self.checkpoint_freq == 0:
                 if self.training_mode == "diet_only":
                     checkpoint_metrics = {
                         "test_acc": test_acc,
