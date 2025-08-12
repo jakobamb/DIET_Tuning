@@ -2,21 +2,22 @@
 """
 Main entry point for running DIET finetuning experiments.
 """
+# Standard library imports
 import os
 import sys
 import argparse
-import torch
-import time
-import wandb
 from datetime import datetime
 
 # Add the project root directory to Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-# Import configuration
+# Third-party imports
+import torch
+import wandb
+
+# Configuration imports
 from config import create_experiment_config, create_trainer_config
 from config.training_config import DEVICE
-from config.model_config import get_model_embedding_dim
 from config.params import (
     BACKBONE_TYPE,
     MODEL_SIZE,
@@ -31,13 +32,15 @@ from config.params import (
     LABEL_SMOOTHING,
     NUM_DIET_CLASSES,
     PROJECTION_DIM,
-    RUN_SANITY_CHECK,
-    EXPECTED_THRESHOLD,
 )
 
-# Import from our modules
+# Data loading
 from loaders.data_loader import prepare_data_loaders
+
+# Training components
 from training.trainer import DIETTrainer, create_projection_head
+
+# Utility modules
 from utils.wandb_logger import (
     init_wandb,
     create_experiment_dashboard,
@@ -45,12 +48,12 @@ from utils.wandb_logger import (
 )
 from utils.sanity_check import unified_sanity_check
 
-# Import model implementations
-from models.dinov2 import get_dinov2_model
-from models.mae import get_mae_model
-from models.ijepa import get_ijepa_model
-from models.mambavision import get_mambavision_model
+# Model implementations
 from models.aim import get_aim_model
+from models.dinov2 import get_dinov2_model
+from models.ijepa import get_ijepa_model
+from models.mae import get_mae_model
+from models.mambavision import get_mambavision_model
 from models.resnet50 import get_resnet50_model
 from models.simclr import get_simclr_model
 
