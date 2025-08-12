@@ -3,7 +3,7 @@
 ### –- specify queue --
 #BSUB -q p1
 ### -- set the job Name --
-##BSUB -J DIET
+#BSUB -J DIET
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
 ### -- ask for number of cores (default: 1) --
