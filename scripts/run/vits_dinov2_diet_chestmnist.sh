@@ -27,6 +27,8 @@
 #BSUB -o logs/gpu_%J.out
 # -- end of LSF options --
 
+module load python3/3.11.9
+
 # Activate conda environment
 source .venv/bin/activate
 
