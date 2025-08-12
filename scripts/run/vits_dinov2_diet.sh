@@ -38,7 +38,7 @@ python main.py \
     --backbone dinov2 \
     --model-size small \
     --training-mode diet_only \
-    --label-smoothing 0.3 \
+    --label-smoothing 0.2 \
     --dataset dermamnist \
     --data-root /dtu/p1/jakambs/diet/data
     --wandb-dir /dtu/p1/jakambs/diet/wandb

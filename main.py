@@ -37,12 +37,14 @@ from models.resnet50 import get_resnet50_model
 from models.simclr import get_simclr_model
 
 
-def get_model(backbone_type, model_size):
+def get_model(backbone_type, model_size, run_sanity_check, use_wandb):
     """Load the appropriate model based on backbone type"""
 
-    # ... (model selection variables) ...
-    sanity_results = unified_sanity_check(backbone_type, model_size)
-    print(sanity_results)
+    if run_sanity_check:
+        sanity_results = unified_sanity_check(
+            model_type=backbone_type, model_size=model_size, log_to_wandb=use_wandb
+        )
+        print(sanity_results)
 
     print(f"Creating {backbone_type}-{model_size} model...")
 
@@ -98,7 +100,9 @@ def train(args):
     print(f"Loaded dataset with {num_classes} classes")
 
     # Create the backbone model
-    net, embedding_dim = get_model(args.backbone, args.model_size)
+    net, embedding_dim = get_model(
+        args.backbone, args.model_size, args.run_sanity_check, args.use_wandb
+    )
     print(f"Created backbone with embedding dimension: {embedding_dim}")
 
     # Create projection head for DIET
@@ -327,6 +331,11 @@ def parse_args():
         dest="use_wandb",
         action="store_false",
         help="Disable Weights & Biases logging",
+    )
+    parser.add_argument(
+        "--run-sanity-check",
+        action="store_true",
+        help="Run the initial k-NN sanity check on CIFAR10.",
     )
     parser.add_argument(
         "--wandb-dir",
