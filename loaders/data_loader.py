@@ -281,7 +281,9 @@ def get_dataset(dataset_name="cifar10", root="./data"):
                 )
 
                 # Load the dataset
-                dataset = load_dataset("randall-lab/cifar100", trust_remote_code=True)
+                dataset = load_dataset(
+                    "randall-lab/cifar100", trust_remote_code=True, cache_dir=root
+                )
 
                 num_classes = 100
                 input_size = dataset_stats["cifar100"]["input_size"]
@@ -325,6 +327,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
                 dataset = load_dataset(
                     "randall-lab/food101",
                     trust_remote_code=True,
+                    cache_dir=root,
                     # Add download configuration for better reliability
                     download_config={
                         "resume_download": True,  # Resume interrupted downloads
@@ -395,7 +398,9 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             )
 
             # Load the dataset
-            dataset = load_dataset("randall-lab/fgvc-aircraft", trust_remote_code=True)
+            dataset = load_dataset(
+                "randall-lab/fgvc-aircraft", trust_remote_code=True, cache_dir=root
+            )
 
             num_classes = 100
             input_size = dataset_stats["fgvc_aircraft"]["input_size"]
@@ -450,7 +455,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             print("Loading PlantNet300K dataset from HuggingFace...")
 
             # Load the dataset
-            dataset = load_dataset("mikehemberger/plantnet300K")
+            dataset = load_dataset("mikehemberger/plantnet300K", cache_dir=root)
 
             # Number of classes is 85 according to the dataset card
             num_classes = 85
@@ -490,7 +495,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             print("Loading Galaxy10 DECals dataset from HuggingFace...")
 
             # Load the dataset
-            dataset = load_dataset("matthieulel/galaxy10_decals")
+            dataset = load_dataset("matthieulel/galaxy10_decals", cache_dir=root)
 
             # Number of classes is 10 according to the dataset card
             num_classes = 10
@@ -533,7 +538,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             print(
                 "Loading crop14_balance dataset from Hugging Face (gary109/crop14_balance)..."
             )
-            dataset = load_dataset("gary109/crop14_balance")
+            dataset = load_dataset("gary109/crop14_balance", cache_dir=root)
             # Use the provided splits; here, 'train' and 'validation' are available
             train_dataset_hf = dataset["train"]
             test_dataset_hf = dataset["validation"]
