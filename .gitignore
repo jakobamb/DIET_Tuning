@@ -57,6 +57,7 @@ outputs/
 # Environment variables
 .env
 .env.*
+.venv
 
 # Cache directories
 .cache/
