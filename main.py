@@ -1,27 +1,34 @@
 #!/usr/bin/env python
 """
 Main entry point for running DIET finetuning experiments.
-Provides a clean command-line interface to run experiments with different configurations.
 """
 import os
 import sys
-
-# Add the project root directory to Python path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
 import argparse
 import torch
-import numpy as np
 import time
 import wandb
 from datetime import datetime
 
+# Add the project root directory to Python path
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+# Import configuration
+from config import create_experiment_config, create_trainer_config
+from config.training_config import DEVICE
+from config.model_config import get_model_embedding_dim
+from config.params import (
+    BACKBONE_TYPE, MODEL_SIZE, DATASET_NAME, LIMIT_DATA,
+    NUM_EPOCHS, BATCH_SIZE, LEARNING_RATE, WEIGHT_DECAY,
+    DA_STRENGTH, RESUME_FROM, LABEL_SMOOTHING, NUM_DIET_CLASSES,
+    PROJECTION_DIM, RUN_SANITY_CHECK, EXPECTED_THRESHOLD
+)
+
 # Import from our modules
-from config.params import *
 from loaders.data_loader import prepare_data_loaders
-from training.config import get_training_settings, get_model_embedding_dim, DEVICE
 from training.trainer import DIETTrainer, create_projection_head
 from utils.wandb_logger import init_wandb, create_experiment_dashboard, log_model_architecture
+from utils.sanity_check import unified_sanity_check
 
 # Import model implementations
 from models.dinov2 import get_dinov2_model
@@ -30,14 +37,7 @@ from models.ijepa import get_ijepa_model
 from models.mambavision import get_mambavision_model
 from models.aim import get_aim_model
 from models.resnet50 import get_resnet50_model
-from models.simclr import get_simclr_model  # Add SimCLR import
-from utils.sanity_check import unified_sanity_check
-from config.params import (
-    BACKBONE_TYPE, MODEL_SIZE, DATASET_NAME, LIMIT_DATA,
-    NUM_EPOCHS, BATCH_SIZE, LEARNING_RATE, WEIGHT_DECAY,
-    DA_STRENGTH, RESUME_FROM, LABEL_SMOOTHING, NUM_DIET_CLASSES,
-    PROJECTION_DIM, RUN_SANITY_CHECK, EXPECTED_THRESHOLD
-)
+from models.simclr import get_simclr_model
 
 def get_model(backbone_type, model_size):
     """Load the appropriate model based on backbone type"""
@@ -160,35 +160,11 @@ def train(args):
         else:
             print(f"Warning: Checkpoint file {checkpoint_path} not found. Starting from scratch.")
     
-    # Create experiment configuration dictionary for wandb
-    experiment_config = {
-        # Model parameters
-        "backbone_type": args.backbone,
-        "model_size": args.model_size,
-        "embedding_dim": embedding_dim,
-        "projection_dim": args.projection_dim,
-        
-        # Dataset parameters
-        "dataset_name": args.dataset,
-        "num_classes": num_classes,
-        "num_diet_classes": args.num_diet_classes,
-        "input_size": dataset_info['input_size'],
-        "is_rgb": dataset_info['is_rgb'],
-        "limit_data": args.limit_data,
-        
-        # Training parameters
-        "num_epoch": args.num_epochs,
-        "batch_size": args.batch_size,
-        "lr": args.lr,
-        "weight_decay": args.weight_decay,
-        "da_strength": args.da_strength,
-        "label_smoothing": args.label_smoothing,
-        "resume_from": args.resume_from,
-        "start_epoch": start_epoch,
-        
-        # DIET-specific settings
-        "is_diet_active": args.label_smoothing > 0
-    }
+    # Create experiment configuration dictionary for wandb using our new config structure
+    experiment_config = create_experiment_config(args, embedding_dim, dataset_info)
+    
+    # Add any additional fields that aren't in the config structure
+    experiment_config["start_epoch"] = start_epoch
     
     # Initialize wandb if enabled
     run = None
@@ -196,7 +172,10 @@ def train(args):
         run = init_wandb(experiment_config)
         log_model_architecture(run, net, projection_head, W_probe, W_diet)
     
-    # Create the trainer
+    # Create a trainer config object
+    trainer_config = create_trainer_config(args)
+    
+    # Create the trainer with our config
     trainer = DIETTrainer(
         model=net,
         projection_head=projection_head,
@@ -207,7 +186,8 @@ def train(args):
         optimizer=optimizer,
         scheduler=scheduler,
         label_smoothing=args.label_smoothing,
-        checkpoint_dir=args.checkpoint_dir
+        checkpoint_dir=args.checkpoint_dir,
+        config=trainer_config
     )
     
     # Run the training

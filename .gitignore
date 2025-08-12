@@ -52,6 +52,7 @@ outputs/
 
 # VS Code settings
 .vscode/
+.github/
 
 # Environment variables
 .env

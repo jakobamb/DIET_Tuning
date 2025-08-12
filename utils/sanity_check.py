@@ -10,11 +10,8 @@ import wandb
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-# Assuming DEVICE is defined elsewhere, e.g., in training.config
-# If not, define it here:
-# DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# Or import it:
-from training.config import DEVICE
+# Define the device for model execution
+from config.training_config import DEVICE
 
 # Import model getter functions (adjust paths if necessary)
 # It's better practice to have these in their respective model files
