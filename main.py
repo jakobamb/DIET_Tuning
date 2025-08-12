@@ -12,21 +12,7 @@ import torch
 # Configuration imports
 from config import create_experiment_config, create_trainer_config
 from config.training_config import DEVICE
-from config.params import (
-    BACKBONE_TYPE,
-    MODEL_SIZE,
-    DATASET_NAME,
-    LIMIT_DATA,
-    NUM_EPOCHS,
-    BATCH_SIZE,
-    LEARNING_RATE,
-    WEIGHT_DECAY,
-    DA_STRENGTH,
-    RESUME_FROM,
-    LABEL_SMOOTHING,
-    NUM_DIET_CLASSES,
-    PROJECTION_DIM,
-)
+from config.params import DEFAULT_PARAMS
 
 # Data loading
 from loaders.data_loader import prepare_data_loaders
@@ -240,67 +226,84 @@ def parse_args():
     parser.add_argument(
         "--backbone",
         type=str,
-        default=BACKBONE_TYPE,
+        default=DEFAULT_PARAMS.backbone_type,
         choices=["resnet50", "dinov2", "mae", "mambavision", "ijepa", "aim"],
         help="Backbone model type",
     )
     parser.add_argument(
         "--model-size",
         type=str,
-        default=MODEL_SIZE,
+        default=DEFAULT_PARAMS.model_size,
         help="Model size (depends on backbone type)",
     )
 
     # Dataset arguments
     parser.add_argument(
-        "--dataset", type=str, default=DATASET_NAME, help="Dataset name"
+        "--dataset", type=str, default=DEFAULT_PARAMS.dataset_name, help="Dataset name"
     )
     parser.add_argument(
         "--limit-data",
         type=int,
-        default=LIMIT_DATA,
+        default=DEFAULT_PARAMS.limit_data,
         help="Maximum number of training samples",
     )
 
     # Training arguments
     parser.add_argument(
-        "--num-epochs", type=int, default=NUM_EPOCHS, help="Number of training epochs"
+        "--num-epochs",
+        type=int,
+        default=DEFAULT_PARAMS.num_epochs,
+        help="Number of training epochs",
     )
-    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Batch size")
-    parser.add_argument("--lr", type=float, default=LEARNING_RATE, help="Learning rate")
     parser.add_argument(
-        "--weight-decay", type=float, default=WEIGHT_DECAY, help="Weight decay"
+        "--batch-size", type=int, default=DEFAULT_PARAMS.batch_size, help="Batch size"
+    )
+    parser.add_argument(
+        "--lr", type=float, default=DEFAULT_PARAMS.learning_rate, help="Learning rate"
+    )
+    parser.add_argument(
+        "--weight-decay",
+        type=float,
+        default=DEFAULT_PARAMS.weight_decay,
+        help="Weight decay",
     )
     parser.add_argument(
         "--da-strength",
         type=int,
-        default=DA_STRENGTH,
+        default=DEFAULT_PARAMS.da_strength,
         help="Data augmentation strength (0-3)",
     )
     parser.add_argument(
         "--resume-from",
         type=str,
-        default=RESUME_FROM,
+        default=DEFAULT_PARAMS.resume_from,
         help="Resume training from a checkpoint file (e.g., checkpoint_epoch_25.pt)",
+    )
+    parser.add_argument(
+        "--training-mode",
+        type=str,
+        default=DEFAULT_PARAMS.training_mode,
+        choices=["combined", "diet_only", "probe_only"],
+        help="Training mode",
     )
 
     # DIET arguments
     parser.add_argument(
         "--label-smoothing",
         type=float,
-        default=LABEL_SMOOTHING,
+        default=DEFAULT_PARAMS.label_smoothing,
         help="Label smoothing strength (0 to disable DIET)",
     )
     parser.add_argument(
         "--num-diet-classes",
         type=int,
-        default=NUM_DIET_CLASSES,
+        default=DEFAULT_PARAMS.num_diet_classes,
         help="Number of random classes for DIET method",
     )
     parser.add_argument(
         "--projection-dim",
         type=int,
-        default=PROJECTION_DIM,
+        default=DEFAULT_PARAMS.projection_dim,
         help="Projection head output dimension",
     )
 

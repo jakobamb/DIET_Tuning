@@ -69,7 +69,7 @@ def create_trainer_config(args) -> TrainerConfig:
         "learning_rate": args.lr,
         "weight_decay": args.weight_decay,
         "label_smoothing": args.label_smoothing,
-        "training_mode": "combined",  # Default to combined mode
+        "training_mode": args.training_mode,
         "eval_frequency": args.eval_frequency,
         
         # Paths
