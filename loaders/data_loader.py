@@ -7,7 +7,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, Subset
 from PIL import Image
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from torchvision.transforms import v2
 
 # Try to import MedMNIST

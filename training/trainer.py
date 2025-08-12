@@ -6,8 +6,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from tqdm.notebook import tqdm
-import copy
 import matplotlib.pyplot as plt
 
 from utils.wandb_logger import (
@@ -17,12 +15,9 @@ from utils.wandb_logger import (
     save_model_checkpoint,
 )
 from evaluation.metrics import zero_shot_eval
-from config.training_config import TrainerConfig
 from training.metrics_utils import (
     MetricsTracker,
-    calculate_batch_metrics,
     aggregate_metrics,
-    plot_metrics,
 )
 
 
