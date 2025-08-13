@@ -9,6 +9,7 @@ from torch.utils.data import Dataset, DataLoader, Subset
 from PIL import Image
 from tqdm import tqdm
 from torchvision.transforms import v2
+from config.data_config import DATASET_STATS
 
 # Try to import MedMNIST
 try:
@@ -153,106 +154,8 @@ def get_dataset(dataset_name="cifar10", root="./data"):
     """
     Load the specified dataset with predetermined statistics.
     """
-    # Predetermined mean and std values for common datasets
-    dataset_stats = {
-        "cifar10": {
-            "mean": (0.4914, 0.4822, 0.4465),
-            "std": (0.2470, 0.2435, 0.2616),
-            "input_size": 32,
-            "is_rgb": True,
-        },
-        "cifar100": {
-            "mean": (0.5071, 0.4867, 0.4408),
-            "std": (0.2675, 0.2565, 0.2761),
-            "input_size": 32,
-            "is_rgb": True,
-        },
-        "food101": {
-            "mean": (
-                0.485,
-                0.456,
-                0.406,
-            ),  # ImageNet stats - good baseline for natural food images
-            "std": (
-                0.229,
-                0.224,
-                0.225,
-            ),  # Food images have similar distribution to ImageNet
-            "input_size": 224,  # Standard size for food classification (rescaled from 512)
-            "is_rgb": True,
-        },
-        "fgvc_aircraft": {
-            "mean": (
-                0.485,
-                0.456,
-                0.406,
-            ),  # ImageNet stats - good baseline for aircraft images
-            "std": (
-                0.229,
-                0.224,
-                0.225,
-            ),  # Aircraft images are natural outdoor scenes similar to ImageNet
-            "input_size": 224,  # Standard size for fine-grained classification
-            "is_rgb": True,
-        },
-        "pathmnist": {
-            "mean": (0.5, 0.5, 0.5),
-            "std": (0.5, 0.5, 0.5),
-            "input_size": 28,
-            "is_rgb": True,
-        },
-        "chestmnist": {
-            "mean": (0.4984),
-            "std": (0.2483),
-            "input_size": 28,
-            "is_rgb": False,
-        },
-        "dermamnist": {
-            "mean": (0.7634, 0.5423, 0.5698),
-            "std": (0.0841, 0.1246, 0.1043),
-            "input_size": 28,
-            "is_rgb": True,
-        },
-        "octmnist": {
-            "mean": (0.1778),
-            "std": (0.1316),
-            "input_size": 28,
-            "is_rgb": False,
-        },
-        "pneumoniamnist": {
-            "mean": (0.5060),
-            "std": (0.2537),
-            "input_size": 28,
-            "is_rgb": False,
-        },
-        "plantnet300k": {
-            "mean": (0.485, 0.456, 0.406),  # ImageNet stats as starting point
-            "std": (0.229, 0.224, 0.225),
-            "input_size": 224,  # PlantNet images are resized to 224
-            "is_rgb": True,
-        },
-        "galaxy10_decals": {
-            "mean": (
-                0.097,
-                0.097,
-                0.097,
-            ),  # Approximate for astronomy images (dark background)
-            "std": (
-                0.174,
-                0.164,
-                0.156,
-            ),  # Astronomical images have different distribution
-            "input_size": 256,  # Original image size is 256x256
-            "is_rgb": True,
-        },
-        "crop14_balance": {
-            # Based on the dataset card, images are rescaled to a maximum side length of 512.
-            "mean": (0.485, 0.456, 0.406),  # Using ImageNet stats as a placeholder
-            "std": (0.229, 0.224, 0.225),
-            "input_size": 512,
-            "is_rgb": True,
-        },
-    }
+    # Use dataset stats from config
+    dataset_stats = DATASET_STATS
 
     # Load dataset based on name
     if dataset_name.lower() == "cifar10":
@@ -440,12 +343,21 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         # Get dataset information
         num_classes = len(info["label"])
 
-        train_dataset = DataClass(split="train", download=True, root=root, size=224)
-        test_dataset = DataClass(split="test", download=True, root=root, size=224)
+        # Get the input size from config for this dataset
+        dataset_config = dataset_stats.get(data_flag, {})
+        input_size = dataset_config.get("input_size", 224)
+
+        train_dataset = DataClass(
+            split="train", download=True, root=root, size=input_size
+        )
+        test_dataset = DataClass(
+            split="test", download=True, root=root, size=input_size
+        )
 
         print(f"Dataset: {info['description']}")
         print(f"Task: {info['task']}")
         print(f"Number of classes: {num_classes}")
+        print(f"Using input size: {input_size}x{input_size}")
 
     elif dataset_name.lower() == "plantnet300k":
         # For PlantNet300K, we'll use HuggingFace datasets
