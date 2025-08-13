@@ -23,7 +23,7 @@ python main.py \
 EXP1_PID=$!
 echo "Experiment 1 (Low lr) started with PID: $EXP1_PID"
 
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=3
 
 echo "Starting experiment 2: High batch size (512) on GPU 1"
 
