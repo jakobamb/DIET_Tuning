@@ -192,12 +192,8 @@ def train(args):
         W_probe=W_probe,
         W_diet=W_diet,
         device=device,
-        num_classes=num_classes,
         optimizer=optimizer,
         scheduler=scheduler,
-        label_smoothing=args.label_smoothing,
-        checkpoint_dir=args.checkpoint_dir,
-        checkpoint_freq=args.checkpoint_freq,
         config=trainer_config,
     )
 

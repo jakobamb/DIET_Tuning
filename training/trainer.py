@@ -31,13 +31,8 @@ class DIETTrainer:
         W_probe,
         W_diet,
         device,
-        num_classes,
         optimizer,
         scheduler=None,
-        label_smoothing=0.0,
-        checkpoint_dir="checkpoints",
-        checkpoint_freq=10,
-        training_mode="combined",
         config=None,
     ):
         """Initialize the trainer.
@@ -48,38 +43,36 @@ class DIETTrainer:
             W_probe: The probe linear layer
             W_diet: The DIET linear layer
             device: The device to use
-            num_classes: Number of classes in the dataset
             optimizer: The optimizer
             scheduler: Optional learning rate scheduler
-            label_smoothing: Label smoothing value for DIET loss
-            checkpoint_dir: Directory to save checkpoints
-            checkpoint_freq: Frequency of saving checkpoints
-            training_mode: Training mode to use:
-                - "combined": Uses weighted combination of DIET and probe losses
-                - "diet_only": Uses only the DIET loss (requires n)
-                - "probe_only": Uses only the probe loss
-            config: Optional TrainerConfig object with additional settings
+            config: TrainerConfig object with all training settings
         """
+        if config is None:
+            raise ValueError("config parameter is required")
+
         self.model = model
         self.projection_head = projection_head
         self.W_probe = W_probe
         self.W_diet = W_diet
         self.device = device
-        self.num_classes = num_classes
         self.optimizer = optimizer
         self.scheduler = scheduler
-        self.is_diet_active = label_smoothing > 0
-        self.checkpoint_dir = checkpoint_dir
-        self.checkpoint_freq = checkpoint_freq
-        self.training_mode = training_mode
         self.config = config
 
-        # Set temperature from config if available
-        self.temperature = getattr(config, "temperature", 3.0) if config else 3.0
+        # Extract all settings from config
+        self.num_classes = config.num_classes
+        self.training_mode = config.training_mode
+        self.label_smoothing = config.label_smoothing
+        self.checkpoint_dir = config.checkpoint_dir
+        self.checkpoint_freq = config.checkpoint_freq
+        self.temperature = config.temperature
+        self.is_diet_active = config.label_smoothing > 0
+
+        print(f"Using training_mode from config: {self.training_mode}")
 
         # Create loss functions
         self.criterion = nn.CrossEntropyLoss(label_smoothing=0.0)
-        self.criterion_diet = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
+        self.criterion_diet = nn.CrossEntropyLoss(label_smoothing=self.label_smoothing)
 
         # Initialize metrics tracker
         self.metrics_tracker = MetricsTracker()

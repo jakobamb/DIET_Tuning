@@ -41,6 +41,7 @@ def create_trainer_config(args) -> TrainerConfig:
         "label_smoothing": args.label_smoothing,
         "training_mode": args.training_mode,
         "eval_frequency": args.eval_frequency,
+        "checkpoint_freq": args.checkpoint_freq,
         # Paths
         "checkpoint_dir": args.checkpoint_dir,
         # Logging settings
@@ -81,6 +82,8 @@ def create_experiment_config(args, embedding_dim: int, dataset_info: Dict) -> Di
         "weight_decay": args.weight_decay,
         "da_strength": args.da_strength,
         "label_smoothing": args.label_smoothing,
+        "training_mode": args.training_mode,
+        "checkpoint_freq": args.checkpoint_freq,
         "resume_from": args.resume_from,
         # Logging
         "wandb_dir": args.wandb_dir,
