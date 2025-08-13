@@ -197,6 +197,7 @@ def train(args):
         scheduler=scheduler,
         label_smoothing=args.label_smoothing,
         checkpoint_dir=args.checkpoint_dir,
+        checkpoint_freq=args.checkpoint_freq,
         config=trainer_config,
     )
 
@@ -289,6 +290,12 @@ def parse_args():
         default="combined",
         choices=["combined", "diet_only", "probe_only"],
         help="Training mode",
+    )
+    parser.add_argument(
+        "--checkpoint-freq",
+        type=int,
+        default=10,
+        help="Frequency of saving checkpoints",
     )
 
     # DIET arguments
