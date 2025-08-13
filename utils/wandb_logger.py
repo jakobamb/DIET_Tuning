@@ -23,6 +23,11 @@ def init_wandb(args):
     Returns:
         run: wandb run object
     """
+    # Set wandb data directory to prevent pollution of home directory
+    # This controls where artifacts staging and cache are stored
+    wandb_dir = args.get("wandb_dir", "wandb")
+    os.environ["WANDB_DATA_DIR"] = wandb_dir
+
     # Create experiment name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     experiment_name = f"DIET_{args['training_mode']}_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
@@ -33,7 +38,7 @@ def init_wandb(args):
         name=experiment_name,
         config=args,
         settings=wandb.Settings(start_method="thread"),
-        dir=args.get("wandb_dir"),
+        dir=wandb_dir,
         tags=[
             args["backbone_type"],
             args["model_size"],
