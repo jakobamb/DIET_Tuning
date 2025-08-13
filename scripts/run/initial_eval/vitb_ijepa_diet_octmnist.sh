@@ -29,6 +29,9 @@
 
 module load python3/3.11.9
 
+# cd into project directory
+cd /zhome/6a/3/198677/projects/DIET_Tuning
+
 # Activate conda environment
 source .venv/bin/activate
 
