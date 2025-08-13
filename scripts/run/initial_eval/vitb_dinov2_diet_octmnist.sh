@@ -33,7 +33,7 @@ module load python3/3.11.9
 cd /zhome/6a/3/198677/projects/DIET_Tuning
 
 # Activate conda environment
-source .venv/bin/activate
+source /dtu/p1/jakambs/diet_env/bin/activate
 
 export CUDA_VISIBLE_DEVICES=0
 
@@ -44,7 +44,7 @@ python main.py \
     --training-mode diet_only \
     --label-smoothing 0.2 \
     --dataset octmnist \
-    --num-epochs 50 \
+    --num-epochs 500\
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
     --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints
