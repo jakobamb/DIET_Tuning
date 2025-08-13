@@ -25,7 +25,7 @@ def init_wandb(args):
     """
     # Create experiment name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    experiment_name = f"DIET_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
+    experiment_name = f"DIET_{args['training_mode']}_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
 
     # Initialize wandb run
     run = wandb.init(
@@ -55,12 +55,18 @@ def log_training_metrics(run, metrics, epoch, lr=None):
         epoch: Current epoch number
         lr: Current learning rate (optional)
     """
+
     log_dict = {
-        "train/diet_loss": metrics["diet_loss"],
-        "train/probe_loss": metrics["probe_loss"],
-        "train/accuracy": metrics["accuracy"],
         "epoch": epoch,
     }
+
+    # depending on the training_mode different metrics are available
+    if "diet_loss" in metrics:
+        log_dict["train/diet_loss"] = metrics["diet_loss"]
+
+    if "probe_loss" in metrics:
+        log_dict["train/probe_loss"] = metrics["probe_loss"]
+        log_dict["train/accuracy"] = metrics["accuracy"]
 
     # Add learning rate if provided
     if lr is not None:
@@ -546,7 +552,7 @@ def create_experiment_dashboard(
         <tr><td><b>Label Smoothing:</b></td><td>{experiment_config['label_smoothing']}</td></tr>
         <tr><td><b>Training Samples:</b></td><td>{experiment_config.get('limit_data', 'Full Dataset')}</td></tr>
         <tr><td><b>Training Epochs:</b></td><td>{experiment_config['num_epochs']}</td></tr>
-        <tr><td><b>Learning Rate:</b></td><td>{experiment_config['lr']}</td></tr>
+        <tr><td><b>Learning Rate:</b></td><td>{experiment_config['learning_rate']}</td></tr>
     </table>
     
     <h2>Performance Summary</h2>
