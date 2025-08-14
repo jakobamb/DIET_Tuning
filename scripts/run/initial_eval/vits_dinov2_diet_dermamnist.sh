@@ -36,6 +36,7 @@ cd /zhome/6a/3/198677/projects/DIET_Tuning
 source /dtu/p1/jakambs/diet_env/bin/activate
 
 export CUDA_VISIBLE_DEVICES=0
+export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
 # Run the training script
 python main.py \
