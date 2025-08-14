@@ -30,7 +30,8 @@ def init_wandb(args):
 
     # Create experiment name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    experiment_name = f"DIET_{args['training_mode']}_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
+    wandb_prefix = args.get("wandb_prefix", "DIET")
+    experiment_name = f"{wandb_prefix}_{args['training_mode']}_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
 
     # Initialize wandb run
     run = wandb.init(

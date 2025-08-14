@@ -87,6 +87,7 @@ def create_experiment_config(args, embedding_dim: int, dataset_info: Dict) -> Di
         "resume_from": args.resume_from,
         # Logging
         "wandb_dir": args.wandb_dir,
+        "wandb_prefix": args.wandb_prefix,
         # DIET-specific settings
         "is_diet_active": args.label_smoothing > 0,
     }

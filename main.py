@@ -357,6 +357,12 @@ def parse_args():
         default="wandb",
         help="Directory to save wandb logs",
     )
+    parser.add_argument(
+        "--wandb-prefix",
+        type=str,
+        default="DIET",
+        help="Prefix for wandb experiment names",
+    )
 
     return parser.parse_args()
 
