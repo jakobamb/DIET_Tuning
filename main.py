@@ -290,7 +290,7 @@ def parse_args():
     parser.add_argument(
         "--checkpoint-freq",
         type=int,
-        default=10,
+        default=500,
         help="Frequency of saving checkpoints",
     )
 
