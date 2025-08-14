@@ -42,10 +42,10 @@ export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 python main.py \
     --wandb-prefix "lsmooth" \
     --backbone dinov2 \
-    --model-size base \
+    --model-size small \
     --training-mode diet_only \
-    --label-smoothing 0.4 \
-    --dataset dermamnist \
+    --label-smoothing 0.8 \
+    --dataset octmnist \
     --num-epochs 500\
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
