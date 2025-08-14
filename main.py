@@ -26,6 +26,7 @@ from utils.wandb_logger import (
     log_model_architecture,
 )
 from utils.sanity_check import unified_sanity_check
+from utils.lr_schedule import create_warmup_cosine_scheduler, get_scheduler_info
 
 # Model implementations
 from models.aim import get_aim_model
@@ -127,10 +128,20 @@ def train(args):
         weight_decay=args.weight_decay,
     )
 
-    # Add learning rate scheduler
-    print("Creating learning rate scheduler (cosine annealing)")
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, T_max=args.num_epochs, eta_min=1e-5
+    # Add learning rate scheduler with warmup
+    scheduler_info = get_scheduler_info(args.num_epochs, warmup_ratio=0.1)
+    print("Creating learning rate scheduler (warmup + cosine annealing)")
+    print(
+        f"Warmup epochs: {scheduler_info['warmup_epochs']}, "
+        f"Total epochs: {scheduler_info['total_epochs']}"
+    )
+
+    scheduler = create_warmup_cosine_scheduler(
+        optimizer=optimizer,
+        num_epochs=args.num_epochs,
+        base_lr=args.lr,
+        warmup_ratio=0.1,
+        eta_min=1e-5,
     )
 
     # Load from checkpoint if specified
