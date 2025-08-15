@@ -88,7 +88,7 @@ def train(args):
 
     # Load data
     print(f"\nLoading {args.dataset} dataset...")
-    train_loader, test_loader, dataset_info = prepare_data_loaders(
+    train_loader, val_loader, test_loader, dataset_info = prepare_data_loaders(
         dataset_name=args.dataset,
         batch_size=args.batch_size,
         da_strength=args.da_strength,
@@ -209,10 +209,15 @@ def train(args):
         config=trainer_config,
     )
 
+    # Choose evaluation loader based on parameter
+    eval_loader = test_loader if args.eval_on_test else val_loader
+    eval_set_name = "test" if args.eval_on_test else "validation"
+    print(f"Using {eval_set_name} set for evaluation")
+
     # Run the training
     metrics_history, initial_results, final_results = trainer.train(
         train_loader=train_loader,
-        test_loader=test_loader,
+        test_loader=eval_loader,
         num_epochs=args.num_epochs,
         run=run,
         eval_frequency=args.eval_frequency,
@@ -326,6 +331,11 @@ def parse_args():
         type=int,
         default=5,
         help="Run zero-shot evaluation every N epochs",
+    )
+    parser.add_argument(
+        "--eval-on-test",
+        action="store_true",
+        help="Evaluate on test set instead of validation set",
     )
 
     # Logging and saving arguments

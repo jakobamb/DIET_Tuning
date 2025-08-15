@@ -87,6 +87,8 @@ def create_experiment_config(args, embedding_dim: int, dataset_info: Dict) -> Di
         "training_mode": args.training_mode,
         "checkpoint_freq": args.checkpoint_freq,
         "resume_from": args.resume_from,
+        "eval_frequency": args.eval_frequency,
+        "eval_on_test": args.eval_on_test,
         # Logging
         "wandb_dir": args.wandb_dir,
         "wandb_prefix": args.wandb_prefix,

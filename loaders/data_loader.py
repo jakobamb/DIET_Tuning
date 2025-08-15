@@ -11,15 +11,44 @@ from tqdm import tqdm
 from torchvision.transforms import v2
 from config.data_config import DATASET_STATS
 
-# Try to import MedMNIST
 try:
     import medmnist
     from medmnist import INFO
 
     MEDMNIST_AVAILABLE = True
 except ImportError:
-    print("MedMNIST not found, install with: pip install medmnist")
     MEDMNIST_AVAILABLE = False
+
+try:
+    from datasets import load_dataset
+
+    HAS_DATASETS = True
+except ImportError:
+    HAS_DATASETS = False
+
+
+class TransformDataset(Dataset):
+    """Wrapper to apply transforms to any dataset."""
+
+    def __init__(self, dataset, transform=None):
+        self.dataset = dataset
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx):
+        item = self.dataset[idx]
+        if isinstance(item, tuple) and len(item) >= 2:
+            x, y = item[0], item[1]
+        else:
+            x = item
+            y = torch.tensor(0)
+
+        if self.transform:
+            x = self.transform(x)
+
+        return x, y
 
 
 class DatasetWithIndices(Dataset):
@@ -29,32 +58,24 @@ class DatasetWithIndices(Dataset):
         self.dataset = dataset
 
     def __getitem__(self, n):
-        # Convert tensor index to int if needed
         if isinstance(n, torch.Tensor):
             n = int(n.item())
 
-        # Get sample from wrapped dataset
         item = self.dataset[n]
 
-        # Handle different return formats
         if isinstance(item, tuple) and len(item) >= 2:
             x, y = item[0], item[1]
         else:
             x = item
-            y = torch.tensor(0)  # Default label if not provided
+            y = torch.tensor(0)
 
-        # Ensure label is a proper tensor with correct dimension
         if not isinstance(y, torch.Tensor):
             y = torch.tensor(y, dtype=torch.long)
 
-        # Make sure y has the right dimension (not a scalar)
         if y.dim() == 0:
             y = y.view(1)
 
-        # Diet class is simply the sample index
-        diet_class = torch.tensor(n, dtype=torch.long)
-        diet_class = diet_class.view(1)
-
+        diet_class = torch.tensor(n, dtype=torch.long).view(1)
         return x, y, diet_class
 
     def __len__(self):
@@ -67,406 +88,223 @@ class HFImageDataset(Dataset):
     def __init__(self, hf_dataset, transform=None, input_size=224):
         self.dataset = hf_dataset
         self.transform = transform
-        self.input_size = input_size
         self.resize = transforms.Resize((input_size, input_size))
 
     def __len__(self):
         return int(len(self.dataset))
 
     def __getitem__(self, idx):
-        # Convert idx to an integer if needed.
         if isinstance(idx, torch.Tensor):
             idx = int(idx.item())
+
         item = self.dataset[idx]
         image = item["image"]
         label = item.get("label", item.get("labels"))
+
         if not isinstance(image, Image.Image):
             try:
                 image = Image.fromarray(image)
-            except Exception as e:
-                print(f"Warning: Unexpected image format at index {idx}: {e}")
+            except Exception:
+                pass
+
         image = self.resize(image)
         if self.transform:
             image = self.transform(image)
+
         return image, label
 
 
-class RobustGalaxyDataset(torch.utils.data.Dataset):
-    """A robust dataset class specifically for Galaxy datasets that guarantees consistent tensor dimensions."""
+class RobustGalaxyDataset(Dataset):
+    """Robust dataset class for Galaxy datasets."""
 
     def __init__(self, hf_dataset, transform=None, limit_samples=None):
-        """A robust dataset class that guarantees consistent tensor dimensions"""
         self.dataset = hf_dataset
         self.transform = transform
+        self.resize = transforms.Resize((256, 256))
 
-        # Limit samples if requested
         if limit_samples is not None and limit_samples < len(hf_dataset):
             indices = torch.randperm(len(hf_dataset))[:limit_samples].tolist()
             self.indices = indices
         else:
             self.indices = list(range(len(hf_dataset)))
 
-        # Diet classes will be based on position in the indices list
-
-        # Create resize transform to ensure consistent image sizes
-        self.resize = torchvision.transforms.Resize((256, 256))
-
     def __len__(self):
         return len(self.indices)
 
     def __getitem__(self, idx):
-        # Get the sample using our saved indices
         original_idx = self.indices[idx]
         sample = self.dataset[original_idx]
 
-        # Get image and label
         image = sample["image"]
-        label = torch.tensor([sample["label"]], dtype=torch.long)  # Create as 1D tensor
+        label = torch.tensor([sample["label"]], dtype=torch.long)
 
-        # Convert to PIL if needed
         if not isinstance(image, Image.Image):
             try:
                 image = Image.fromarray(image)
             except:
-                print(f"Warning: Could not convert image to PIL at index {idx}")
+                pass
 
-        # Resize to ensure consistent dimensions
         image = self.resize(image)
-
-        # Apply additional transforms
         if self.transform:
             image = self.transform(image)
 
-        # Diet class is simply the idx (position in our dataset)
         diet_class = torch.tensor([idx], dtype=torch.long)
-
         return image, label, diet_class
 
 
 def get_dataset(dataset_name="cifar10", root="./data"):
-    """
-    Load the specified dataset with predetermined statistics.
-    """
-    # Use dataset stats from config
+    """Load dataset and return train, validation, test splits."""
+    from torch.utils.data import random_split
+
     dataset_stats = DATASET_STATS
 
-    # Load dataset based on name
     if dataset_name.lower() == "cifar10":
         train_dataset = datasets.CIFAR10(root=root, train=True, download=True)
         test_dataset = datasets.CIFAR10(root=root, train=False, download=True)
+        train_size = len(train_dataset) // 2
+        val_size = len(train_dataset) - train_size
+        train_dataset, val_dataset = random_split(train_dataset, [train_size, val_size])
         num_classes = 10
 
     elif dataset_name.lower() == "cifar100":
-        # Option 1: Use PyTorch's built-in CIFAR-100
         try:
             train_dataset = datasets.CIFAR100(root=root, train=True, download=True)
             test_dataset = datasets.CIFAR100(root=root, train=False, download=True)
+            train_size = len(train_dataset) // 2
+            val_size = len(train_dataset) - train_size
+            train_dataset, val_dataset = random_split(
+                train_dataset, [train_size, val_size]
+            )
             num_classes = 100
-            print("CIFAR-100 loaded from PyTorch datasets")
-            print("Dataset: 60,000 32x32 color images in 100 classes")
-            print("Training samples: 50,000, Test samples: 10,000")
-            print("Classes grouped into 20 superclasses with 5 classes each")
-        except Exception as e:
-            # Option 2: Fallback to HuggingFace dataset
-            print(f"PyTorch CIFAR-100 failed ({e}), trying HuggingFace dataset...")
-            try:
-                from datasets import load_dataset
-
-                print(
-                    "Loading CIFAR-100 dataset from HuggingFace (randall-lab/cifar100)..."
-                )
-
-                # Load the dataset
-                dataset = load_dataset(
-                    "randall-lab/cifar100", trust_remote_code=True, cache_dir=root
-                )
-
-                num_classes = 100
-                input_size = dataset_stats["cifar100"]["input_size"]
-
-                # Create train and test datasets
-                train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
-                test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
-
-                print(
-                    f"CIFAR-100 loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples"
-                )
-                print(f"Number of classes: {num_classes}")
-                print("Dataset contains 100 classes grouped into 20 superclasses:")
-                print(
-                    "- Examples: apple, aquarium fish, baby, bear, beaver, bed, bee, etc."
-                )
-
-            except ImportError:
-                raise ImportError(
-                    "HuggingFace datasets library is required for CIFAR-100 fallback. Install with 'pip install datasets'"
-                )
-            except Exception as e:
-                raise ValueError(
-                    f"Error loading CIFAR-100 dataset from both PyTorch and HuggingFace: {e}"
-                )
+        except Exception:
+            if not HAS_DATASETS:
+                raise ImportError("HuggingFace datasets not available")
+            dataset = load_dataset(
+                "randall-lab/cifar100", trust_remote_code=True, cache_dir=root
+            )
+            num_classes = 100
+            input_size = dataset_stats["cifar100"]["input_size"]
+            train_dataset_full = HFImageDataset(dataset["train"], input_size=input_size)
+            test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
+            train_size = len(train_dataset_full) // 2
+            val_size = len(train_dataset_full) - train_size
+            train_dataset, val_dataset = random_split(
+                train_dataset_full, [train_size, val_size]
+            )
 
     elif dataset_name.lower() == "food101":
-        # Food-101 dataset from HuggingFace with robust error handling
+        if not HAS_DATASETS:
+            raise ImportError("HuggingFace datasets not available")
         try:
-            from datasets import load_dataset
-            import os
-
-            print("Loading Food-101 dataset from HuggingFace (randall-lab/food101)...")
-            print(
-                "Note: Food-101 is a large dataset (~5GB). This may take a while to download."
+            dataset = load_dataset(
+                "randall-lab/food101", trust_remote_code=True, cache_dir=root
             )
-
-            # Try to load with increased timeout and retry settings
-            try:
-                # Load the dataset with custom download configuration
-                dataset = load_dataset(
-                    "randall-lab/food101",
-                    trust_remote_code=True,
-                    cache_dir=root,
-                    # Add download configuration for better reliability
-                    download_config={
-                        "resume_download": True,  # Resume interrupted downloads
-                        "max_retries": 3,  # Retry failed downloads
-                    },
-                )
-
-                num_classes = 101
-                input_size = dataset_stats["food101"]["input_size"]
-
-                # Create train and test datasets
-                train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
-                test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
-
-                print(
-                    f"Food-101 loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples"
-                )
-                print(f"Number of classes: {num_classes}")
-                print("Dataset: 101,000 images of food in 101 categories")
-                print("Training samples: 75,750, Test samples: 25,250")
-                print(
-                    "Examples: apple_pie, baby_back_ribs, baklava, beef_carpaccio, etc."
-                )
-                print(f"Images resized to {input_size}x{input_size} (from max 512px)")
-
-            except Exception as download_error:
-                print(f"HuggingFace download failed: {download_error}")
-                print("\nAlternative solutions:")
-                print("1. Try again later (network issues)")
-                print("2. Use a different dataset (cifar100, fgvc_aircraft)")
-                print(
-                    "3. Manually download Food-101 from: https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/"
-                )
-                print("\nFor now, falling back to CIFAR-100...")
-
-                # Fallback to CIFAR-100 for immediate testing
-                try:
-                    train_dataset = datasets.CIFAR100(
-                        root=root, train=True, download=True
-                    )
-                    test_dataset = datasets.CIFAR100(
-                        root=root, train=False, download=True
-                    )
-                    num_classes = 100
-                    print("Successfully loaded CIFAR-100 as fallback")
-                    print("Dataset: 60,000 32x32 color images in 100 classes")
-                    print("Training samples: 50,000, Test samples: 10,000")
-                except Exception as fallback_error:
-                    raise ValueError(
-                        f"Both Food-101 and CIFAR-100 fallback failed: {fallback_error}"
-                    )
-
-        except ImportError:
-            raise ImportError(
-                "HuggingFace datasets library is required for Food-101. Install with 'pip install datasets'"
+            num_classes = 101
+            input_size = dataset_stats["food101"]["input_size"]
+            train_dataset_full = HFImageDataset(dataset["train"], input_size=input_size)
+            test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
+            train_size = len(train_dataset_full) // 2
+            val_size = len(train_dataset_full) - train_size
+            train_dataset, val_dataset = random_split(
+                train_dataset_full, [train_size, val_size]
             )
-        except Exception as e:
-            print(f"Food-101 loading failed: {e}")
-            raise ValueError(f"Error loading Food-101 dataset: {e}")
+        except Exception:
+            train_dataset = datasets.CIFAR100(root=root, train=True, download=True)
+            test_dataset = datasets.CIFAR100(root=root, train=False, download=True)
+            train_size = len(train_dataset) // 2
+            val_size = len(train_dataset) - train_size
+            train_dataset, val_dataset = random_split(
+                train_dataset, [train_size, val_size]
+            )
+            num_classes = 100
 
     elif dataset_name.lower() == "fgvc_aircraft":
-        # FGVC-Aircraft dataset from HuggingFace
-        try:
-            from datasets import load_dataset
+        from datasets import load_dataset
 
-            print(
-                "Loading FGVC-Aircraft dataset from HuggingFace (randall-lab/fgvc-aircraft)..."
-            )
-
-            # Load the dataset
-            dataset = load_dataset(
-                "randall-lab/fgvc-aircraft", trust_remote_code=True, cache_dir=root
-            )
-
-            num_classes = 100
-            input_size = dataset_stats["fgvc_aircraft"]["input_size"]
-
-            # Create train and test datasets - use validation as test since it has 3-way split
-            train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
-            # Use validation split as test set (both val and test have 3,333 samples each)
-            test_dataset = HFImageDataset(dataset["validation"], input_size=input_size)
-
-            print(
-                f"FGVC-Aircraft loaded from HuggingFace: {len(train_dataset)} training, {len(test_dataset)} test samples"
-            )
-            print(f"Number of classes: {num_classes}")
-            print(
-                "Dataset: 10,000 images of aircraft in 100 fine-grained model variants"
-            )
-            print("Training samples: 3,334, Validation/Test samples: 3,333 each")
-            print(
-                "Fine-grained classification: different aircraft models (not just types)"
-            )
-            print(
-                f"Images resized to {input_size}x{input_size} (from variable resolution)"
-            )
-
-        except ImportError:
-            raise ImportError(
-                "HuggingFace datasets library is required for FGVC-Aircraft. Install with 'pip install datasets'"
-            )
-        except Exception as e:
-            raise ValueError(f"Error loading FGVC-Aircraft dataset: {e}")
+        dataset = load_dataset(
+            "randall-lab/fgvc-aircraft", trust_remote_code=True, cache_dir=root
+        )
+        num_classes = 100
+        input_size = dataset_stats["fgvc_aircraft"]["input_size"]
+        train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
+        val_dataset = HFImageDataset(dataset["validation"], input_size=input_size)
+        test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
 
     elif MEDMNIST_AVAILABLE and dataset_name.lower() in INFO.keys():
         data_flag = dataset_name.lower()
         info = INFO[data_flag]
         DataClass = getattr(medmnist, info["python_class"])
-
-        # Get dataset information
         num_classes = len(info["label"])
-
-        # Get the input size from config for this dataset
         dataset_config = dataset_stats.get(data_flag, {})
         input_size = dataset_config.get("input_size", 224)
-
         train_dataset = DataClass(
             split="train", download=True, root=root, size=input_size
         )
+        val_dataset = DataClass(split="val", download=True, root=root, size=input_size)
         test_dataset = DataClass(
             split="test", download=True, root=root, size=input_size
         )
 
-        print(f"Dataset: {info['description']}")
-        print(f"Task: {info['task']}")
-        print(f"Number of classes: {num_classes}")
-        print(f"Using input size: {input_size}x{input_size}")
-
     elif dataset_name.lower() == "plantnet300k":
-        # For PlantNet300K, we'll use HuggingFace datasets
-        try:
-            from datasets import load_dataset
+        from datasets import load_dataset
 
-            print("Loading PlantNet300K dataset from HuggingFace...")
-
-            # Load the dataset
-            dataset = load_dataset("mikehemberger/plantnet300K", cache_dir=root)
-
-            # Number of classes is 85 according to the dataset card
-            num_classes = 85
-
-            # Get the input_size from stats
-            input_size = dataset_stats["plantnet300k"]["input_size"]
-
-            # Create train and test datasets with consistent sizing
-            train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
-
-            # Use validation set as test set
-            if "validation" in dataset:
-                test_dataset = HFImageDataset(
-                    dataset["validation"], input_size=input_size
-                )
-            else:
-                test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
-
-            print(
-                f"PlantNet300K loaded: {len(train_dataset)} training, {len(test_dataset)} test samples"
-            )
-            print(f"Number of classes: {num_classes}")
-            print(f"All images will be resized to {input_size}x{input_size}")
-
-        except ImportError:
-            raise ImportError(
-                "HuggingFace datasets library is required for PlantNet300K. Install with 'pip install datasets'"
-            )
-        except Exception as e:
-            raise ValueError(f"Error loading PlantNet300K dataset: {e}")
+        dataset = load_dataset("mikehemberger/plantnet300K", cache_dir=root)
+        num_classes = 85
+        input_size = dataset_stats["plantnet300k"]["input_size"]
+        train_dataset_full = HFImageDataset(dataset["train"], input_size=input_size)
+        if "validation" in dataset:
+            test_dataset = HFImageDataset(dataset["validation"], input_size=input_size)
+        else:
+            test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
+        train_size = len(train_dataset_full) // 2
+        val_size = len(train_dataset_full) - train_size
+        train_dataset, val_dataset = random_split(
+            train_dataset_full, [train_size, val_size]
+        )
 
     elif dataset_name.lower() == "galaxy10_decals":
-        # For Galaxy10 DECals, we'll use HuggingFace datasets
-        try:
-            from datasets import load_dataset
+        from datasets import load_dataset
 
-            print("Loading Galaxy10 DECals dataset from HuggingFace...")
-
-            # Load the dataset
-            dataset = load_dataset("matthieulel/galaxy10_decals", cache_dir=root)
-
-            # Number of classes is 10 according to the dataset card
-            num_classes = 10
-
-            # Get the input_size from stats
-            input_size = dataset_stats["galaxy10_decals"]["input_size"]
-
-            # Create train and test datasets with consistent sizing
-            train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
-            test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
-
-            print(
-                f"Galaxy10 DECals loaded: {len(train_dataset)} training, {len(test_dataset)} test samples"
-            )
-            print(f"Number of classes: {num_classes}")
-            print(f"All images will be resized to {input_size}x{input_size}")
-            print("Galaxy class labels:")
-            print("0: Disturbed Galaxies")
-            print("1: Merging Galaxies")
-            print("2: Round Smooth Galaxies")
-            print("3: In-between Round Smooth Galaxies")
-            print("4: Cigar Shaped Smooth Galaxies")
-            print("5: Barred Spiral Galaxies")
-            print("6: Unbarred Tight Spiral Galaxies")
-            print("7: Unbarred Loose Spiral Galaxies")
-            print("8: Edge-on Galaxies without Bulge")
-            print("9: Edge-on Galaxies with Bulge")
-
-        except ImportError:
-            raise ImportError(
-                "HuggingFace datasets library is required for Galaxy10 DECals. Install with 'pip install datasets'"
-            )
-        except Exception as e:
-            raise ValueError(f"Error loading Galaxy10 DECals dataset: {e}")
+        dataset = load_dataset("matthieulel/galaxy10_decals", cache_dir=root)
+        num_classes = 10
+        input_size = dataset_stats["galaxy10_decals"]["input_size"]
+        train_dataset_full = HFImageDataset(dataset["train"], input_size=input_size)
+        test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
+        train_size = len(train_dataset_full) // 2
+        val_size = len(train_dataset_full) - train_size
+        train_dataset, val_dataset = random_split(
+            train_dataset_full, [train_size, val_size]
+        )
 
     elif dataset_name.lower() == "crop14_balance":
-        try:
-            from datasets import load_dataset
+        from datasets import load_dataset
+        from torch.utils.data import Subset
 
-            print(
-                "Loading crop14_balance dataset from Hugging Face (gary109/crop14_balance)..."
-            )
-            dataset = load_dataset("gary109/crop14_balance", cache_dir=root)
-            # Use the provided splits; here, 'train' and 'validation' are available
-            train_dataset_hf = dataset["train"]
-            test_dataset_hf = dataset["validation"]
-            num_classes = 14  # As given in the features ("14 classes")
-            input_size = dataset_stats["crop14_balance"]["input_size"]
-            train_dataset = HFImageDataset(
-                train_dataset_hf, transform=None, input_size=input_size
-            )
-            test_dataset = HFImageDataset(
-                test_dataset_hf, transform=None, input_size=input_size
-            )
-            print(
-                f"crop14_balance loaded: {len(train_dataset)} training, {len(test_dataset)} test samples"
-            )
-        except Exception as e:
-            raise ValueError(f"Error loading crop14_balance dataset: {e}")
+        dataset = load_dataset("gary109/crop14_balance", cache_dir=root)
+        train_dataset_hf = dataset["train"]
+        val_dataset_hf = dataset["validation"]
+        val_size = len(val_dataset_hf)
+        test_size = val_size // 2
+        val_indices = list(range(val_size))
+        test_indices = val_indices[:test_size]
+        val_indices = val_indices[test_size:]
+        val_subset = Subset(val_dataset_hf, val_indices)
+        test_subset = Subset(val_dataset_hf, test_indices)
+        num_classes = 14
+        input_size = dataset_stats["crop14_balance"]["input_size"]
+        train_dataset = HFImageDataset(
+            train_dataset_hf, transform=None, input_size=input_size
+        )
+        val_dataset = HFImageDataset(val_subset, transform=None, input_size=input_size)
+        test_dataset = HFImageDataset(
+            test_subset, transform=None, input_size=input_size
+        )
 
     else:
         raise ValueError(
             f"Dataset {dataset_name} not supported or MedMNIST not installed"
         )
 
-    # Get stats from our predefined dictionary
     stats = dataset_stats.get(
         dataset_name.lower(),
         {"mean": (0.5,), "std": (0.5,), "input_size": 28, "is_rgb": False},
@@ -474,6 +312,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
 
     return (
         train_dataset,
+        val_dataset,
         test_dataset,
         num_classes,
         stats["input_size"],
@@ -484,37 +323,24 @@ def get_dataset(dataset_name="cifar10", root="./data"):
 
 
 def calculate_dataset_stats(dataset, batch_size=64, max_samples=10000):
-    """Calculate mean and std for dataset
-
-    Args:
-        dataset: PyTorch dataset or HuggingFace dataset
-        batch_size: Batch size for loading
-        max_samples: Maximum number of samples to use (for large datasets)
-
-    Returns:
-        mean, std as lists
-    """
+    """Calculate mean and std for dataset."""
     from torch.utils.data import DataLoader, Subset
     import random
 
-    # Limit samples for large datasets
     if hasattr(dataset, "__len__") and len(dataset) > max_samples:
         indices = random.sample(range(len(dataset)), max_samples)
         dataset_subset = Subset(dataset, indices)
     else:
         dataset_subset = dataset
 
-    # Create a copy of the dataset with only ToTensor transform
     if hasattr(dataset, "transform"):
-        # Standard PyTorch dataset
         original_transform = dataset.transform
         dataset.transform = torchvision.transforms.ToTensor()
     elif hasattr(dataset, "dataset") and hasattr(dataset.dataset, "transform"):
-        # Handle subset case
         original_transform = dataset.dataset.transform
         dataset.dataset.transform = torchvision.transforms.ToTensor()
     else:
-        # Create a wrapper for HuggingFace datasets or other types
+
         class StatsDataset(torch.utils.data.Dataset):
             def __init__(self, original_dataset):
                 self.dataset = original_dataset
@@ -529,47 +355,34 @@ def calculate_dataset_stats(dataset, batch_size=64, max_samples=10000):
                     if isinstance(item, tuple) and len(item) >= 2:
                         img, label = item[0], item[1]
                     else:
-                        # For HuggingFace datasets
                         img = item["image"]
                         label = item.get("label", 0)
                 else:
-                    # Fallback for unusual dataset structures
-                    raise ValueError(
-                        "Dataset structure not supported for statistics calculation"
-                    )
+                    raise ValueError("Dataset structure not supported")
 
                 if self.transform:
                     img = self.transform(img)
-
                 return img, label
 
         dataset_subset = StatsDataset(dataset_subset)
         original_transform = None
 
-    # Create loader
     loader = DataLoader(
         dataset_subset, batch_size=batch_size, shuffle=False, num_workers=0
     )
-
     channels_sum, channels_squared_sum, num_batches = 0, 0, 0
 
-    print("Calculating dataset statistics...")
-    for data, _ in tqdm(loader):
-        # Check if data is already a tensor
+    for data, _ in tqdm(loader, desc="Calculating dataset statistics"):
         if not isinstance(data, torch.Tensor):
-            print(f"Warning: Expected tensor but got {type(data)}. Skipping batch.")
             continue
 
-        # Handle both single-channel and multi-channel images
-        if data.dim() == 3:  # [batch, height, width]
-            data = data.unsqueeze(1)  # Add channel dimension
+        if data.dim() == 3:
+            data = data.unsqueeze(1)
 
-        # Mean over batch, height and width, but not over channels
         channels_sum += torch.mean(data, dim=[0, 2, 3])
         channels_squared_sum += torch.mean(data**2, dim=[0, 2, 3])
         num_batches += 1
 
-    # Restore original transform
     if hasattr(dataset, "transform") and original_transform is not None:
         dataset.transform = original_transform
     elif (
@@ -579,33 +392,24 @@ def calculate_dataset_stats(dataset, batch_size=64, max_samples=10000):
     ):
         dataset.dataset.transform = original_transform
 
-    # Calculate mean and std
     mean = channels_sum / num_batches
     std = (channels_squared_sum / num_batches - mean**2) ** 0.5
-
     return mean.tolist(), std.tolist()
 
 
-def create_transforms(mean, std, input_size, is_rgb=True, da_strength=1):
-    """Create training and testing transforms based on statistics and data augmentation strength"""
-
-    # Always use 224x224 as the standard size
+def create_transforms(mean, std, is_rgb=True, da_strength=1):
+    """Create training and testing transforms."""
     standard_size = 224
 
-    # Create base transform list starting with RGB conversion
     base_transforms = [
-        # First step: Convert to RGB using proper torchvision v2 transform
         v2.RGB(),
-        # Resize to standard 224x224 size
         transforms.Resize((standard_size, standard_size), antialias=True),
     ]
 
-    # Basic test transform - RGB conversion, resize, normalize
     test_transform = transforms.Compose(
         base_transforms + [transforms.ToTensor(), transforms.Normalize(mean, std)]
     )
 
-    # Create training transform with augmentations based on strength
     if da_strength > 0:
         aug_list = base_transforms + [
             transforms.RandomResizedCrop(standard_size, antialias=True),
@@ -652,52 +456,72 @@ def prepare_data_loaders(
     print(f"Loading {dataset_name} dataset...")
 
     # Get dataset
-    training_data_raw, test_data_raw, num_classes, input_size, mean, std, is_rgb = (
-        get_dataset(dataset_name, root)
-    )
+    (
+        training_data_raw,
+        val_data_raw,
+        test_data_raw,
+        num_classes,
+        input_size,
+        mean,
+        std,
+        is_rgb,
+    ) = get_dataset(dataset_name, root)
     print(
-        f"Dataset loaded: input_size={input_size}, mean={mean}, std={std}, is_rgb={is_rgb}"
+        f"Dataset loaded: input_size={input_size}, mean={mean}, std={std}, "
+        f"is_rgb={is_rgb}"
     )
 
     # Create transforms
-    train_transform, test_transform = create_transforms(
-        mean, std, input_size, is_rgb, da_strength
-    )
+    train_transform, test_transform = create_transforms(mean, std, is_rgb, da_strength)
 
     # Apply transforms to the datasets
     if dataset_name.lower() in ["plantnet300k", "galaxy10_decals"]:
         # For HuggingFace datasets we need to handle the custom dataset wrapper
         training_data = training_data_raw  # No deepcopy needed
+        val_data = val_data_raw
         test_data = test_data_raw
         if hasattr(training_data, "transform"):
             training_data.transform = train_transform
+            val_data.transform = test_transform
             test_data.transform = test_transform
         else:
             print(
-                f"Note: {dataset_name} dataset structure is using custom transform handling"
+                f"Note: {dataset_name} dataset structure is using "
+                f"custom transform handling"
             )
     else:
         # Standard datasets
         import copy
 
         training_data = copy.deepcopy(training_data_raw)
-        try:
-            training_data.transform = train_transform
-            test_data = copy.deepcopy(test_data_raw)
-            test_data.transform = test_transform
-        except AttributeError:
-            # Handle if dataset doesn't have a transform attribute (like Subset)
-            print("Note: Using dataset that requires special transform handling")
+        val_data = copy.deepcopy(val_data_raw)
+        test_data = copy.deepcopy(test_data_raw)
 
-    # Limit training data if specified
+    # Limit training data if specified (before applying transforms)
     if limit_data < np.inf and limit_data < len(training_data):
         print(
-            f"Limiting training data to {limit_data} samples (out of {len(training_data)})"
+            f"Limiting training data to {limit_data} samples "
+            f"(out of {len(training_data)})"
         )
-        indices = torch.randperm(len(training_data))[:limit_data]
+        indices = torch.randperm(len(training_data))[:limit_data].tolist()
         training_data = Subset(training_data, indices)
     else:
         print(f"Using full training set: {len(training_data)} samples")
+
+    # Apply transforms after subsetting for standard datasets
+    if dataset_name.lower() not in ["plantnet300k", "galaxy10_decals"]:
+        # Always use TransformDataset wrapper for consistency
+        if hasattr(training_data, "dataset"):
+            # This is a Subset, wrap the whole thing with TransformDataset
+            training_data = TransformDataset(training_data, train_transform)
+        else:
+            # This is a regular dataset, wrap it
+            training_data = TransformDataset(training_data, train_transform)
+
+        # For val and test data, use TransformDataset wrapper
+        # to ensure transforms work
+        val_data = TransformDataset(val_data, test_transform)
+        test_data = TransformDataset(test_data, test_transform)
 
     # Special handling for Galaxy dataset
     if dataset_name.lower() == "galaxy10_decals":
@@ -718,16 +542,19 @@ def prepare_data_loaders(
             limit_samples=limit_data if limit_data < np.inf else None,
         )
 
-        test_data = RobustGalaxyDataset(test_data, transform=test_transform)
+        val_data = RobustGalaxyDataset(val_data_raw, transform=test_transform)
+        test_data = RobustGalaxyDataset(test_data_raw, transform=test_transform)
 
         print(
-            f"Created robust datasets: {len(training_data)} training, {len(test_data)} test"
+            f"Created robust datasets: {len(training_data)} training, "
+            f"{len(val_data)} validation, {len(test_data)} test"
         )
         print("===== GALAXY DATASET REBUILDING COMPLETE =====\n")
     else:
         # For non-Galaxy datasets, use the regular DatasetWithIndices wrapper
         training_data = DatasetWithIndices(training_data)
 
+    print(f"Validation set size: {len(val_data)} samples")
     print(f"Test set size: {len(test_data)} samples")
 
     # Create data loaders
@@ -739,9 +566,21 @@ def prepare_data_loaders(
         num_workers=0,
     )
 
+    val_loader = DataLoader(
+        val_data,
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+        num_workers=0,
+    )
+
     test_loader = DataLoader(
-        test_data, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=0
-    ) 
+        test_data,
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+        num_workers=0,
+    )
 
     dataset_info = {
         "num_classes": num_classes,
@@ -751,7 +590,8 @@ def prepare_data_loaders(
         "std": std,
         "is_rgb": is_rgb,
         "train_size": len(training_data),
+        "val_size": len(val_data),
         "test_size": len(test_data),
     }
 
-    return training_loader, test_loader, dataset_info
+    return training_loader, val_loader, test_loader, dataset_info
