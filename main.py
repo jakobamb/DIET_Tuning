@@ -91,14 +91,15 @@ def train(args):
     train_loader, test_loader, dataset_info = prepare_data_loaders(
         dataset_name=args.dataset,
         batch_size=args.batch_size,
-        num_diet_classes=args.num_diet_classes,
         da_strength=args.da_strength,
         limit_data=args.limit_data,
         root=args.data_root,
     )
 
     num_classes = dataset_info["num_classes"]
+    num_diet_classes = dataset_info["num_diet_classes"]
     print(f"Loaded dataset with {num_classes} classes")
+    print(f"Dataset size determines {num_diet_classes} diet classes")
 
     # Create the backbone model
     net, embedding_dim = get_model(
@@ -113,7 +114,7 @@ def train(args):
 
     # Create classification heads
     W_probe = torch.nn.Linear(embedding_dim, num_classes).to(device)
-    W_diet = torch.nn.Linear(args.projection_dim, args.num_diet_classes, bias=False).to(
+    W_diet = torch.nn.Linear(args.projection_dim, num_diet_classes, bias=False).to(
         device
     )
 
@@ -194,7 +195,7 @@ def train(args):
         log_model_architecture(run, net, projection_head, W_probe, W_diet)
 
     # Create a trainer config object
-    trainer_config = create_trainer_config(args)
+    trainer_config = create_trainer_config(args, dataset_info)
 
     # Create the trainer with our config
     trainer = DIETTrainer(
@@ -311,12 +312,6 @@ def parse_args():
         type=float,
         default=0.3,
         help="Label smoothing strength (0 to disable DIET)",
-    )
-    parser.add_argument(
-        "--num-diet-classes",
-        type=int,
-        default=100,
-        help="Number of random classes for DIET method",
     )
     parser.add_argument(
         "--projection-dim",

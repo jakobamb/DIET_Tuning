@@ -25,11 +25,8 @@ except ImportError:
 class DatasetWithIndices(Dataset):
     """Wrapper that assigns diet classes based on sample indices."""
 
-    def __init__(self, dataset, num_diet_classes=200):
+    def __init__(self, dataset):
         self.dataset = dataset
-        self.num_diet_classes = num_diet_classes
-        # Each sample's diet class is simply its index
-        # No need to store assignments since we can compute them on-the-fly
 
     def __getitem__(self, n):
         # Convert tensor index to int if needed
@@ -56,8 +53,7 @@ class DatasetWithIndices(Dataset):
 
         # Diet class is simply the sample index
         diet_class = torch.tensor(n, dtype=torch.long)
-        if diet_class.dim() == 0:
-            diet_class = diet_class.view(1)
+        diet_class = diet_class.view(1)
 
         return x, y, diet_class
 
@@ -98,9 +94,7 @@ class HFImageDataset(Dataset):
 class RobustGalaxyDataset(torch.utils.data.Dataset):
     """A robust dataset class specifically for Galaxy datasets that guarantees consistent tensor dimensions."""
 
-    def __init__(
-        self, hf_dataset, transform=None, diet_classes=100, limit_samples=None
-    ):
+    def __init__(self, hf_dataset, transform=None, limit_samples=None):
         """A robust dataset class that guarantees consistent tensor dimensions"""
         self.dataset = hf_dataset
         self.transform = transform
@@ -113,7 +107,6 @@ class RobustGalaxyDataset(torch.utils.data.Dataset):
             self.indices = list(range(len(hf_dataset)))
 
         # Diet classes will be based on position in the indices list
-        # No need to store them since we can compute on-the-fly
 
         # Create resize transform to ensure consistent image sizes
         self.resize = torchvision.transforms.Resize((256, 256))
@@ -651,7 +644,6 @@ def create_transforms(mean, std, input_size, is_rgb=True, da_strength=1):
 def prepare_data_loaders(
     dataset_name,
     batch_size,
-    num_diet_classes,
     da_strength=1,
     limit_data=np.inf,
     root="./data",
@@ -723,13 +715,10 @@ def prepare_data_loaders(
         training_data = RobustGalaxyDataset(
             train_data,
             transform=train_transform,
-            diet_classes=num_diet_classes,
             limit_samples=limit_data if limit_data < np.inf else None,
         )
 
-        test_data = RobustGalaxyDataset(
-            test_data, transform=test_transform, diet_classes=num_diet_classes
-        )
+        test_data = RobustGalaxyDataset(test_data, transform=test_transform)
 
         print(
             f"Created robust datasets: {len(training_data)} training, {len(test_data)} test"
@@ -737,9 +726,7 @@ def prepare_data_loaders(
         print("===== GALAXY DATASET REBUILDING COMPLETE =====\n")
     else:
         # For non-Galaxy datasets, use the regular DatasetWithIndices wrapper
-        training_data = DatasetWithIndices(
-            training_data, num_diet_classes=num_diet_classes
-        )
+        training_data = DatasetWithIndices(training_data)
 
     print(f"Test set size: {len(test_data)} samples")
 
@@ -754,10 +741,11 @@ def prepare_data_loaders(
 
     test_loader = DataLoader(
         test_data, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=0
-    )
+    ) 
 
     dataset_info = {
         "num_classes": num_classes,
+        "num_diet_classes": len(training_data),
         "input_size": input_size,
         "mean": mean,
         "std": std,

@@ -107,14 +107,7 @@ DATASET_STATS = {
     },
 }
 
-# Default data settings
-DEFAULT_DATA_CONFIG = {
-    "dataset_name": "cifar10",
-    "limit_data": 1000,
-    "batch_size": 32,
-    "da_strength": 1,
-    "num_diet_classes": 100,
-}
+
 
 
 def get_dataset_stats(dataset_name: str) -> Dict:

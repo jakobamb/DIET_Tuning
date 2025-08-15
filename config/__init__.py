@@ -8,16 +8,18 @@ from config.model_config import get_model_embedding_dim
 from config.training_config import TrainerConfig, DEVICE
 
 
-def create_trainer_config(args) -> TrainerConfig:
+def create_trainer_config(args, dataset_info=None) -> TrainerConfig:
     """Create a TrainerConfig from command line arguments.
 
     Args:
         args: Command line arguments
+        dataset_info: Optional dataset info dict with num_diet_classes
 
     Returns:
         Configuration for the trainer
     """
-    dataset_info = get_dataset_stats(args.dataset)
+    if dataset_info is None:
+        dataset_info = get_dataset_stats(args.dataset)
 
     config_dict = {
         # Model configuration
@@ -29,7 +31,7 @@ def create_trainer_config(args) -> TrainerConfig:
         "dataset_name": args.dataset,
         "batch_size": args.batch_size,
         "limit_data": args.limit_data,
-        "num_diet_classes": args.num_diet_classes,
+        "num_diet_classes": dataset_info["num_diet_classes"],
         "input_size": dataset_info["input_size"],
         "is_rgb": dataset_info["is_rgb"],
         "dataset_mean": dataset_info["mean"],
@@ -71,7 +73,7 @@ def create_experiment_config(args, embedding_dim: int, dataset_info: Dict) -> Di
         # Dataset parameters
         "dataset_name": args.dataset,
         "num_classes": dataset_info["num_classes"],
-        "num_diet_classes": args.num_diet_classes,
+        "num_diet_classes": dataset_info["num_diet_classes"],
         "input_size": dataset_info["input_size"],
         "is_rgb": dataset_info["is_rgb"],
         "limit_data": args.limit_data,
