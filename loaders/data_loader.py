@@ -23,13 +23,13 @@ except ImportError:
 
 
 class DatasetWithIndices(Dataset):
-    """Wrapper that assigns random diet classes to dataset samples."""
+    """Wrapper that assigns diet classes based on sample indices."""
 
     def __init__(self, dataset, num_diet_classes=200):
         self.dataset = dataset
         self.num_diet_classes = num_diet_classes
-        # Assign each sample to one of num_diet_classes
-        self.class_assignments = torch.randint(0, num_diet_classes, (len(dataset),))
+        # Each sample's diet class is simply its index
+        # No need to store assignments since we can compute them on-the-fly
 
     def __getitem__(self, n):
         # Convert tensor index to int if needed
@@ -54,8 +54,8 @@ class DatasetWithIndices(Dataset):
         if y.dim() == 0:
             y = y.view(1)
 
-        # Ensure diet class is a proper tensor with correct dimension
-        diet_class = self.class_assignments[n]
+        # Diet class is simply the sample index
+        diet_class = torch.tensor(n, dtype=torch.long)
         if diet_class.dim() == 0:
             diet_class = diet_class.view(1)
 
@@ -112,8 +112,8 @@ class RobustGalaxyDataset(torch.utils.data.Dataset):
         else:
             self.indices = list(range(len(hf_dataset)))
 
-        # Create diet class assignments - one per sample
-        self.diet_classes = torch.randint(0, diet_classes, (len(self.indices),))
+        # Diet classes will be based on position in the indices list
+        # No need to store them since we can compute on-the-fly
 
         # Create resize transform to ensure consistent image sizes
         self.resize = torchvision.transforms.Resize((256, 256))
@@ -144,8 +144,8 @@ class RobustGalaxyDataset(torch.utils.data.Dataset):
         if self.transform:
             image = self.transform(image)
 
-        # Get diet class for this sample - ensure it's a 1D tensor
-        diet_class = torch.tensor([self.diet_classes[idx].item()], dtype=torch.long)
+        # Diet class is simply the idx (position in our dataset)
+        diet_class = torch.tensor([idx], dtype=torch.long)
 
         return image, label, diet_class
 
