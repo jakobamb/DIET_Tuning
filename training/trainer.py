@@ -114,7 +114,13 @@ class DIETTrainer:
         print("=" * 50)
         initial_time = time.time()
         initial_results = zero_shot_eval(
-            self.model, test_loader, self.num_classes, self.device, eval_id=0
+            model=self.model,
+            train_loader=train_loader,
+            test_loader=test_loader,
+            num_classes=self.num_classes,
+            device=self.device,
+            probe_lr=1e-3,
+            probe_steps=10000,
         )
         print(f"Initial evaluation completed in {time.time() - initial_time:.2f}s")
 
@@ -391,11 +397,13 @@ class DIETTrainer:
 
                 try:
                     epoch_zero_shot = zero_shot_eval(
-                        self.model,
-                        test_loader,
-                        self.num_classes,
-                        self.device,
-                        eval_id=epoch + 1,
+                        model=self.model,
+                        train_loader=train_loader,
+                        test_loader=test_loader,
+                        num_classes=self.num_classes,
+                        device=self.device,
+                        probe_lr=1e-3,
+                        probe_steps=10000,
                     )
                     self.metrics_history["zero_shot_metrics"][
                         epoch + 1
@@ -452,11 +460,13 @@ class DIETTrainer:
         print("=" * 50)
         final_time = time.time()
         final_results = zero_shot_eval(
-            self.model,
-            test_loader,
-            self.num_classes,
-            self.device,
-            eval_id=start_epoch + num_epochs + 1,
+            model=self.model,
+            train_loader=train_loader,
+            test_loader=test_loader,
+            num_classes=self.num_classes,
+            device=self.device,
+            probe_lr=1e-3,
+            probe_steps=10000,
         )
         print(f"Final evaluation completed in {time.time() - final_time:.2f}s")
 

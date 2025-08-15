@@ -16,191 +16,119 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 
-def zero_shot_eval(net, test_loader, num_classes, device, eval_id=None):
-    """Evaluate model using zero-shot methods (K-NN, K-means, Linear Probe)
-    Handles both single-label and multi-label MedMNIST datasets.
+def zero_shot_eval(
+    model,
+    train_loader,
+    test_loader,
+    num_classes,
+    device,
+    probe_lr=1e-3,
+    probe_steps=10000,
+):
+    """Evaluate model using zero-shot methods with proper train/test split.
+
+    Trains on train_loader features and evaluates on test_loader features.
+    Single-label datasets only.
+
+    Args:
+        net: Model to evaluate
+        train_loader: DataLoader for training features
+        test_loader: DataLoader for test features
+        num_classes: Number of classes
+        device: Device to run evaluation on
+        probe_lr: Learning rate for linear probe (default: 1e-3)
+        probe_steps: Number of training steps for linear probe (default: 50)
+
+    Returns:
+        dict: Dictionary of evaluation metrics
     """
-
-    if eval_id is None:
-        eval_id = int(time.time()) % 10000
-
     start_time = time.time()
-    print("Extracting features for zero-shot evaluation...")
+    print("Extracting features for zero-shot evaluation with train/test split...")
 
-    features, labels = [], []
-    net.eval()
-    with torch.no_grad():
-        for batch in tqdm(test_loader, desc="Extracting features"):
-            if isinstance(batch, (list, tuple)) and len(batch) == 3:
-                x, y, _ = batch
-            elif isinstance(batch, (list, tuple)) and len(batch) == 2:
-                x, y = batch
-            else:
-                raise ValueError("Unexpected batch structure")
+    def extract_features(loader, split_name):
+        """Extract features from a data loader."""
+        features, labels = [], []
+        model.eval()
+        with torch.no_grad():
+            for batch in tqdm(loader, desc=f"Extracting {split_name} features"):
+                if isinstance(batch, (list, tuple)) and len(batch) == 3:
+                    x, y, _ = batch
+                elif isinstance(batch, (list, tuple)) and len(batch) == 2:
+                    x, y = batch
+                else:
+                    raise ValueError("Unexpected batch structure")
 
-            x = x.to(device)
-            feat = net(x)
+                x = x.to(device)
+                feat = model(x)
 
-            if isinstance(feat, list):
-                features.extend([f.detach().cpu().numpy() for f in feat])
-            else:
-                features.append(feat.detach().cpu().numpy())
+                if isinstance(feat, list):
+                    features.extend([f.detach().cpu().numpy() for f in feat])
+                else:
+                    features.append(feat.detach().cpu().numpy())
 
-            labels.append(y.detach().cpu().numpy())
+                labels.append(y.detach().cpu().numpy())
 
-    features = np.vstack(features)  # (N, D)
-    labels = np.concatenate(labels, axis=0)  # target shape varies by dataset
-    N = features.shape[0]
+        features = np.vstack(features)
+        labels = np.concatenate(labels, axis=0)
 
-    # ---------- Label normalization (robust) ----------
-    # (N, L, 1) -> (N, L)
-    if labels.ndim == 3 and labels.shape[-1] == 1:
-        labels = labels.squeeze(-1)
-    # (N, 1) -> (N,)
-    if labels.ndim == 2 and labels.shape[1] == 1:
-        labels = labels.squeeze(1)
-    # Rescue flattened multi-label: (N*L,) with known N
-    if labels.ndim == 1 and labels.size != N and labels.size % N == 0:
-        L = labels.size // N
-        print(f"[fix] Reshaping flattened labels from {(labels.size,)} to {(N, L)}")
-        labels = labels.reshape(N, L)
+        # Normalize labels to 1D
+        if labels.ndim == 2 and labels.shape[1] == 1:
+            labels = labels.squeeze(1)
 
-    # Final sanity
-    if labels.shape[0] != N:
-        raise ValueError(
-            f"Labels length {labels.shape} mismatches features {features.shape}"
-        )
+        return features, labels
 
-    is_multilabel = labels.ndim == 2 and labels.shape[1] > 1
+    # Extract train and test features separately
+    train_features, train_labels = extract_features(train_loader, "train")
+    test_features, test_labels = extract_features(test_loader, "test")
 
-    feature_hash = hash(str(features[:3].sum()))
-    print(f"Feature hash: {feature_hash} (should change between evaluations)")
     print(
-        f"Features: {features.shape}, Labels: {labels.shape}, multilabel={is_multilabel}, time: {time.time() - start_time:.2f}s"
+        f"Train features: {train_features.shape}, "
+        f"Train labels: {train_labels.shape}"
     )
+    print(f"Test features: {test_features.shape}, " f"Test labels: {test_labels.shape}")
+    print(f"Time: {time.time() - start_time:.2f}s")
 
     results = {}
 
     # ---------- k-NN ----------
-    print("Running k-NN evaluation...")
+    print("Running k-NN evaluation (train on train, test on test)...")
     t0 = time.time()
     knn = KNeighborsClassifier(n_neighbors=10)
-    knn.fit(features, labels)  # works for single-label (1D) and multi-output (2D)
-    knn_pred = knn.predict(features)
+    knn.fit(train_features, train_labels)
+    knn_pred = knn.predict(test_features)
 
-    if is_multilabel:
-        results["knn_subset_acc"] = accuracy_score(labels, knn_pred)
-        results["knn_micro_f1"] = f1_score(
-            labels, knn_pred, average="micro", zero_division=0
-        )
-        results["knn_macro_f1"] = f1_score(
-            labels, knn_pred, average="macro", zero_division=0
-        )
-        print(
-            f"k-NN (multilabel) subset-acc: {results['knn_subset_acc']:.4f}, "
-            f"micro-F1: {results['knn_micro_f1']:.4f}, macro-F1: {results['knn_macro_f1']:.4f}, "
-            f"time: {time.time() - t0:.2f}s"
-        )
-    else:
-        # Ensure y is 1D for clean sklearn behavior
-        if labels.ndim == 2 and labels.shape[1] == 1:
-            labels_for_acc = labels.squeeze(1)
-        else:
-            labels_for_acc = labels
-        results["knn_acc"] = accuracy_score(labels_for_acc, knn_pred)
-        print(f"k-NN accuracy: {results['knn_acc']:.4f}, time: {time.time() - t0:.2f}s")
-
-    # ---------- k-means (only for single-label) ----------
-    if is_multilabel:
-        print(
-            "Skipping k-means ARI/NMI for multi-label datasets (requires single-label ground truth)."
-        )
-    else:
-        print("Running k-means clustering evaluation...")
-        t0 = time.time()
-        kmeans = KMeans(n_clusters=int(num_classes), random_state=0, n_init=10)
-        cluster_pred = kmeans.fit_predict(features)
-
-        # labels must be 1D for ARI/NMI
-        if labels.ndim == 2 and labels.shape[1] == 1:
-            labels_1d = labels.squeeze(1)
-        else:
-            labels_1d = labels
-        results["kmeans_ari"] = adjusted_rand_score(labels_1d, cluster_pred)
-        results["kmeans_nmi"] = normalized_mutual_info_score(labels_1d, cluster_pred)
-        print(
-            f"k-means ARI: {results['kmeans_ari']:.4f}, NMI: {results['kmeans_nmi']:.4f}, time: {time.time() - t0:.2f}s"
-        )
+    results["knn_acc"] = accuracy_score(test_labels, knn_pred)
+    print(f"k-NN accuracy: {results['knn_acc']:.4f}, " f"time: {time.time() - t0:.2f}s")
 
     # ---------- Linear probe ----------
-    print("Running linear probe evaluation...")
+    print("Running linear probe evaluation (train on train, test on test)...")
     t0 = time.time()
-    X_train, X_test = features[: N // 2], features[N // 2 :]
 
-    if is_multilabel:
-        y = labels.astype(np.float32)
-        y_train, y_test = y[: N // 2], y[N // 2 :]
-        out_dim = y.shape[1]
-        clf = torch.nn.Linear(features.shape[1], out_dim).to(device)
-        opt = torch.optim.Adam(clf.parameters(), lr=0.001)
-        crit = torch.nn.BCEWithLogitsLoss()
+    out_dim = int(num_classes)
+    clf = torch.nn.Linear(train_features.shape[1], out_dim).to(device)
+    opt = torch.optim.Adam(clf.parameters(), lr=probe_lr)
+    crit = torch.nn.CrossEntropyLoss()
 
-        clf.train()
-        Xtr = torch.as_tensor(X_train, dtype=torch.float32, device=device)
-        ytr = torch.as_tensor(y_train, dtype=torch.float32, device=device)
-        for _ in range(50):
-            opt.zero_grad()
-            loss = crit(clf(Xtr), ytr)
-            loss.backward()
-            opt.step()
+    clf.train()
+    Xtr = torch.as_tensor(train_features, dtype=torch.float32, device=device)
+    ytr = torch.as_tensor(train_labels, dtype=torch.long, device=device)
+    for _ in range(probe_steps):
+        opt.zero_grad()
+        loss = crit(clf(Xtr), ytr)
+        loss.backward()
+        opt.step()
 
-        clf.eval()
-        with torch.no_grad():
-            Xte = torch.as_tensor(X_test, dtype=torch.float32, device=device)
-            logits = clf(Xte).cpu().numpy()
-            probs = 1 / (1 + np.exp(-logits))
-            pred = (probs >= 0.5).astype(np.int64)
+    clf.eval()
+    with torch.no_grad():
+        Xte = torch.as_tensor(test_features, dtype=torch.float32, device=device)
+        logits = clf(Xte)
+        pred = logits.argmax(dim=1).cpu().numpy()
 
-        results["linear_subset_acc"] = accuracy_score(y_test, pred)
-        results["linear_micro_f1"] = f1_score(
-            y_test, pred, average="micro", zero_division=0
-        )
-        results["linear_macro_f1"] = f1_score(
-            y_test, pred, average="macro", zero_division=0
-        )
-        print(
-            f"Linear probe (multilabel) subset-acc: {results['linear_subset_acc']:.4f}, "
-            f"micro-F1: {results['linear_micro_f1']:.4f}, macro-F1: {results['linear_macro_f1']:.4f}, "
-            f"time: {time.time() - t0:.2f}s"
-        )
-    else:
-        # single-label
-        y = labels.squeeze() if labels.ndim > 1 else labels
-        y_train, y_test = y[: N // 2], y[N // 2 :]
-        out_dim = int(num_classes)
-
-        clf = torch.nn.Linear(features.shape[1], out_dim).to(device)
-        opt = torch.optim.Adam(clf.parameters(), lr=0.001)
-        crit = torch.nn.CrossEntropyLoss()
-
-        clf.train()
-        Xtr = torch.as_tensor(X_train, dtype=torch.float32, device=device)
-        ytr = torch.as_tensor(y_train, dtype=torch.long, device=device)
-        for _ in range(50):
-            opt.zero_grad()
-            loss = crit(clf(Xtr), ytr)
-            loss.backward()
-            opt.step()
-
-        clf.eval()
-        with torch.no_grad():
-            Xte = torch.as_tensor(X_test, dtype=torch.float32, device=device)
-            logits = clf(Xte)
-            pred = logits.argmax(dim=1).cpu().numpy()
-        results["linear_acc"] = accuracy_score(y_test, pred)
-        print(
-            f"Linear probe accuracy: {results['linear_acc']:.4f}, time: {time.time() - t0:.2f}s"
-        )
+    results["linear_acc"] = accuracy_score(test_labels, pred)
+    print(
+        f"Linear probe accuracy: {results['linear_acc']:.4f}, "
+        f"time: {time.time() - t0:.2f}s"
+    )
 
     print(f"Total zero-shot evaluation time: {time.time() - start_time:.2f}s")
     return results
