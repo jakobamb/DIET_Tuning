@@ -1,97 +1,94 @@
-"""Main configuration for DIET finetuning."""
+"""Main configuration module for DIET finetuning.
 
-from typing import Dict, Any
+This module provides a clean, consolidated interface to all configuration
+components following DRY principles and single source of truth.
+"""
 
-# Re-export key configuration components for easy imports
-from config.data_config import get_dataset_stats
-from config.model_config import get_model_embedding_dim
-from config.training_config import TrainerConfig, DEVICE
-
-
-def create_trainer_config(args, dataset_info=None) -> TrainerConfig:
-    """Create a TrainerConfig from command line arguments.
-
-    Args:
-        args: Command line arguments
-        dataset_info: Optional dataset info dict with num_diet_classes
-
-    Returns:
-        Configuration for the trainer
-    """
-    if dataset_info is None:
-        dataset_info = get_dataset_stats(args.dataset)
-
-    config_dict = {
-        # Model configuration
-        "backbone_type": args.backbone,
-        "model_size": args.model_size,
-        "num_classes": dataset_info["num_classes"],
-        "projection_dim": args.projection_dim,
-        # Data configuration
-        "dataset_name": args.dataset,
-        "batch_size": args.batch_size,
-        "limit_data": args.limit_data,
-        "num_diet_classes": dataset_info["num_diet_classes"],
-        "input_size": dataset_info["input_size"],
-        "is_rgb": dataset_info["is_rgb"],
-        "dataset_mean": dataset_info["mean"],
-        "dataset_std": dataset_info["std"],
-        # Training configuration
-        "num_epochs": args.num_epochs,
-        "learning_rate": args.lr,
-        "weight_decay": args.weight_decay,
-        "label_smoothing": args.label_smoothing,
-        "training_mode": args.training_mode,
-        "eval_frequency": args.eval_frequency,
-        "checkpoint_freq": args.checkpoint_freq,
-        # Paths
-        "checkpoint_dir": args.checkpoint_dir,
-        # Logging settings
-        "enable_wandb": args.use_wandb,
-    }
-
-    return TrainerConfig.from_dict(config_dict)
+# Re-export main configuration classes
+from config.base_config import DEVICE, GLOBAL_DEFAULTS
+from config.models import (
+    ModelConfig,
+    get_model_embedding_dim,
+    get_available_model_sizes,
+)
+from config.data import DataConfig, get_dataset_stats, get_available_datasets
+from config.experiment import ExperimentConfig, create_experiment_config_from_args
+from config.models import SANITY_CHECK_THRESHOLDS
 
 
-def create_experiment_config(args, embedding_dim: int, dataset_info: Dict) -> Dict:
-    """Create experiment configuration dictionary for wandb.
+# Keep legacy functions for existing code
+def create_trainer_config(args, dataset_info=None):
+    """DEPRECATED: Use create_experiment_config_from_args instead."""
+    import warnings
 
-    Args:
-        args: Command line arguments
-        embedding_dim: Model embedding dimension
-        dataset_info: Dataset information
+    warnings.warn(
+        "create_trainer_config is deprecated. Use create_experiment_config_from_args instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
-    Returns:
-        Experiment configuration
-    """
+    # Convert to new format temporarily for backward compatibility
+    config = create_experiment_config_from_args(args)
+
+    # Return a simplified dict that matches the old TrainerConfig interface
     return {
-        # Model parameters
-        "backbone_type": args.backbone,
-        "model_size": args.model_size,
-        "embedding_dim": embedding_dim,
-        "projection_dim": args.projection_dim,
-        # Dataset parameters
-        "dataset_name": args.dataset,
-        "num_classes": dataset_info["num_classes"],
-        "num_diet_classes": dataset_info["num_diet_classes"],
-        "input_size": dataset_info["input_size"],
-        "is_rgb": dataset_info["is_rgb"],
-        "limit_data": args.limit_data,
-        # Training parameters
-        "num_epochs": args.num_epochs,
-        "batch_size": args.batch_size,
-        "learning_rate": args.lr,
-        "weight_decay": args.weight_decay,
-        "da_strength": args.da_strength,
-        "label_smoothing": args.label_smoothing,
-        "training_mode": args.training_mode,
-        "checkpoint_freq": args.checkpoint_freq,
-        "resume_from": args.resume_from,
-        "eval_frequency": args.eval_frequency,
-        "eval_on_test": args.eval_on_test,
-        # Logging
-        "wandb_dir": args.wandb_dir,
-        "wandb_prefix": args.wandb_prefix,
-        # DIET-specific settings
-        "is_diet_active": args.label_smoothing > 0,
+        "backbone_type": config.model.backbone_type,
+        "model_size": config.model.model_size,
+        "num_classes": config.data.num_classes,
+        "projection_dim": config.model.projection_dim,
+        "dataset_name": config.data.dataset_name,
+        "batch_size": config.data.batch_size,
+        "limit_data": config.data.limit_data,
+        "num_diet_classes": config.num_diet_classes,
+        "input_size": config.data.input_size,
+        "is_rgb": config.data.is_rgb,
+        "dataset_mean": config.data.mean,
+        "dataset_std": config.data.std,
+        "num_epochs": config.training.num_epochs,
+        "learning_rate": config.training.learning_rate,
+        "weight_decay": config.training.weight_decay,
+        "label_smoothing": config.training.label_smoothing,
+        "training_mode": config.training.training_mode,
+        "eval_frequency": config.training.eval_frequency,
+        "checkpoint_freq": config.training.checkpoint_freq,
+        "checkpoint_dir": config.checkpoint_dir,
+        "enable_wandb": config.enable_wandb,
     }
+
+
+def create_experiment_config(args, embedding_dim: int, dataset_info: dict):
+    """DEPRECATED: Use create_experiment_config_from_args instead."""
+    import warnings
+
+    warnings.warn(
+        "create_experiment_config is deprecated. Use ExperimentConfig.to_wandb_config() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    config = create_experiment_config_from_args(args)
+    return config.to_wandb_config()
+
+
+# Main public API
+__all__ = [
+    # Hardware and global settings
+    "DEVICE",
+    "GLOBAL_DEFAULTS",
+    # Configuration classes
+    "ModelConfig",
+    "DataConfig",
+    "ExperimentConfig",
+    # Factory functions
+    "create_experiment_config_from_args",
+    # Utility functions
+    "get_model_embedding_dim",
+    "get_available_model_sizes",
+    "get_dataset_stats",
+    "get_available_datasets",
+    # Constants
+    "SANITY_CHECK_THRESHOLDS",
+    # Legacy compatibility (deprecated)
+    "create_trainer_config",
+    "create_experiment_config",
+]

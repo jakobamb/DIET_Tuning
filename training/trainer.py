@@ -60,13 +60,13 @@ class DIETTrainer:
         self.config = config
 
         # Extract all settings from config
-        self.num_classes = config.num_classes
-        self.training_mode = config.training_mode
-        self.label_smoothing = config.label_smoothing
+        self.num_classes = config.data.num_classes
+        self.training_mode = config.training.training_mode
+        self.label_smoothing = config.training.label_smoothing
         self.checkpoint_dir = config.checkpoint_dir
-        self.checkpoint_freq = config.checkpoint_freq
-        self.temperature = config.temperature
-        self.is_diet_active = config.label_smoothing > 0
+        self.checkpoint_freq = config.training.checkpoint_freq
+        self.temperature = config.model.temperature
+        self.is_diet_active = config.training.label_smoothing > 0
 
         print(f"Using training_mode from config: {self.training_mode}")
 

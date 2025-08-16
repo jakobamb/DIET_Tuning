@@ -10,8 +10,7 @@ import argparse
 import torch
 
 # Configuration imports
-from config import create_experiment_config, create_trainer_config
-from config.training_config import DEVICE
+from config import create_experiment_config_from_args, DEVICE
 
 # Data loading
 from loaders.data_loader import prepare_data_loaders
@@ -182,10 +181,13 @@ def train(args):
                 f"Warning: Checkpoint file {checkpoint_path} not found. Starting from scratch."
             )
 
-    # Create experiment configuration dictionary for wandb using our new config structure
-    experiment_config = create_experiment_config(args, embedding_dim, dataset_info)
+    # Create experiment configuration
+    config = create_experiment_config_from_args(args)
 
-    # Add any additional fields that aren't in the config structure
+    # Convert to wandb format for logging
+    experiment_config = config.to_wandb_config()
+
+    # Add runtime fields
     experiment_config["start_epoch"] = start_epoch
 
     # Initialize wandb if enabled
@@ -194,10 +196,7 @@ def train(args):
         run = init_wandb(experiment_config)
         log_model_architecture(run, net, projection_head, W_probe, W_diet)
 
-    # Create a trainer config object
-    trainer_config = create_trainer_config(args, dataset_info)
-
-    # Create the trainer with our config
+    # Create trainer
     trainer = DIETTrainer(
         model=net,
         projection_head=projection_head,
@@ -206,7 +205,7 @@ def train(args):
         device=device,
         optimizer=optimizer,
         scheduler=scheduler,
-        config=trainer_config,
+        config=config,
     )
 
     # Choose evaluation loader based on parameter

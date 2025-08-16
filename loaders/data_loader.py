@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader, Subset
 from PIL import Image
 from tqdm import tqdm
 from torchvision.transforms import v2
-from config.data_config import DATASET_STATS
+from config.data import DATASET_STATS
 
 try:
     import medmnist
