@@ -11,7 +11,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Global defaults - centralized
 GLOBAL_DEFAULTS = {
-    "temperature": 3.0,
+    "temperature": 1.0,
     "enable_wandb": True,
     "wandb_project": "DIET-Finetuning",
 }
