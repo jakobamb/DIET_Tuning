@@ -43,7 +43,6 @@ python main.py \
     --wandb-prefix "no_proj_head_freeze_phase" \
     --backbone dinov2 \
     --model-size small \
-    --training-mode diet_only \
     --label-smoothing 0.2 \
     --dataset dermamnist \
     --num-epochs 500\

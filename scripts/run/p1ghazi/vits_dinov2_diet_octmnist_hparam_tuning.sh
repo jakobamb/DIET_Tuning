@@ -11,7 +11,6 @@ echo "Starting experiment 1: Low lr (1e-5) on GPU 0"
 python main.py \
     --backbone dinov2 \
     --model-size small \
-    --training-mode diet_only \
     --label-smoothing 0.2 \
     --dataset octmnist \
     --lr 1e-5 \
@@ -30,7 +29,6 @@ echo "Starting experiment 2: High batch size (512) on GPU 1"
 python main.py \
     --backbone dinov2 \
     --model-size small \
-    --training-mode diet_only \
     --label-smoothing 0.2 \
     --dataset octmnist \
     --batch-size 512 \

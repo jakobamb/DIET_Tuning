@@ -42,7 +42,6 @@ export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 python main.py \
     --backbone ijepa \
     --model-size b16_22k \
-    --training-mode diet_only \
     --label-smoothing 0.2 \
     --dataset octmnist \
     --num-epochs 500\

@@ -43,7 +43,6 @@ python main.py \
     --wandb-prefix "lsmooth" \
     --backbone dinov2 \
     --model-size small \
-    --training-mode diet_only \
     --label-smoothing 0.8 \
     --dataset dermamnist \
     --num-epochs 500\
