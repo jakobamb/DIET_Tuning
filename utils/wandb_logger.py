@@ -94,7 +94,7 @@ def log_evaluation_metrics(run, metrics, epoch):
     log_dict = {"eval/accuracy": metrics["accuracy"], "epoch": epoch}
 
     # Log metrics to wandb
-    run.log(log_dict)
+    run.log(log_dict, step=epoch)
 
 
 def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
@@ -132,7 +132,7 @@ def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
         log_dict["zero_shot/average_improvement"] = avg_improvement
 
     # Log metrics to wandb
-    run.log(log_dict)
+    run.log(log_dict, step=epoch)
 
 
 def save_model_checkpoint(
