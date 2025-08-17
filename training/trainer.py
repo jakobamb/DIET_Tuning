@@ -1,6 +1,5 @@
 """Training components for DIET finetuning framework."""
 
-import os
 import time
 import numpy as np
 import torch
@@ -27,9 +26,7 @@ class DIETTrainer:
     def __init__(
         self,
         model,
-        projection_head,
-        W_probe,
-        W_diet,
+        diet_head,
         device,
         optimizer,
         scheduler=None,
@@ -39,9 +36,7 @@ class DIETTrainer:
 
         Args:
             model: The backbone model
-            projection_head: The projection head
-            W_probe: The probe linear layer
-            W_diet: The DIET linear layer
+            diet_head: The DIET linear layer
             device: The device to use
             optimizer: The optimizer
             scheduler: Optional learning rate scheduler
@@ -51,9 +46,7 @@ class DIETTrainer:
             raise ValueError("config parameter is required")
 
         self.model = model
-        self.projection_head = projection_head
-        self.W_probe = W_probe
-        self.W_diet = W_diet
+        self.diet_head = diet_head
         self.device = device
         self.optimizer = optimizer
         self.scheduler = scheduler
@@ -61,17 +54,12 @@ class DIETTrainer:
 
         # Extract all settings from config
         self.num_classes = config.data.num_classes
-        self.training_mode = config.training.training_mode
         self.label_smoothing = config.training.label_smoothing
         self.checkpoint_dir = config.checkpoint_dir
         self.checkpoint_freq = config.training.checkpoint_freq
         self.temperature = config.model.temperature
         self.is_diet_active = config.training.label_smoothing > 0
 
-        print(f"Using training_mode from config: {self.training_mode}")
-
-        # Create loss functions
-        self.criterion = nn.CrossEntropyLoss(label_smoothing=0.0)
         self.criterion_diet = nn.CrossEntropyLoss(label_smoothing=self.label_smoothing)
 
         # Initialize metrics tracker
@@ -85,6 +73,18 @@ class DIETTrainer:
             "test_acc": [],
             "zero_shot_metrics": {},
         }
+
+    def _freeze_backbone(self):
+        """Freeze backbone model for DIET-only training."""
+        self.model.eval()
+        for param in self.model.parameters():
+            param.requires_grad = False
+
+    def _unfreeze_backbone(self):
+        """Unfreeze backbone model for full training."""
+        self.model.train()
+        for param in self.model.parameters():
+            param.requires_grad = True
 
     def train(
         self,
@@ -131,15 +131,6 @@ class DIETTrainer:
         if run is not None:
             log_zero_shot_metrics(run, initial_results, 0)
 
-        # Validate that the training data matches the training mode
-        if self.training_mode == "diet_only":
-            # Check first batch for diet classes
-            first_batch = next(iter(train_loader))
-            if len(first_batch) < 3 or first_batch[2] is None:
-                raise ValueError(
-                    "DIET-only training requires diet classes (n) in the dataloader"
-                )
-
         # Begin training
         train_start_time = time.time()
         epoch_times = []
@@ -149,14 +140,13 @@ class DIETTrainer:
             p.numel() for p in self.model.parameters() if p.requires_grad
         )
         num_trainable_params += sum(
-            p.numel() for p in self.projection_head.parameters() if p.requires_grad
+            p.numel() for p in self.diet_head.parameters() if p.requires_grad
         )
-        num_trainable_params += sum(
-            p.numel() for p in self.W_probe.parameters() if p.requires_grad
-        )
-        num_trainable_params += sum(
-            p.numel() for p in self.W_diet.parameters() if p.requires_grad
-        )
+
+        # Determine DIET-only phase boundaries
+        diet_only_epochs = max(1, int(num_epochs * 0.05))  # At least 1 epoch
+        diet_only_end_epoch = start_epoch + diet_only_epochs
+        backbone_frozen = False
 
         # Training loop
         for epoch in range(start_epoch, start_epoch + num_epochs):
@@ -164,11 +154,27 @@ class DIETTrainer:
             epoch_start = time.time()
             batch_metrics_list = []
 
-            # Set models to training mode
-            self.model.train()
-            self.projection_head.train()
-            self.W_probe.train()
-            self.W_diet.train()
+            # Handle phase transitions
+            diet_only_phase = epoch < diet_only_end_epoch
+
+            if diet_only_phase and not backbone_frozen:
+                # Freeze backbone for DIET-only training (one-time operation)
+                self._freeze_backbone()
+                backbone_frozen = True
+                print(
+                    f"Epoch {epoch+1}: Starting DIET-only phase (backbone frozen for {diet_only_epochs} epochs)"
+                )
+            elif not diet_only_phase and backbone_frozen:
+                # Unfreeze backbone for full training (one-time operation)
+                self._unfreeze_backbone()
+                backbone_frozen = False
+                print(
+                    f"Epoch {epoch+1}: Starting full training phase (backbone unfrozen)"
+                )
+
+            # Set trainable components to training mode
+            self.diet_head.train()
+            # Note: backbone mode is set by freeze/unfreeze methods
 
             print("\n==========================")
             print(
@@ -181,21 +187,14 @@ class DIETTrainer:
 
             # Iterate through training data (without tqdm)
             for i, batch in enumerate(train_loader):
-                # Flexible batch unpacking: support (x, y, n) and (x, y)
-                if isinstance(batch, (list, tuple)):
-                    if len(batch) == 3:
-                        x, y, n = batch
-                    elif len(batch) == 2:
-                        x, y = batch
-                        n = None  # No diet class provided
-                    else:
-                        print(
-                            f"Warning: Unexpected batch length ({len(batch)}) at batch {i}. Skipping."
-                        )
-                        continue
-                else:
-                    print(f"Warning: Unexpected batch type at batch {i}. Skipping.")
-                    continue
+                assert (
+                    len(batch) == 3
+                ), f"Batch needs to contain data, label, diet_class, found {batch}"
+                x, y, diet_idx = batch
+
+                assert (
+                    diet_idx is not None
+                ), "DIET class indices are required for training"
 
                 # Send tensors to device
                 x = x.to(self.device)
@@ -205,70 +204,40 @@ class DIETTrainer:
                 if y.dim() > 1:
                     y = y.view(-1)
 
-                if n is not None:
-                    n = n.to(self.device).long()
-                    if n.dim() > 1:
-                        n = n.view(-1)
+                if diet_idx.dim() > 1:
+                    diet_idx = diet_idx.view(-1)
 
                 # Forward pass
                 z = self.model(x)  # Original features
                 z_norm = F.normalize(z, p=2, dim=1)  # L2 normalize
-                z_proj = self.projection_head(z_norm)  # Projection through MLP
 
-                # Calculate diet loss with temperature scaling
-                if n is not None:
-                    logits_diet = self.W_diet(z_proj) / self.temperature
-                    loss_diet = self.criterion_diet(logits_diet, n)
-                else:
-                    loss_diet = torch.tensor(0.0, device=self.device)
+                # Calculate diet loss
+                logits_diet = self.diet_head(z_norm)
+                loss_diet = self.criterion_diet(logits_diet, diet_idx)
 
-                # Calculate probe loss (only if needed)
-                loss_probe = None
-                logits_probe = None
-                batch_acc = None
-                if self.training_mode != "diet_only":
-                    logits_probe = self.W_probe(z)
-                    loss_probe = self.criterion(logits_probe, y)
-                    # Calculate accuracy for tracking
-                    preds = logits_probe.argmax(dim=1)
-                    batch_acc = torch.mean((y == preds).float()).item()
-
-                # Determine which loss to use based on training mode
-                if self.training_mode == "diet_only":
-                    if n is not None:
-                        loss = loss_diet
-                    else:
-                        raise ValueError(
-                            "DIET-only training requires diet classes (n) to be provided"
-                        )
-                elif self.training_mode == "probe_only":
-                    loss = loss_probe
-                else:  # Combined mode (default)
-                    # Combine losses dynamically based on training phase
-                    total_epochs = start_epoch + num_epochs
-                    if n is not None:
-                        if epoch < total_epochs * 0.5:  # First 50% of training
-                            loss = 0.6 * loss_diet + 0.4 * loss_probe
-                        elif epoch < total_epochs * 0.8:  # Next 30% of training
-                            loss = 0.4 * loss_diet + 0.6 * loss_probe
-                        else:  # Final 20% of training
-                            loss = 0.2 * loss_diet + 0.8 * loss_probe
-                    else:
-                        loss = loss_probe
+                loss = loss_diet
 
                 # Backward pass and optimization
                 self.optimizer.zero_grad()
                 loss.backward()
 
-                # Calculate gradient norm
+                # Calculate gradient norm (only for parameters being trained)
                 total_grad_norm = 0.0
-                for p in (
-                    list(self.model.parameters())
-                    + list(self.projection_head.parameters())
-                    + list(self.W_probe.parameters())
-                    + list(self.W_diet.parameters())
-                ):
-                    if p.grad is not None:
+                trainable_params = []
+
+                if backbone_frozen:
+                    # Only include DIET components during DIET-only phase
+                    trainable_params = list(self.projection_head.parameters()) + list(
+                        self.diet_head.parameters()
+                    )
+                else:
+                    # Include backbone and DIET components when training everything
+                    trainable_params = list(self.model.parameters()) + list(
+                        self.diet_head.parameters()
+                    )
+
+                for p in trainable_params:
+                    if p.grad is not None and p.requires_grad:
                         param_norm = p.grad.data.norm(2)
                         total_grad_norm += param_norm.item() ** 2
                 total_grad_norm = total_grad_norm**0.5
@@ -282,16 +251,18 @@ class DIETTrainer:
                     "batch_grad_norm": total_grad_norm,
                 }
 
-                if self.training_mode != "diet_only" and loss_probe is not None:
-                    batch_metrics["batch_loss_probe"] = loss_probe.item()
-                    batch_metrics["batch_acc"] = batch_acc
-
                 batch_metrics_list.append(batch_metrics)
 
                 # Print batch update every 10 batches
                 if i % 10 == 0:
+                    # Count currently trainable parameters
+                    current_trainable = sum(
+                        p.numel() for p in trainable_params if p.requires_grad
+                    )
+                    phase_description = "DIET-head-only" if backbone_frozen else "full"
                     print(
-                        f"Batch {i}: grad_norm={total_grad_norm:.4f} across {num_trainable_params} trainable params"
+                        f"Batch {i}: grad_norm={total_grad_norm:.4f} "
+                        f"({phase_description} training, {current_trainable} params)"
                     )
 
             # End of epoch processing
@@ -313,17 +284,9 @@ class DIETTrainer:
                 epoch_metrics.get("train_batch_loss_diet", float("nan"))
             )
 
-            if "train_batch_loss_probe" in epoch_metrics:
-                self.metrics_history["train_loss_probe"].append(
-                    epoch_metrics["train_batch_loss_probe"]
-                )
-                self.metrics_history["train_acc"].append(
-                    epoch_metrics["train_batch_acc"]
-                )
-            else:
-                # Use NaN for metrics that weren't tracked
-                self.metrics_history["train_loss_probe"].append(float("nan"))
-                self.metrics_history["train_acc"].append(float("nan"))
+            # Set unused metrics to NaN
+            self.metrics_history["train_loss_probe"].append(float("nan"))
+            self.metrics_history["train_acc"].append(float("nan"))
 
             # Step the learning rate scheduler
             if self.scheduler is not None:
@@ -335,35 +298,18 @@ class DIETTrainer:
 
             # Log training metrics to wandb
             if run is not None:
-                # Create a clean dict for wandb
+                # Create a clean dict for wandb (DIET loss only)
                 wandb_metrics = {
                     "diet_loss": epoch_metrics.get("train_batch_loss_diet", 0)
                 }
 
-                # Add probe metrics if available
-                if "train_batch_loss_probe" in epoch_metrics:
-                    wandb_metrics.update(
-                        {
-                            "probe_loss": epoch_metrics["train_batch_loss_probe"],
-                            "accuracy": epoch_metrics["train_batch_acc"],
-                        }
-                    )
-
                 log_training_metrics(run, wandb_metrics, epoch + 1, current_lr)
 
             # Print epoch summary
-            if self.training_mode == "diet_only":
-                print(
-                    f"Epoch {epoch+1} Metrics - DIET Loss: "
-                    f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
-                )
-            else:
-                print(
-                    f"Epoch {epoch+1} Metrics - DIET Loss: "
-                    f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}, "
-                    f"Probe Loss: {epoch_metrics.get('train_batch_loss_probe', float('nan')):.4e}, "
-                    f"Accuracy: {epoch_metrics.get('train_batch_acc', float('nan')):.4f}"
-                )
+            print(
+                f"Epoch {epoch+1} Metrics - DIET Loss: "
+                f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
+            )
 
             # Evaluate on test set
             test_acc = self.evaluate_test_set(test_loader)
@@ -375,18 +321,10 @@ class DIETTrainer:
 
             # Print epoch summary
             print(f"Epoch {epoch+1}/{start_epoch + num_epochs} summary:")
-            if self.training_mode == "diet_only":
-                print(
-                    f"  Train - DIET loss: "
-                    f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
-                )
-            else:
-                print(
-                    f"  Train - DIET loss: "
-                    f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}, "
-                    f"Probe loss: {epoch_metrics.get('train_batch_loss_probe', float('nan')):.4e}, "
-                    f"Acc: {epoch_metrics.get('train_batch_acc', float('nan')):.4f}"
-                )
+            print(
+                f"  Train - DIET loss: "
+                f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
+            )
             print(f"  Test  - Acc: {test_acc:.4f}")
 
             # Zero-shot evaluation every few epochs
@@ -415,36 +353,20 @@ class DIETTrainer:
                             run, epoch_zero_shot, epoch + 1, initial_results
                         )
 
-                except Exception as e:
+                except (RuntimeError, ValueError) as e:
                     print(f"Error in zero-shot evaluation: {e}")
 
             # Save checkpoint
             if run is not None and (epoch + 1) % self.checkpoint_freq == 0:
-                if self.training_mode == "diet_only":
-                    checkpoint_metrics = {
-                        "test_acc": test_acc,
-                        "train_loss_diet": epoch_metrics.get(
-                            "train_batch_loss_diet", 0
-                        ),
-                    }
-                else:
-                    checkpoint_metrics = {
-                        "train_acc": epoch_metrics.get("train_batch_acc", 0),
-                        "test_acc": test_acc,
-                        "train_loss_diet": epoch_metrics.get(
-                            "train_batch_loss_diet", 0
-                        ),
-                        "train_loss_probe": epoch_metrics.get(
-                            "train_batch_loss_probe", 0
-                        ),
-                    }
+                checkpoint_metrics = {
+                    "test_acc": test_acc,
+                    "train_loss_diet": epoch_metrics.get("train_batch_loss_diet", 0),
+                }
                 save_model_checkpoint(
                     run,
                     self.model,
                     self.optimizer,
-                    self.projection_head,
-                    self.W_probe,
-                    self.W_diet,
+                    self.diet_head,
                     epoch + 1,
                     checkpoint_metrics,
                     save_dir=self.checkpoint_dir,
@@ -487,7 +409,6 @@ class DIETTrainer:
         print("EXPERIMENT RESULTS SUMMARY")
         print("=" * 50)
         print(f"Number of classes: {self.num_classes}")
-        print(f"Training mode: {self.training_mode}")
         print(
             f"DIET label smoothing: {self.criterion_diet.label_smoothing}"
             + (" (DIET active)" if self.is_diet_active else " (DIET inactive)")
@@ -525,59 +446,6 @@ class DIETTrainer:
 
         return self.metrics_history, initial_results, final_results
 
-    def evaluate_test_set(self, test_loader):
-        """Evaluate model on test set with probe classifier.
-
-        Args:
-            test_loader: DataLoader for test data
-
-        Returns:
-            float: Test accuracy
-        """
-        print("\nStarting evaluation on test set:")
-        self.model.eval()
-        with torch.no_grad():
-            run_acc_test = []
-            for i, batch in enumerate(test_loader):
-                # Flexible unpacking: works with (x, y) or (x, y, n)
-                if isinstance(batch, (list, tuple)):
-                    if len(batch) == 3:
-                        x, y, _ = batch
-                    elif len(batch) == 2:
-                        x, y = batch
-                    else:
-                        print(
-                            f"Warning: Unexpected test batch length ({len(batch)}) at batch {i}. Skipping."
-                        )
-                        continue
-                else:
-                    print(
-                        f"Warning: Unexpected test batch type at batch {i}. Skipping."
-                    )
-                    continue
-
-                x = x.to(self.device)
-                y = y.to(self.device)
-                z = self.model(x)
-                logits_probe = self.W_probe(z)
-
-                # Adjust dimensions if necessary
-                if y.dim() != logits_probe.argmax(1).dim():
-                    y = (
-                        y.squeeze()
-                        if y.dim() > logits_probe.argmax(1).dim()
-                        else y.unsqueeze(0)
-                    )
-                batch_acc = torch.mean((y == logits_probe.argmax(1)).float()).item()
-                run_acc_test.append(batch_acc)
-
-                if i % 10 == 0:  # Print only every 10 batches to reduce verbosity
-                    print(f"Test Batch {i}: Accuracy={batch_acc:.4f}")
-
-            test_acc = np.mean(run_acc_test) if run_acc_test else 0
-            print(f"\nOverall Test Accuracy: {test_acc:.4f}")
-        return test_acc
-
     def create_visualizations(self, tracked_epochs=None):
         """Create visualization plots for training metrics.
 
@@ -594,10 +462,6 @@ class DIETTrainer:
         plt.subplot(1, 3, 1)
         plt.plot(self.metrics_history["train_loss_diet"], label="DIET Loss")
 
-        # Only plot probe loss if not in diet_only mode
-        if self.training_mode != "diet_only":
-            plt.plot(self.metrics_history["train_loss_probe"], label="Probe Loss")
-
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         plt.title("Training Loss")
@@ -606,10 +470,6 @@ class DIETTrainer:
 
         # Plot accuracy
         plt.subplot(1, 3, 2)
-
-        # Only plot train accuracy if not in diet_only mode
-        if self.training_mode != "diet_only":
-            plt.plot(self.metrics_history["train_acc"], label="Train Accuracy")
 
         plt.plot(self.metrics_history["test_acc"], label="Test Accuracy")
         plt.xlabel("Epoch")
@@ -751,10 +611,6 @@ def plot_training_metrics(self, tracked_epochs=None, figsize=(18, 6)):
         # Always include DIET loss
         metrics_to_plot.append("train_batch_loss_diet")
 
-        # Include probe metrics if not in diet_only mode
-        if self.training_mode != "diet_only":
-            metrics_to_plot.extend(["train_batch_loss_probe", "train_batch_acc"])
-
         # Include test accuracy and gradient norm
         metrics_to_plot.append("train_batch_grad_norm")
 
@@ -779,9 +635,6 @@ def plot_training_metrics(self, tracked_epochs=None, figsize=(18, 6)):
     plt.subplot(1, 3, 1)
     plt.plot(self.metrics_history["train_loss_diet"], label="DIET Loss")
 
-    if self.training_mode != "diet_only":
-        plt.plot(self.metrics_history["train_loss_probe"], label="Probe Loss")
-
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
     plt.title("Training Loss")
@@ -790,9 +643,6 @@ def plot_training_metrics(self, tracked_epochs=None, figsize=(18, 6)):
 
     # Plot accuracy
     plt.subplot(1, 3, 2)
-
-    if self.training_mode != "diet_only":
-        plt.plot(self.metrics_history["train_acc"], label="Train Accuracy")
 
     plt.plot(self.metrics_history["test_acc"], label="Test Accuracy")
     plt.xlabel("Epoch")
@@ -845,7 +695,3 @@ def plot_training_metrics(self, tracked_epochs=None, figsize=(18, 6)):
 
     plt.tight_layout()
     return fig
-
-
-# Add the plot_metrics method to the DIETTrainer class
-DIETTrainer.plot_metrics = plot_training_metrics

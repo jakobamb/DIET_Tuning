@@ -16,9 +16,6 @@ GLOBAL_DEFAULTS = {
     "wandb_project": "DIET-Finetuning",
 }
 
-# Valid options - single source of truth
-VALID_TRAINING_MODES = ["combined", "diet_only", "probe_only"]
-
 
 @dataclasses.dataclass
 class BaseConfig(ABC):
@@ -45,11 +42,3 @@ class BaseConfig(ABC):
     def validate(self) -> None:
         """Validate configuration values."""
         pass
-
-
-def validate_training_mode(mode: str) -> None:
-    """Validate training mode."""
-    if mode not in VALID_TRAINING_MODES:
-        raise ValueError(
-            f"Invalid training mode: {mode}. Must be one of {VALID_TRAINING_MODES}"
-        )

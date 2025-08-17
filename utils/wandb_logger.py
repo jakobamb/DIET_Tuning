@@ -31,7 +31,10 @@ def init_wandb(args):
     # Create experiment name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     wandb_prefix = args.get("wandb_prefix", "DIET")
-    experiment_name = f"{wandb_prefix}_{args['training_mode']}_{args['backbone_type']}_{args['model_size']}_{args['dataset_name']}_{timestamp}"
+    experiment_name = (
+        f"{wandb_prefix}_{args['backbone_type']}_"
+        f"{args['model_size']}_{args['dataset_name']}_{timestamp}"
+    )
 
     # Initialize wandb run
     run = wandb.init(
@@ -52,34 +55,32 @@ def init_wandb(args):
     return run
 
 
-def log_training_metrics(run, metrics, epoch, lr=None):
-    """Log training metrics to wandb
+def log_training_metrics(run, metrics_dict, epoch, lr=None):
+    """
+    Log training metrics to wandb
 
     Args:
-        run: wandb run object
-        metrics: Dictionary of training metrics
+        run: The wandb run object
+        metrics_dict: Dictionary containing training metrics
         epoch: Current epoch number
         lr: Current learning rate (optional)
     """
+    log_dict = {"epoch": epoch}
 
-    log_dict = {
-        "epoch": epoch,
-    }
+    # Add all metrics from the dictionary
+    for key, value in metrics_dict.items():
+        if key == "diet_loss":
+            log_dict["train/diet_loss"] = value
+        elif key == "diet_acc":
+            log_dict["train/diet_accuracy"] = value
+        else:
+            log_dict[f"train/{key}"] = value
 
-    # depending on the training_mode different metrics are available
-    if "diet_loss" in metrics:
-        log_dict["train/diet_loss"] = metrics["diet_loss"]
-
-    if "probe_loss" in metrics:
-        log_dict["train/probe_loss"] = metrics["probe_loss"]
-        log_dict["train/accuracy"] = metrics["accuracy"]
-
-    # Add learning rate if provided
+    # Log learning rate if provided
     if lr is not None:
         log_dict["train/learning_rate"] = lr
 
-    # Log metrics to wandb
-    run.log(log_dict)
+    run.log(log_dict, step=epoch)
 
 
 def log_evaluation_metrics(run, metrics, epoch):
@@ -138,11 +139,10 @@ def save_model_checkpoint(
     run,
     model,
     optimizer,
-    projection_head,
-    W_probe,
     W_diet,
     epoch,
     metrics,
+    log_frequency=100,
     save_dir="checkpoints",
 ):
     """Save model checkpoint and log it to wandb
@@ -151,29 +151,18 @@ def save_model_checkpoint(
         run: wandb run object
         model: The backbone model
         optimizer: Optimizer
-        projection_head: DIET projection head
-        W_probe: Probe linear layer
         W_diet: DIET linear layer
         epoch: Current epoch number
         metrics: Metrics to determine if this is a best checkpoint
         save_dir: Directory to save checkpoints locally
     """
 
-    # Determine if this is the best checkpoint based on test accuracy
-    test_acc = metrics.get("test_acc", 0)
-    is_best = test_acc > getattr(save_model_checkpoint, "best_acc", 0)
-    if is_best:
-        save_model_checkpoint.best_acc = test_acc
-
     # Create checkpoint
     checkpoint = {
         "epoch": epoch,
         "model_state_dict": model.state_dict(),
-        "projection_head_state_dict": projection_head.state_dict(),
-        "W_probe_state_dict": W_probe.state_dict(),
         "W_diet_state_dict": W_diet.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
-        "test_acc": test_acc,
         "metrics": metrics,
     }
 
@@ -181,22 +170,8 @@ def save_model_checkpoint(
     checkpoint_path = os.path.join(save_dir, f"checkpoint_epoch_{epoch}.pt")
     torch.save(checkpoint, checkpoint_path)
 
-    # Save best checkpoint separately
-    if is_best:
-        best_path = os.path.join(save_dir, "best_checkpoint.pt")
-        torch.save(checkpoint, best_path)
-
-        # Log best checkpoint to wandb
-        best_artifact = wandb.Artifact(
-            name=f"best_model_{run.id}",
-            type="model",
-            description=f"Best model checkpoint (epoch {epoch}, acc={test_acc:.4f})",
-        )
-        best_artifact.add_file(best_path)
-        run.log_artifact(best_artifact)
-
-    # Log regular checkpoint to wandb every 5 epochs or final epoch
-    if epoch % 5 == 0 or is_best:
+    # Log regular checkpoint to wandb every log_frequency epochs or final epoch
+    if epoch % log_frequency == 0:
         artifact = wandb.Artifact(
             name=f"model_e{epoch}_{run.id}",
             type="model",
@@ -206,18 +181,12 @@ def save_model_checkpoint(
         run.log_artifact(artifact)
 
 
-# Initialize static variable for best accuracy
-save_model_checkpoint.best_acc = 0
-
-
-def log_model_architecture(run, model, projection_head, W_probe, W_diet):
+def log_model_architecture(run, model, W_diet):
     """Log model architecture details to wandb
 
     Args:
         run: wandb run object
         model: The backbone model
-        projection_head: DIET projection head
-        W_probe: Probe linear layer
         W_diet: DIET linear layer
     """
     # Log architecture as a text table
@@ -228,28 +197,29 @@ def log_model_architecture(run, model, projection_head, W_probe, W_diet):
     trainable_model_params = sum(
         p.numel() for p in model.parameters() if p.requires_grad
     )
-    projection_params = sum(p.numel() for p in projection_head.parameters())
-    W_probe_params = sum(p.numel() for p in W_probe.parameters())
     W_diet_params = sum(p.numel() for p in W_diet.parameters())
-    total_params = model_params + projection_params + W_probe_params + W_diet_params
-    total_trainable = (
-        trainable_model_params + projection_params + W_probe_params + W_diet_params
-    )
+    total_params = model_params + W_diet_params
+    total_trainable = trainable_model_params + W_diet_params
 
     # Add parameter counts
-    architecture_text += f"## Parameter Counts\n\n"
+    architecture_text += "## Parameter Counts\n\n"
     architecture_text += (
-        f"| Component | Total Parameters | Trainable Parameters | % of Total |\n"
+        "| Component | Total Parameters | Trainable Parameters | % of Total |\n"
     )
     architecture_text += (
-        f"|-----------|-----------------|----------------------|------------|\n"
+        "|-----------|-----------------|----------------------|------------|\n"
     )
-    architecture_text += f"| Backbone Model | {model_params:,} | {trainable_model_params:,} | {100 * model_params / total_params:.2f}% |\n"
-    architecture_text += f"| Projection Head | {projection_params:,} | {projection_params:,} | {100 * projection_params / total_params:.2f}% |\n"
-    architecture_text += f"| Classification Head | {W_probe_params:,} | {W_probe_params:,} | {100 * W_probe_params / total_params:.2f}% |\n"
-    architecture_text += f"| DIET Head | {W_diet_params:,} | {W_diet_params:,} | {100 * W_diet_params / total_params:.2f}% |\n"
     architecture_text += (
-        f"| **Total** | **{total_params:,}** | **{total_trainable:,}** | **100%** |\n\n"
+        f"| Backbone Model | {model_params:,} | {trainable_model_params:,} | "
+        f"{100 * model_params / total_params:.2f}% |\n"
+    )
+    architecture_text += (
+        f"| DIET Head | {W_diet_params:,} | {W_diet_params:,} | "
+        f"{100 * W_diet_params / total_params:.2f}% |\n"
+    )
+    architecture_text += (
+        f"| **Total** | **{total_params:,}** | **{total_trainable:,}** | "
+        f"**100%** |\n\n"
     )
 
     # Log the architecture text
@@ -342,14 +312,16 @@ def log_metrics_table(
         "knn_acc": "K-NN Accuracy",
         "kmeans_ari": "K-Means ARI",
         "kmeans_nmi": "K-Means NMI",
-        "linear_acc": "Linear Probe Accuracy",
     }
 
     columns = ["Epoch"]
     for metric in metrics_list:
-        # Use friendly names if available
-        nice_name = metric_names.get(metric, metric)
-        columns.append(nice_name)
+        # Convert technical metric names to human-readable display names
+        if metric in metric_names:
+            display_name = metric_names[metric]
+        else:
+            display_name = metric
+        columns.append(display_name)
 
     friendly_table = wandb.Table(columns=columns)
 
@@ -440,9 +412,6 @@ def log_sanity_check_results(run, results_dict, model_type):
     best_acc = results_dict["best_acc"]
     best_k = results_dict["best_k"]
 
-    # Check if we have linear probe results (for IJEPA)
-    has_linear_probe = "linear_probe_acc" in results_dict
-
     # Create accuracy table by k value
     k_table = wandb.Table(columns=["model", "k_value", "accuracy"])
 
@@ -454,21 +423,9 @@ def log_sanity_check_results(run, results_dict, model_type):
     run.log({f"sanity_check_{model_type}_knn": k_table})
 
     # Create summary table
-    if has_linear_probe:
-        summary_columns = ["model", "method", "accuracy", "best_k"]
-        summary_table = wandb.Table(columns=summary_columns)
-
-        # Add k-NN result
-        summary_table.add_data(model_type, "k-NN", best_acc * 100, best_k)
-
-        # Add linear probe result
-        summary_table.add_data(
-            model_type, "Linear Probe", results_dict["linear_probe_acc"] * 100, "N/A"
-        )
-    else:
-        summary_columns = ["model", "best_k_value", "best_accuracy"]
-        summary_table = wandb.Table(columns=summary_columns)
-        summary_table.add_data(model_type, best_k, best_acc * 100)
+    summary_columns = ["model", "best_k_value", "best_accuracy"]
+    summary_table = wandb.Table(columns=summary_columns)
+    summary_table.add_data(model_type, best_k, best_acc * 100)
 
     # Log the summary table
     run.log({f"sanity_check_{model_type}_summary": summary_table})
@@ -517,19 +474,6 @@ def log_combined_sanity_check_results(run, results_dict):
             "✓" if passed else "✗",
         )
 
-        # Add linear probe result if available
-        if "linear_probe_acc" in results:
-            linear_acc = results["linear_probe_acc"]
-            linear_passed = linear_acc >= threshold
-
-            combined_table.add_data(
-                model_type,
-                "Linear Probe",
-                linear_acc * 100,  # Convert to percentage
-                "N/A",
-                "✓" if linear_passed else "✗",
-            )
-
     # Log the combined table
     run.log({"sanity_check_combined_results": combined_table})
 
@@ -548,22 +492,35 @@ def create_experiment_dashboard(
         experiment_config: Dictionary with experiment configuration
     """
     # Create main summary as HTML
+    backbone_info = (
+        f"{experiment_config['backbone_type']} " f"({experiment_config['model_size']})"
+    )
+    diet_status = "Active" if experiment_config["is_diet_active"] else "Inactive"
+    training_samples = experiment_config.get("limit_data", "Full Dataset")
+
+    label_smoothing_val = experiment_config["label_smoothing"]
+    num_epochs_val = experiment_config["num_epochs"]
+    learning_rate_val = experiment_config["learning_rate"]
+
     summary_text = f"""
     <h1>DIET Finetuning Experiment Dashboard</h1>
     <h2>Configuration</h2>
     <table>
-        <tr><td><b>Model:</b></td><td>{experiment_config['backbone_type']} ({experiment_config['model_size']})</td></tr>
+        <tr><td><b>Model:</b></td><td>{backbone_info}</td></tr>
         <tr><td><b>Dataset:</b></td><td>{experiment_config['dataset_name']}</td></tr>
-        <tr><td><b>DIET Status:</b></td><td>{'Active' if experiment_config['is_diet_active'] else 'Inactive'}</td></tr>
-        <tr><td><b>Label Smoothing:</b></td><td>{experiment_config['label_smoothing']}</td></tr>
-        <tr><td><b>Training Samples:</b></td><td>{experiment_config.get('limit_data', 'Full Dataset')}</td></tr>
-        <tr><td><b>Training Epochs:</b></td><td>{experiment_config['num_epochs']}</td></tr>
-        <tr><td><b>Learning Rate:</b></td><td>{experiment_config['learning_rate']}</td></tr>
+        <tr><td><b>DIET Status:</b></td><td>{diet_status}</td></tr>
+        <tr><td><b>Label Smoothing:</b></td><td>{label_smoothing_val}</td></tr>
+        <tr><td><b>Training Samples:</b></td><td>{training_samples}</td></tr>
+        <tr><td><b>Training Epochs:</b></td><td>{num_epochs_val}</td></tr>
+        <tr><td><b>Learning Rate:</b></td><td>{learning_rate_val}</td></tr>
     </table>
     
     <h2>Performance Summary</h2>
     <table>
-        <tr><th>Metric</th><th>Initial</th><th>Final</th><th>Improvement</th><th>Relative %</th></tr>
+        <tr>
+            <th>Metric</th><th>Initial</th><th>Final</th>
+            <th>Improvement</th><th>Relative %</th>
+        </tr>
     """
 
     # Add metrics to summary
@@ -596,12 +553,13 @@ def create_experiment_dashboard(
     ) * 100
 
     # Close the table and add conclusion
+    improvement_text = "improved" if avg_improvement > 0 else "did not improve"
     summary_text += f"""
     </table>
     
     <h2>Conclusion</h2>
     <p>
-        DIET finetuning {'improved' if avg_improvement > 0 else 'did not improve'} zero-shot performance by an average of 
+        DIET finetuning {improvement_text} zero-shot performance by an average of
         {avg_improvement:.4f} ({avg_rel_improvement:.2f}%).
     </p>
     """
@@ -634,7 +592,7 @@ def create_experiment_dashboard(
         report.add_data("zero_shot_progression", wandb.Image(zero_shot_fig))
 
         run.log({"experiment_report": report})
-    except:
-        print("Failed to create report table - continuing without it")
+    except (wandb.Error, KeyError, ValueError) as e:
+        print(f"Failed to create report table - continuing without it: {e}")
 
     return

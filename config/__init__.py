@@ -48,7 +48,6 @@ def create_trainer_config(args, dataset_info=None):
         "learning_rate": config.training.learning_rate,
         "weight_decay": config.training.weight_decay,
         "label_smoothing": config.training.label_smoothing,
-        "training_mode": config.training.training_mode,
         "eval_frequency": config.training.eval_frequency,
         "checkpoint_freq": config.training.checkpoint_freq,
         "checkpoint_dir": config.checkpoint_dir,

@@ -16,7 +16,7 @@ from config import create_experiment_config_from_args, DEVICE
 from loaders.data_loader import prepare_data_loaders
 
 # Training components
-from training.trainer import DIETTrainer, create_projection_head
+from training.trainer import DIETTrainer
 
 # Utility modules
 from utils.wandb_logger import (
@@ -76,9 +76,8 @@ def get_model(backbone_type, model_size, run_sanity_check, use_wandb):
 def train(args):
     """Main training function"""
     print("\n" + "=" * 70)
-    print(
-        f"DIET FINETUNING EXPERIMENT: {args.backbone.upper()}-{args.model_size} on {args.dataset}"
-    )
+    backbone_info = f"{args.backbone.upper()}-{args.model_size}"
+    print(f"DIET FINETUNING EXPERIMENT: {backbone_info} on {args.dataset}")
     print("=" * 70)
 
     # Basic settings
@@ -106,24 +105,17 @@ def train(args):
     )
     print(f"Created backbone with embedding dimension: {embedding_dim}")
 
-    # Create projection head for DIET
-    projection_head = create_projection_head(
-        embedding_dim, embedding_dim, args.projection_dim, device
-    )
+    # Ensure embedding_dim is valid
+    if embedding_dim is None:
+        raise ValueError("embedding_dim cannot be None")
 
-    # Create classification heads
-    W_probe = torch.nn.Linear(embedding_dim, num_classes).to(device)
-    W_diet = torch.nn.Linear(args.projection_dim, num_diet_classes, bias=False).to(
-        device
-    )
+    # Create DIET classification head
+    diet_head = torch.nn.Linear(embedding_dim, num_diet_classes, bias=False).to(device)
 
     # Create optimizer
     print(f"Creating optimizer with lr={args.lr}, weight_decay={args.weight_decay}")
     optimizer = torch.optim.AdamW(
-        list(net.parameters())
-        + list(W_probe.parameters())
-        + list(W_diet.parameters())
-        + list(projection_head.parameters()),
+        list(net.parameters()) + list(diet_head.parameters()),
         lr=args.lr,
         weight_decay=args.weight_decay,
     )
@@ -160,9 +152,7 @@ def train(args):
 
             # Load model and optimizer states
             net.load_state_dict(checkpoint["model_state_dict"])
-            projection_head.load_state_dict(checkpoint["projection_head_state_dict"])
-            W_probe.load_state_dict(checkpoint["W_probe_state_dict"])
-            W_diet.load_state_dict(checkpoint["W_diet_state_dict"])
+            diet_head.load_state_dict(checkpoint["W_diet_state_dict"])
             optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
 
             # Get the starting epoch
@@ -174,11 +164,13 @@ def train(args):
                 scheduler.step()
 
             print(
-                f"Successfully loaded checkpoint. Current learning rate: {scheduler.get_last_lr()[0]:.6f}"
+                f"Successfully loaded checkpoint. Current learning rate: "
+                f"{scheduler.get_last_lr()[0]:.6f}"
             )
         else:
             print(
-                f"Warning: Checkpoint file {checkpoint_path} not found. Starting from scratch."
+                f"Warning: Checkpoint file {checkpoint_path} not found. "
+                f"Starting from scratch."
             )
 
     # Create experiment configuration
@@ -194,14 +186,12 @@ def train(args):
     run = None
     if args.use_wandb:
         run = init_wandb(experiment_config)
-        log_model_architecture(run, net, projection_head, W_probe, W_diet)
+        log_model_architecture(run, net, diet_head)
 
     # Create trainer
     trainer = DIETTrainer(
         model=net,
-        projection_head=projection_head,
-        W_probe=W_probe,
-        W_diet=W_diet,
+        diet_head=diet_head,
         device=device,
         optimizer=optimizer,
         scheduler=scheduler,
@@ -295,13 +285,6 @@ def parse_args():
         type=str,
         default=None,
         help="Resume training from a checkpoint file (e.g., checkpoint_epoch_25.pt)",
-    )
-    parser.add_argument(
-        "--training-mode",
-        type=str,
-        default="combined",
-        choices=["combined", "diet_only", "probe_only"],
-        help="Training mode",
     )
     parser.add_argument(
         "--checkpoint-freq",

@@ -59,45 +59,19 @@ class MetricsTracker:
 
 # Utility functions for metrics computation
 def calculate_batch_metrics(
-    logits: torch.Tensor,
-    targets: torch.Tensor,
-    training_mode: str,
-    diet_loss: Optional[torch.Tensor] = None,
-    probe_loss: Optional[torch.Tensor] = None,
+    diet_loss: torch.Tensor,
 ) -> Dict[str, float]:
-    """Calculate batch-level metrics based on training mode.
+    """Calculate batch-level metrics for DIET training.
 
     Args:
-        logits: Prediction logits
-        targets: Target labels
-        training_mode: Training mode (combined, diet_only, probe_only)
-        diet_loss: Optional DIET loss value
-        probe_loss: Optional probe loss value
+        diet_loss: DIET loss value
 
     Returns:
         Dictionary of metric name to value
     """
-    metrics = {}
-
-    # Calculate accuracy if we have logits and we're not in diet_only mode
-    if training_mode != "diet_only":
-        preds = logits.argmax(dim=1)
-        batch_acc = torch.mean((targets == preds).float()).item()
-        metrics["batch_acc"] = batch_acc
-
-    # Add losses based on training mode
-    if training_mode == "diet_only":
-        if diet_loss is not None:
-            metrics["batch_loss_diet"] = diet_loss.item()
-    elif training_mode == "probe_only":
-        if probe_loss is not None:
-            metrics["batch_loss_probe"] = probe_loss.item()
-    else:  # combined mode
-        if diet_loss is not None:
-            metrics["batch_loss_diet"] = diet_loss.item()
-        if probe_loss is not None:
-            metrics["batch_loss_probe"] = probe_loss.item()
-
+    metrics = {
+        "batch_loss_diet": diet_loss.item(),
+    }
     return metrics
 
 

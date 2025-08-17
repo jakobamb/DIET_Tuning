@@ -54,6 +54,7 @@ outputs/
 # VS Code settings
 .vscode/
 .github/
+.flake8
 
 # Environment variables
 .env

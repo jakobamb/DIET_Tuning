@@ -1,7 +1,7 @@
 """Consolidated training configuration for DIET finetuning."""
 
 from typing import Dict, Any, Union, Tuple
-from config.base_config import BaseConfig, GLOBAL_DEFAULTS, validate_training_mode
+from config.base_config import BaseConfig, GLOBAL_DEFAULTS
 from config.models import ModelConfig
 from config.data import DataConfig
 import dataclasses
@@ -15,14 +15,11 @@ class TrainingConfig(BaseConfig):
     learning_rate: float = 1e-4
     weight_decay: float = 0.05
     label_smoothing: float = 0.3
-    training_mode: str = "combined"
     eval_frequency: int = 5
     checkpoint_freq: int = 500
 
     def validate(self) -> None:
         """Validate training configuration."""
-        validate_training_mode(self.training_mode)
-
         if self.num_epochs <= 0:
             raise ValueError(f"Epochs must be positive, got {self.num_epochs}")
         if self.learning_rate <= 0:
@@ -96,7 +93,6 @@ class ExperimentConfig(BaseConfig):
             "learning_rate": self.training.learning_rate,
             "weight_decay": self.training.weight_decay,
             "label_smoothing": self.training.label_smoothing,
-            "training_mode": self.training.training_mode,
             "eval_frequency": self.training.eval_frequency,
             "checkpoint_freq": self.training.checkpoint_freq,
             # Additional parameters
@@ -129,7 +125,6 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         learning_rate=getattr(args, "lr", 1e-4),
         weight_decay=getattr(args, "weight_decay", 0.05),
         label_smoothing=getattr(args, "label_smoothing", 0.3),
-        training_mode=getattr(args, "training_mode", "combined"),
         eval_frequency=getattr(args, "eval_frequency", 5),
         checkpoint_freq=getattr(args, "checkpoint_freq", 500),
     )
