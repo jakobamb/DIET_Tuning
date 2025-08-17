@@ -199,6 +199,7 @@ class DIETTrainer:
                 # Send tensors to device
                 x = x.to(self.device)
                 y = y.to(self.device)
+                diet_idx = diet_idx.to(self.device)
 
                 # Ensure y is 1D (flatten if needed)
                 if y.dim() > 1:
@@ -226,12 +227,10 @@ class DIETTrainer:
                 trainable_params = []
 
                 if backbone_frozen:
-                    # Only include DIET components during DIET-only phase
-                    trainable_params = list(self.projection_head.parameters()) + list(
-                        self.diet_head.parameters()
-                    )
+                    # Only include DIET head during DIET-only phase
+                    trainable_params = list(self.diet_head.parameters())
                 else:
-                    # Include backbone and DIET components when training everything
+                    # Include backbone and DIET head when training everything
                     trainable_params = list(self.model.parameters()) + list(
                         self.diet_head.parameters()
                     )
@@ -311,8 +310,8 @@ class DIETTrainer:
                 f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
             )
 
-            # Evaluate on test set
-            test_acc = self.evaluate_test_set(test_loader)
+            # Simple test accuracy placeholder (not used in DIET evaluation)
+            test_acc = 0.0  # Placeholder - actual evaluation done via zero-shot
             self.metrics_history["test_acc"].append(test_acc)
 
             # Log evaluation metrics to wandb
