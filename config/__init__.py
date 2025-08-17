@@ -35,7 +35,6 @@ def create_trainer_config(args, dataset_info=None):
         "backbone_type": config.model.backbone_type,
         "model_size": config.model.model_size,
         "num_classes": config.data.num_classes,
-        "projection_dim": config.model.projection_dim,
         "dataset_name": config.data.dataset_name,
         "batch_size": config.data.batch_size,
         "limit_data": config.data.limit_data,

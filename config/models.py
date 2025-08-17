@@ -101,7 +101,6 @@ class ModelConfig(BaseConfig):
 
     backbone_type: str
     model_size: str
-    projection_dim: int = 256
     temperature: float = 3.0
 
     def validate(self) -> None:

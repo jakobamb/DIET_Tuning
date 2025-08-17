@@ -78,7 +78,6 @@ class ExperimentConfig(BaseConfig):
             "backbone_type": self.model.backbone_type,
             "model_size": self.model.model_size,
             "embedding_dim": self.model.embedding_dim,
-            "projection_dim": self.model.projection_dim,
             "temperature": self.model.temperature,
             # Dataset parameters
             "dataset_name": self.data.dataset_name,
@@ -110,7 +109,6 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
     model_config = ModelConfig(
         backbone_type=args.backbone,
         model_size=args.model_size,
-        projection_dim=getattr(args, "projection_dim", 256),
         temperature=getattr(args, "temperature", GLOBAL_DEFAULTS["temperature"]),
     )
 

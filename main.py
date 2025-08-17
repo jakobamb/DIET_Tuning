@@ -300,12 +300,6 @@ def parse_args():
         default=0.3,
         help="Label smoothing strength (0 to disable DIET)",
     )
-    parser.add_argument(
-        "--projection-dim",
-        type=int,
-        default=256,
-        help="Projection head output dimension",
-    )
 
     # Evaluation arguments
     parser.add_argument(
