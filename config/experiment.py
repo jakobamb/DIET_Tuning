@@ -99,6 +99,9 @@ class ExperimentConfig(BaseConfig):
             "eval_on_test": self.eval_on_test,
             "resume_from": self.resume_from,
             "is_diet_active": self.is_diet_active,
+            # Wandb parameters
+            "wandb_prefix": self.wandb_prefix,
+            "wandb_dir": self.wandb_dir,
         }
 
 
