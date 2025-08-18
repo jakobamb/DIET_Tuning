@@ -582,15 +582,9 @@ def create_experiment_dashboard(
         run, metrics_history, initial_results, final_results, enhanced=True
     )
 
-    # Create a report (only available in paid tiers)
-    try:
-        report = wandb.Table(columns=["component", "content"])
-        report.add_data("summary", wandb.Html(summary_text))
-        report.add_data("training_progress", wandb.Image(training_fig))
-        report.add_data("zero_shot_progression", wandb.Image(zero_shot_fig))
-
-        run.log({"experiment_report": report})
-    except (wandb.Error, KeyError, ValueError) as e:
-        print(f"Failed to create report table - continuing without it: {e}")
+    # Log individual components instead of trying to create a mixed-type table
+    run.log({"experiment_summary": wandb.Html(summary_text)})
+    run.log({"training_progress_final": wandb.Image(training_fig)})
+    run.log({"zero_shot_progression_final": wandb.Image(zero_shot_fig)})
 
     return
