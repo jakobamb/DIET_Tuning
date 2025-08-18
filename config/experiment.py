@@ -104,6 +104,11 @@ class ExperimentConfig(BaseConfig):
             "label_smoothing": self.training.label_smoothing,
             "eval_frequency": self.training.eval_frequency,
             "checkpoint_freq": self.training.checkpoint_freq,
+            "diet_head_only_epochs": self.training.diet_head_only_epochs,
+            "num_trained_blocks": self.training.num_trained_blocks,
+            # Path parameters
+            "checkpoint_dir": self.checkpoint_dir,
+            "results_dir": self.results_dir,
             # Additional parameters
             "da_strength": self.da_strength,
             "eval_on_test": self.eval_on_test,
@@ -112,6 +117,8 @@ class ExperimentConfig(BaseConfig):
             # Wandb parameters
             "wandb_prefix": self.wandb_prefix,
             "wandb_dir": self.wandb_dir,
+            "enable_wandb": self.enable_wandb,
+            "wandb_project": self.wandb_project,
         }
 
 

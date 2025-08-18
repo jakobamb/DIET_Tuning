@@ -44,6 +44,7 @@ python main.py \
     --backbone dinov2 \
     --model-size small \
     --label-smoothing 0.2 \
+    --diet-head-only-epochs 0.05 \
     --dataset octmnist \
     --num-epochs 500 \
     --num-trained-blocks 4 \
