@@ -143,9 +143,11 @@ class DIETTrainer:
             p.numel() for p in self.diet_head.parameters() if p.requires_grad
         )
 
-        # Determine DIET-only phase boundaries
-        diet_only_epochs = max(1, int(num_epochs * 0.05))  # At least 1 epoch
-        diet_only_end_epoch = start_epoch + diet_only_epochs
+        # Determine DIET-head-only phase boundaries
+        diet_head_only_epochs = int(
+            num_epochs * self.config.training.diet_head_only_epochs
+        )
+        diet_only_end_epoch = start_epoch + diet_head_only_epochs
         backbone_frozen = False
 
         # Training loop
@@ -162,7 +164,8 @@ class DIETTrainer:
                 self._freeze_backbone()
                 backbone_frozen = True
                 print(
-                    f"Epoch {epoch+1}: Starting DIET-only phase (backbone frozen for {diet_only_epochs} epochs)"
+                    f"Epoch {epoch+1}: Starting DIET-head-only phase "
+                    f"(backbone frozen for {diet_head_only_epochs} epochs)"
                 )
             elif not diet_only_phase and backbone_frozen:
                 # Unfreeze backbone for full training (one-time operation)

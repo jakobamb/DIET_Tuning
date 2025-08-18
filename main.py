@@ -300,6 +300,13 @@ def parse_args():
         default=0.3,
         help="Label smoothing strength (0 to disable DIET)",
     )
+    parser.add_argument(
+        "--diet-head-only-epochs",
+        type=float,
+        default=0.05,
+        help="Fraction of total epochs for DIET-head-only training (freezes backbone). "
+        "Set to 0.0 for direct full training.",
+    )
 
     # Evaluation arguments
     parser.add_argument(

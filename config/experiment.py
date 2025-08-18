@@ -17,6 +17,7 @@ class TrainingConfig(BaseConfig):
     label_smoothing: float = 0.3
     eval_frequency: int = 5
     checkpoint_freq: int = 500
+    diet_head_only_epochs: float = 0.05
 
     def validate(self) -> None:
         """Validate training configuration."""
@@ -27,6 +28,10 @@ class TrainingConfig(BaseConfig):
         if not 0 <= self.label_smoothing <= 1:
             raise ValueError(
                 f"Label smoothing must be in [0,1], got {self.label_smoothing}"
+            )
+        if self.diet_head_only_epochs < 0:
+            raise ValueError(
+                f"diet_head_only_epochs must be >= 0, got {self.diet_head_only_epochs}"
             )
 
 
@@ -128,6 +133,7 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         label_smoothing=getattr(args, "label_smoothing", 0.3),
         eval_frequency=getattr(args, "eval_frequency", 5),
         checkpoint_freq=getattr(args, "checkpoint_freq", 500),
+        diet_head_only_epochs=getattr(args, "diet_head_only_epochs", 0.05),
     )
 
     # Create complete configuration
