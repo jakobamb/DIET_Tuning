@@ -18,6 +18,7 @@ class TrainingConfig(BaseConfig):
     eval_frequency: int = 5
     checkpoint_freq: int = 500
     diet_head_only_epochs: float = 0.05
+    num_trained_blocks: int = -1
 
     def validate(self) -> None:
         """Validate training configuration."""
@@ -32,6 +33,10 @@ class TrainingConfig(BaseConfig):
         if self.diet_head_only_epochs < 0:
             raise ValueError(
                 f"diet_head_only_epochs must be >= 0, got {self.diet_head_only_epochs}"
+            )
+        if self.num_trained_blocks < -1:
+            raise ValueError(
+                f"num_trained_blocks must be >= -1, got {self.num_trained_blocks}"
             )
 
 
@@ -134,6 +139,7 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         eval_frequency=getattr(args, "eval_frequency", 5),
         checkpoint_freq=getattr(args, "checkpoint_freq", 500),
         diet_head_only_epochs=getattr(args, "diet_head_only_epochs", 0.05),
+        num_trained_blocks=getattr(args, "num_trained_blocks", -1),
     )
 
     # Create complete configuration

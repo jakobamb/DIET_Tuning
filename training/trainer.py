@@ -86,6 +86,58 @@ class DIETTrainer:
         for param in self.model.parameters():
             param.requires_grad = True
 
+    def _apply_selective_block_freezing(self):
+        """Apply selective block freezing based on num_trained_blocks config."""
+        num_trained_blocks = self.config.training.num_trained_blocks
+
+        if num_trained_blocks == -1:
+            # Train all blocks - just unfreeze everything
+            self._unfreeze_backbone()
+            return
+
+        # Set model to train mode
+        self.model.train()
+
+        # For DINOv2, we need to access the transformer blocks
+        if hasattr(self.model, "model") and hasattr(self.model.model, "encoder"):
+            # DINOv2 structure: model.model.encoder.layer contains the blocks
+            encoder = self.model.model.encoder
+            if hasattr(encoder, "layer"):
+                total_blocks = len(encoder.layer)
+                print(f"DINOv2 has {total_blocks} transformer blocks")
+
+                if num_trained_blocks == 0:
+                    # Freeze all blocks
+                    for param in self.model.parameters():
+                        param.requires_grad = False
+                    print("Frozen all transformer blocks")
+                else:
+                    # Freeze all parameters first
+                    for param in self.model.parameters():
+                        param.requires_grad = False
+
+                    # Unfreeze the last num_trained_blocks
+                    blocks_to_train = min(num_trained_blocks, total_blocks)
+                    start_idx = total_blocks - blocks_to_train
+
+                    for i in range(start_idx, total_blocks):
+                        for param in encoder.layer[i].parameters():
+                            param.requires_grad = True
+
+                    print(
+                        f"Training last {blocks_to_train} blocks "
+                        f"(blocks {start_idx} to {total_blocks-1})"
+                    )
+            else:
+                print("Warning: Could not find transformer blocks in DINOv2 model")
+                self._unfreeze_backbone()  # Fallback
+        else:
+            print(
+                "Warning: Block freezing only implemented for DINOv2. "
+                "Using full backbone training."
+            )
+            self._unfreeze_backbone()  # Fallback for other models
+
     def train(
         self,
         train_loader,
@@ -168,12 +220,25 @@ class DIETTrainer:
                     f"(backbone frozen for {diet_head_only_epochs} epochs)"
                 )
             elif not diet_only_phase and backbone_frozen:
-                # Unfreeze backbone for full training (one-time operation)
-                self._unfreeze_backbone()
+                # Apply selective block freezing for full training phase
+                self._apply_selective_block_freezing()
                 backbone_frozen = False
-                print(
-                    f"Epoch {epoch+1}: Starting full training phase (backbone unfrozen)"
-                )
+                num_blocks = self.config.training.num_trained_blocks
+                if num_blocks == -1:
+                    print(
+                        f"Epoch {epoch+1}: Starting full training phase "
+                        "(all backbone blocks unfrozen)"
+                    )
+                elif num_blocks == 0:
+                    print(
+                        f"Epoch {epoch+1}: Starting training phase "
+                        "(all backbone blocks frozen)"
+                    )
+                else:
+                    print(
+                        f"Epoch {epoch+1}: Starting training phase "
+                        f"(training last {num_blocks} backbone blocks)"
+                    )
 
             # Set trainable components to training mode
             self.diet_head.train()

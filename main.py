@@ -307,6 +307,14 @@ def parse_args():
         help="Fraction of total epochs for DIET-head-only training (freezes backbone). "
         "Set to 0.0 for direct full training.",
     )
+    parser.add_argument(
+        "--num-trained-blocks",
+        type=int,
+        default=-1,
+        help="Number of transformer blocks to train from the end of the backbone. "
+        "Set to -1 to train all blocks, 0 to freeze all blocks, "
+        "4 to train last 4 blocks.",
+    )
 
     # Evaluation arguments
     parser.add_argument(
