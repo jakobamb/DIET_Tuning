@@ -142,7 +142,6 @@ def save_model_checkpoint(
     W_diet,
     epoch,
     metrics,
-    log_frequency=100,
     save_dir="checkpoints",
 ):
     """Save model checkpoint and log it to wandb
@@ -170,15 +169,14 @@ def save_model_checkpoint(
     checkpoint_path = os.path.join(save_dir, f"checkpoint_epoch_{epoch}.pt")
     torch.save(checkpoint, checkpoint_path)
 
-    # Log regular checkpoint to wandb every log_frequency epochs or final epoch
-    if epoch % log_frequency == 0:
-        artifact = wandb.Artifact(
-            name=f"model_e{epoch}_{run.id}",
-            type="model",
-            description=f"Model checkpoint from epoch {epoch}",
-        )
-        artifact.add_file(checkpoint_path)
-        run.log_artifact(artifact)
+    # Log checkpoint to wandb (frequency is controlled by the caller)
+    artifact = wandb.Artifact(
+        name=f"model_e{epoch}_{run.id}",
+        type="model",
+        description=f"Model checkpoint from epoch {epoch}",
+    )
+    artifact.add_file(checkpoint_path)
+    run.log_artifact(artifact)
 
 
 def log_model_architecture(run, model, W_diet):
