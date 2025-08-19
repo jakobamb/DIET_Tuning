@@ -5,8 +5,10 @@ Main entry point for running DIET finetuning experiments.
 # Standard library imports
 import os
 import argparse
+import random
 
 # Third-party imports
+import numpy as np
 import torch
 
 # Configuration imports
@@ -35,6 +37,17 @@ from models.mae import get_mae_model
 from models.mambavision import get_mambavision_model
 from models.resnet50 import get_resnet50_model
 from models.simclr import get_simclr_model
+
+
+def set_reproducibility_seeds(seed=42):
+    """Set seeds for reproducible results across all random number generators."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    print(f"Set all random seeds to {seed} for reproducibility")
 
 
 def get_model(backbone_type, model_size, run_sanity_check, use_wandb):
@@ -337,6 +350,12 @@ def parse_args():
         help="Directory to save checkpoints",
     )
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed for reproducibility",
+    )
+    parser.add_argument(
         "--no-wandb",
         dest="use_wandb",
         action="store_false",
@@ -366,6 +385,9 @@ def parse_args():
 def main():
     """Main entry point"""
     args = parse_args()
+
+    # Set reproducibility seeds
+    set_reproducibility_seeds(args.seed)
 
     # Create checkpoint directory if it doesn't exist
     os.makedirs(args.checkpoint_dir, exist_ok=True)
