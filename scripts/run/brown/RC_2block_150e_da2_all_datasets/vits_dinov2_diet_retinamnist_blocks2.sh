@@ -4,6 +4,7 @@
 # This script trains DINOv2-small on RetinaMNIST with 2 transformer blocks
 #
 #SBATCH --partition=gpus
+#SBATCH --exclude=gpu[1601-1605],gpu[1701-1708],gpu1801,gpu[1802,1905-1906]
 #SBATCH --gres=gpu:1
 #SBATCH --time=8:00:00
 #SBATCH --mem=20G
