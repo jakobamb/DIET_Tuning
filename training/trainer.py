@@ -79,6 +79,13 @@ class DIETTrainer:
         self.model.eval()
         for param in self.model.parameters():
             param.requires_grad = False
+        # Ensure all BatchNorm layers are in eval mode to prevent running stats updates
+        for module in self.model.modules():
+            if isinstance(
+                module,
+                (torch.nn.BatchNorm1d, torch.nn.BatchNorm2d, torch.nn.BatchNorm3d),
+            ):
+                module.eval()
 
     def _unfreeze_backbone(self):
         """Unfreeze backbone model for full training."""
@@ -242,7 +249,20 @@ class DIETTrainer:
 
             # Set trainable components to training mode
             self.diet_head.train()
-            # Note: backbone mode is set by freeze/unfreeze methods
+            # Ensure backbone stays in eval mode if frozen
+            if backbone_frozen:
+                self.model.eval()
+                # Extra safety: ensure all BatchNorm layers stay in eval mode
+                for module in self.model.modules():
+                    if isinstance(
+                        module,
+                        (
+                            torch.nn.BatchNorm1d,
+                            torch.nn.BatchNorm2d,
+                            torch.nn.BatchNorm3d,
+                        ),
+                    ):
+                        module.eval()
 
             print("\n==========================")
             print(
