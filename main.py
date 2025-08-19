@@ -290,7 +290,7 @@ def parse_args():
     parser.add_argument(
         "--da-strength",
         type=int,
-        default=1,
+        default=2,
         help="Data augmentation strength (0-3)",
     )
     parser.add_argument(
