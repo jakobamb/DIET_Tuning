@@ -91,9 +91,13 @@ def zero_shot_eval(
     results = {}
 
     # ---------- k-NN ----------
-    print("Running k-NN evaluation (train on train, test on test)...")
+    from sklearn.preprocessing import normalize
+
+    print("Running k-NN evaluation...")
     t0 = time.time()
-    knn = KNeighborsClassifier(n_neighbors=10)
+    knn = KNeighborsClassifier(n_neighbors=20, metric="cosine", weights="distance")
+    train_features = normalize(train_features)  # L2
+    test_features = normalize(test_features)
     knn.fit(train_features, train_labels)
     knn_pred = knn.predict(test_features)
 
@@ -110,8 +114,13 @@ def zero_shot_eval(
     crit = torch.nn.CrossEntropyLoss()
 
     clf.train()
+    train_features = normalize(train_features, norm="l2")
+    test_features = normalize(test_features, norm="l2")
+
     Xtr = torch.as_tensor(train_features, dtype=torch.float32, device=device)
     ytr = torch.as_tensor(train_labels, dtype=torch.long, device=device)
+    Xte = torch.as_tensor(test_features, dtype=torch.float32, device=device)
+
     for _ in range(probe_steps):
         opt.zero_grad()
         loss = crit(clf(Xtr), ytr)
@@ -120,7 +129,6 @@ def zero_shot_eval(
 
     clf.eval()
     with torch.no_grad():
-        Xte = torch.as_tensor(test_features, dtype=torch.float32, device=device)
         logits = clf(Xte)
         pred = logits.argmax(dim=1).cpu().numpy()
 
