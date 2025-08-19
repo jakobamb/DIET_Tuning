@@ -8,19 +8,19 @@
 #SBATCH --time=8:00:00
 #SBATCH --mem=20G
 #SBATCH --job-name=RC_2B_150E_DERMA
-#SBATCH --output=/data/people/jambsdor/DIET_Tuning/logs/rc_2b_150e_derma_%j.out
-#SBATCH --error=/data/people/jambsdor/DIET_Tuning/logs/rc_2b_150e_derma_%j.err
+#SBATCH --output=/home/jambsdor/projects/DIET_Tuning/logs/rc_2b_150e_derma_%j.out
+#SBATCH --error=/home/jambsdor/projects/DIET_Tuning/logs/rc_2b_150e_derma_%j.err
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=jakob_ambsdorf@brown.edu
 
 
 # Navigate to project directory
-cd /data/people/jambsdor/DIET_Tuning
+cd /home/jambsdor/projects/DIET_Tuning
 
 # Activate virtual environment
 source venv/bin/activate
 
-PROJECT_DIR=/data/people/jambsdor/DIET_Tuning
+PROJECT_DIR=/home/jambsdor/projects/DIET_Tuning
 
 # Set environment variables
 export CUDA_VISIBLE_DEVICES=0
