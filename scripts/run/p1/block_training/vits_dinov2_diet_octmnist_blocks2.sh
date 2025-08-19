@@ -40,7 +40,7 @@ export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
 # Run the training script
 python main.py \
-    --wandb-prefix "block_training" \
+    --wandb-prefix "2block_training" \
     --backbone dinov2 \
     --model-size small \
     --label-smoothing 0.2 \
