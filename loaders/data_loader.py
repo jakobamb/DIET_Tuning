@@ -472,7 +472,7 @@ def prepare_data_loaders(
     )
 
     # Create transforms
-    train_transform, test_transform = create_transforms(mean, std, is_rgb, da_strength)
+    train_transform, test_transform = create_transforms(mean, std, da_strength)
 
     # Apply transforms to the datasets
     if dataset_name.lower() in ["plantnet300k", "galaxy10_decals"]:
