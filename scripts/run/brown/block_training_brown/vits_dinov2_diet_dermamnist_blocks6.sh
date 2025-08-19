@@ -28,7 +28,7 @@ nvidia-smi
 export WANDB_DATA_DIR=$PROJECT_DIR/wandb
 
 # Run the training script
-python main.py \
+srun python -u main.py \
     --wandb-prefix "block_training_brown" \
     --backbone dinov2 \
     --model-size small \
