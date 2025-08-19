@@ -397,7 +397,7 @@ def calculate_dataset_stats(dataset, batch_size=64, max_samples=10000):
     return mean.tolist(), std.tolist()
 
 
-def create_transforms(mean, std, is_rgb=True, da_strength=1):
+def create_transforms(mean, std, da_strength=1):
     """Create training and testing transforms."""
     standard_size = 224
 
@@ -416,7 +416,7 @@ def create_transforms(mean, std, is_rgb=True, da_strength=1):
             transforms.RandomHorizontalFlip(),
         ]
 
-        if is_rgb and da_strength > 1:
+        if da_strength > 1:
             aug_list.extend(
                 [
                     transforms.RandomApply(
@@ -426,7 +426,7 @@ def create_transforms(mean, std, is_rgb=True, da_strength=1):
                 ]
             )
 
-        if da_strength > 2 and is_rgb:
+        if da_strength > 2:
             aug_list.append(
                 transforms.RandomApply(
                     [transforms.GaussianBlur((3, 3), (1.0, 2.0))], p=0.2
