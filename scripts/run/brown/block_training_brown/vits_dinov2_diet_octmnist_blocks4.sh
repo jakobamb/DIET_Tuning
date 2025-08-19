@@ -24,7 +24,7 @@ source venv/bin/activate
 PROJECT_DIR=/data/people/jambsdor/DIET_Tuning
 
 # Set environment variables
-export CUDA_VISIBLE_DEVICES=0
+nvidia-smi
 export WANDB_DATA_DIR=$PROJECT_DIR/wandb
 
 # Run the training script
