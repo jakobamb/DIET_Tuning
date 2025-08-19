@@ -11,7 +11,7 @@ from utils.wandb_logger import (
     log_training_metrics,
     log_evaluation_metrics,
     log_zero_shot_metrics,
-    save_model_checkpoint,
+    save_final_checkpoint,
 )
 from evaluation.metrics import zero_shot_eval
 from training.metrics_utils import (
@@ -56,7 +56,6 @@ class DIETTrainer:
         self.num_classes = config.data.num_classes
         self.label_smoothing = config.training.label_smoothing
         self.checkpoint_dir = config.checkpoint_dir
-        self.checkpoint_freq = config.training.checkpoint_freq
         self.temperature = config.model.temperature
         self.is_diet_active = config.training.label_smoothing > 0
 
@@ -443,21 +442,7 @@ class DIETTrainer:
                 except (RuntimeError, ValueError) as e:
                     print(f"Error in zero-shot evaluation: {e}")
 
-            # Save checkpoint
-            if run is not None and (epoch + 1) % self.checkpoint_freq == 0:
-                checkpoint_metrics = {
-                    "test_acc": test_acc,
-                    "train_loss_diet": epoch_metrics.get("train_batch_loss_diet", 0),
-                }
-                save_model_checkpoint(
-                    run,
-                    self.model,
-                    self.optimizer,
-                    self.diet_head,
-                    epoch + 1,
-                    checkpoint_metrics,
-                    save_dir=self.checkpoint_dir,
-                )
+            # Note: Checkpoint saving moved to end of training (final checkpoint only)
 
         # End of training
         training_time = time.time() - train_start_time
@@ -529,6 +514,23 @@ class DIETTrainer:
         else:
             print(
                 f"DIET finetuning {'did not improve' if self.is_diet_active else 'would likely not improve'} zero-shot performance"
+            )
+
+        # Save final checkpoint
+        if run is not None:
+            final_checkpoint_metrics = {
+                "final_knn_acc": final_results.get("knn_acc", 0),
+                "final_linear_acc": final_results.get("linear_acc", 0),
+                "avg_improvement": avg_improvement,
+            }
+            save_final_checkpoint(
+                run,
+                self.model,
+                self.optimizer,
+                self.diet_head,
+                start_epoch + num_epochs,
+                final_checkpoint_metrics,
+                save_dir=self.checkpoint_dir,
             )
 
         return self.metrics_history, initial_results, final_results

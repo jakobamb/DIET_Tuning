@@ -179,6 +179,55 @@ def save_model_checkpoint(
     run.log_artifact(artifact)
 
 
+def save_final_checkpoint(
+    run,
+    model,
+    optimizer,
+    W_diet,
+    epoch,
+    metrics,
+    save_dir="checkpoints",
+):
+    """Save final model checkpoint and log it to wandb
+
+    This function saves only the final checkpoint at the end of training,
+    replacing the need for periodic checkpoint saving during training.
+
+    Args:
+        run: wandb run object
+        model: The backbone model
+        optimizer: Optimizer
+        W_diet: DIET linear layer
+        epoch: Final epoch number
+        metrics: Final metrics
+        save_dir: Directory to save checkpoints locally
+    """
+
+    # Create checkpoint
+    checkpoint = {
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "W_diet_state_dict": W_diet.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "metrics": metrics,
+    }
+
+    # Save checkpoint locally
+    checkpoint_path = os.path.join(save_dir, f"final_checkpoint_epoch_{epoch}.pt")
+    torch.save(checkpoint, checkpoint_path)
+
+    # Log final checkpoint to wandb
+    artifact = wandb.Artifact(
+        name=f"final_model_{run.id}",
+        type="model",
+        description=f"Final model checkpoint from epoch {epoch}",
+    )
+    artifact.add_file(checkpoint_path)
+    run.log_artifact(artifact)
+
+    print(f"Final checkpoint saved and logged to wandb: {checkpoint_path}")
+
+
 def log_model_architecture(run, model, W_diet):
     """Log model architecture details to wandb
 

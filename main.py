@@ -299,12 +299,6 @@ def parse_args():
         default=None,
         help="Resume training from a checkpoint file (e.g., checkpoint_epoch_25.pt)",
     )
-    parser.add_argument(
-        "--checkpoint-freq",
-        type=int,
-        default=500,
-        help="Frequency of saving checkpoints",
-    )
 
     # DIET arguments
     parser.add_argument(
