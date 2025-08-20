@@ -20,7 +20,7 @@ from config import DEVICE
 # If get_dinov2_model etc. are defined *inside* main.py's functions, this won't work directly.
 # Let's assume they are importable for now.
 try:
-    from models.dinov2 import get_dinov2_model
+    from models.dinov2 import get_dinov2_model, get_dinov3_model
     from models.mae import get_mae_model
     from models.mambavision import get_mambavision_model
     from models.ijepa import get_ijepa_model
@@ -82,6 +82,11 @@ def unified_sanity_check(
         "dinov2": {
             "model_size": "small",
             "expected_threshold": 0.91,
+            "batch_size": 256,
+        },
+        "dinov3": {
+            "model_size": "s16",
+            "expected_threshold": 0.92,
             "batch_size": 256,
         },
         "mae": {"model_size": "base", "expected_threshold": 0.85, "batch_size": 256},
@@ -212,6 +217,10 @@ def unified_sanity_check(
     try:
         if model_type == "dinov2":
             sanity_model, embedding_dim = get_dinov2_model(
+                DEVICE, model_size=model_size
+            )
+        elif model_type == "dinov3":
+            sanity_model, embedding_dim = get_dinov3_model(
                 DEVICE, model_size=model_size
             )
         elif model_type == "mae":

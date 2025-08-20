@@ -31,7 +31,7 @@ from utils.lr_schedule import create_warmup_cosine_scheduler, get_scheduler_info
 
 # Model implementations
 from models.aim import get_aim_model
-from models.dinov2 import get_dinov2_model
+from models.dinov2 import get_dinov2_model, get_dinov3_model
 from models.ijepa import get_ijepa_model
 from models.mae import get_mae_model
 from models.mambavision import get_mambavision_model
@@ -66,6 +66,9 @@ def get_model(backbone_type, model_size, run_sanity_check, use_wandb):
 
     elif backbone_type == "dinov2":
         return get_dinov2_model(DEVICE, model_size=model_size)
+
+    elif backbone_type == "dinov3":
+        return get_dinov3_model(DEVICE, model_size=model_size)
 
     elif backbone_type == "mae":
         return get_mae_model(DEVICE, model_size=model_size)
@@ -247,14 +250,14 @@ def parse_args():
         "--backbone",
         type=str,
         default="simclr",
-        choices=["resnet50", "dinov2", "mae", "mambavision", "ijepa", "aim"],
+        choices=["resnet50", "dinov2", "dinov3", "mae", "mambavision", "ijepa", "aim"],
         help="Backbone model type",
     )
     parser.add_argument(
         "--model-size",
         type=str,
         default="resnet50-1x",
-        help="Model size (depends on backbone type)",
+        help="Model size (depends on backbone type). DINOv2: small/base/large/giant, DINOv3: s16/s16plus/b16/l16/h16plus/7b16",
     )
 
     # Dataset arguments

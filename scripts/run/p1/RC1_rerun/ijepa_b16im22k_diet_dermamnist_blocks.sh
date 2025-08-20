@@ -3,7 +3,7 @@
 ### –- specify queue --
 #BSUB -q p1
 ### -- set the job Name --
-#BSUB -J DIET_BLOCKS2_OCT
+#BSUB -J DIET_DINOV3_BLOCKS2_OCT
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
 ### -- ask for number of cores (default: 1) --
@@ -40,9 +40,9 @@ export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
 # Run the training script
 python -u main.py \
-    --wandb-prefix "RC1_ijepa" \
-    --backbone ijepa \
-    --model-size b16_22k \
+    --wandb-prefix "RC1_dinov3" \
+    --backbone dinov3 \
+    --model-size small \
     --label-smoothing 0.2 \
     --da-strength 2 \
     --diet-head-only-epochs 0.05 \
@@ -51,5 +51,4 @@ python -u main.py \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
-    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
-    --seed 69
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints
