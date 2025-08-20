@@ -27,10 +27,15 @@ dependencies = [
     "matplotlib>=3.5.0",
     "wandb>=0.15.0",
     "tqdm>=4.65.0",
-    "transformers>=4.30.0",
+    "transformers @ git+https://github.com/huggingface/transformers",
     "pillow>=9.0.0",
     "medmnist>=2.1.0",
     "timm"
+]
+
+[project.optional-dependencies]
+dev = [
+    "huggingface_hub"
 ]
 
 [project.urls]
