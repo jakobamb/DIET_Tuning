@@ -104,45 +104,55 @@ class DIETTrainer:
         # Set model to train mode
         self.model.train()
 
-        # For DINOv2, we need to access the transformer blocks
+        encoder = None
+        model_type = None
+
+        # Check for DINOv2/DINOv3 structure
         if hasattr(self.model, "model") and hasattr(self.model.model, "encoder"):
-            # DINOv2 structure: model.model.encoder.layer contains the blocks
             encoder = self.model.model.encoder
-            if hasattr(encoder, "layer"):
-                total_blocks = len(encoder.layer)
-                print(f"DINOv2 has {total_blocks} transformer blocks")
+            model_type = "DINO"
+        # Check for MAE structure
+        elif (
+            hasattr(self.model, "model")
+            and hasattr(self.model.model, "vit")
+            and hasattr(self.model.model.vit, "encoder")
+        ):
+            encoder = self.model.model.vit.encoder
+            model_type = "MAE"
 
-                if num_trained_blocks == 0:
-                    # Freeze all blocks
-                    for param in self.model.parameters():
-                        param.requires_grad = False
-                    print("Frozen all transformer blocks")
-                else:
-                    # Freeze all parameters first
-                    for param in self.model.parameters():
-                        param.requires_grad = False
+        if encoder and hasattr(encoder, "layer"):
+            total_blocks = len(encoder.layer)
+            print(f"{model_type} model has {total_blocks} transformer blocks")
 
-                    # Unfreeze the last num_trained_blocks
-                    blocks_to_train = min(num_trained_blocks, total_blocks)
-                    start_idx = total_blocks - blocks_to_train
-
-                    for i in range(start_idx, total_blocks):
-                        for param in encoder.layer[i].parameters():
-                            param.requires_grad = True
-
-                    print(
-                        f"Training last {blocks_to_train} blocks "
-                        f"(blocks {start_idx} to {total_blocks-1})"
-                    )
+            if num_trained_blocks == 0:
+                # Freeze all blocks
+                for param in self.model.parameters():
+                    param.requires_grad = False
+                print("Frozen all transformer blocks")
             else:
-                print("Warning: Could not find transformer blocks in DINOv2 model")
-                self._unfreeze_backbone()  # Fallback
+                # Freeze all parameters first
+                for param in self.model.parameters():
+                    param.requires_grad = False
+
+                # Unfreeze the last num_trained_blocks
+                blocks_to_train = min(num_trained_blocks, total_blocks)
+                start_idx = total_blocks - blocks_to_train
+
+                for i in range(start_idx, total_blocks):
+                    for param in encoder.layer[i].parameters():
+                        param.requires_grad = True
+
+                print(
+                    f"Training last {blocks_to_train} blocks "
+                    f"(blocks {start_idx} to {total_blocks-1})"
+                )
         else:
-            print(
-                "Warning: Block freezing only implemented for DINOv2. "
-                "Using full backbone training."
+            raise NotImplementedError(
+                f"Block freezing (num_trained_blocks={num_trained_blocks}) is not "
+                f"implemented for this model architecture. "
+                f"Supported models: DINOv2, DINOv3, MAE. "
+                f"Use num_trained_blocks=-1 for full backbone training."
             )
-            self._unfreeze_backbone()  # Fallback for other models
 
     def train(
         self,
