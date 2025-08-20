@@ -42,3 +42,4 @@ srun python -u main.py \
     --data-root $PROJECT_DIR/data \
     --wandb-dir $PROJECT_DIR/wandb \
     --checkpoint-dir $PROJECT_DIR/checkpoints
+    $EXTRA_PYTHON_ARGS
