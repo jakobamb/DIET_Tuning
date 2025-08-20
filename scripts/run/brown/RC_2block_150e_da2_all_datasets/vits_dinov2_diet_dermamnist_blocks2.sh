@@ -20,7 +20,7 @@
 cd /home/jambsdor/projects/DIET_Tuning
 
 # Activate virtual environment
-source venv/bin/activate
+source .venv/bin/activate
 
 PROJECT_DIR=/home/jambsdor/projects/DIET_Tuning
 
@@ -41,5 +41,4 @@ srun python -u main.py \
     --num-trained-blocks 2 \
     --data-root $PROJECT_DIR/data \
     --wandb-dir $PROJECT_DIR/wandb \
-    --checkpoint-dir $PROJECT_DIR/checkpoints \
-    $EXTRA_PYTHON_ARGS
+    --checkpoint-dir $PROJECT_DIR/checkpoints

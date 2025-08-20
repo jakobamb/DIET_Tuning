@@ -20,7 +20,7 @@
 cd /data/people/jambsdor/DIET_Tuning
 
 # Activate virtual environment
-source venv/bin/activate
+source .venv/bin/activate
 
 PROJECT_DIR=/data/people/jambsdor/DIET_Tuning
 
