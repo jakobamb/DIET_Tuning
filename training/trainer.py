@@ -147,6 +147,24 @@ class DIETTrainer:
                     f"(blocks {start_idx} to {total_blocks-1})"
                 )
         else:
+            # Add diagnostic info to help debug model structure
+            print(f"Model structure diagnostic:")
+            print(f"  hasattr(self.model, 'model'): {hasattr(self.model, 'model')}")
+            if hasattr(self.model, "model"):
+                print(
+                    f"  hasattr(self.model.model, 'encoder'): {hasattr(self.model.model, 'encoder')}"
+                )
+                print(
+                    f"  hasattr(self.model.model, 'vit'): {hasattr(self.model.model, 'vit')}"
+                )
+                if hasattr(self.model.model, "vit"):
+                    print(
+                        f"  hasattr(self.model.model.vit, 'encoder'): {hasattr(self.model.model.vit, 'encoder')}"
+                    )
+            print(f"  Model type: {type(self.model)}")
+            if hasattr(self.model, "model"):
+                print(f"  Inner model type: {type(self.model.model)}")
+
             raise NotImplementedError(
                 f"Block freezing (num_trained_blocks={num_trained_blocks}) is not "
                 f"implemented for this model architecture. "
