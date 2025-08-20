@@ -20,10 +20,10 @@ def get_ijepa_model(device, model_size):
     """
     # Map model size to exact model IDs based on the available options and their correct dimensions
     model_map = {
-        "b16_1k": {"id": "facebook/ijepa_vith16_1k", "dim": 1280, "img_size": 224},
-        "b16_22k": {"id": "facebook/ijepa_vitg16_22k", "dim": 1280, "img_size": 224},
-        "l14_22k": {"id": "facebook/ijepa_vith14_22k", "dim": 1280, "img_size": 224},
-        "h14_1k": {"id": "facebook/ijepa_vith14_1k", "dim": 1280, "img_size": 224},
+        "h16_1k": {"id": "facebook/ijepa_vith16_1k", "dim": 1408, "img_size": 224},
+        "g16_22k": {"id": "facebook/ijepa_vitg16_22k", "dim": 1408, "img_size": 224},
+        "h14_22k": {"id": "facebook/ijepa_vith14_22k", "dim": 1408, "img_size": 224},
+        "h14_1k": {"id": "facebook/ijepa_vith14_1k", "dim": 1408, "img_size": 224},
     }
 
     if model_size not in model_map:
@@ -113,5 +113,19 @@ def get_ijepa_model(device, model_size):
 
     # Create and return wrapped model
     model = IJEPAWrapper(base_model, img_size=img_size).to(device)
+
+    # Detect actual embedding dimension by doing a forward pass
+    print("Detecting actual embedding dimension...")
+    with torch.no_grad():
+        dummy_input = torch.randn(1, 3, 224, 224).to(device)
+        try:
+            dummy_output = model(dummy_input)
+            actual_embedding_dim = dummy_output.shape[1]
+            print(f"Detected actual embedding dimension: {actual_embedding_dim}")
+            embedding_dim = actual_embedding_dim
+        except Exception as e:
+            print(f"Could not detect embedding dimension: {e}")
+            print(f"Using configured dimension: {embedding_dim}")
+
     print(f"I-JEPA model wrapper created with image size {img_size}x{img_size}")
     return model, embedding_dim
