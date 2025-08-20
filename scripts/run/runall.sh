@@ -60,7 +60,7 @@ for script in "${scripts[@]}"; do
     if [ "$SCHEDULER" = "slurm" ]; then
         # For Slurm, use sbatch with the script file and pass additional args as environment variable
         if [ -n "$PYTHON_ARGS" ]; then
-            if sbatch --export=EXTRA_PYTHON_ARGS="$PYTHON_ARGS" "$script"; then
+            if sbatch --export=ALL,EXTRA_PYTHON_ARGS="$PYTHON_ARGS" "$script"; then
                 echo "✓ Successfully submitted: $script_name (with args: $PYTHON_ARGS)"
             else
                 echo "✗ Failed to submit: $script_name"
