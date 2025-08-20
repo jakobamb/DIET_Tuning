@@ -18,8 +18,11 @@ def get_dinov3_model(device, model_size="small"):
 
 def get_dino_model(device, model_size, version="v2"):
     """Create DINOv2 or DINOv3 model."""
-
+    
     backbone_name = f"dinov{version}"
+    print(f"Looking for backbone: {backbone_name}")
+    print(f"Available in MODEL_SPECS: {list(MODEL_SPECS.keys())}")
+    
     if backbone_name not in MODEL_SPECS:
         raise ValueError(f"Version {version} not supported")
 
