@@ -41,4 +41,5 @@ srun python -u main.py \
     --num-trained-blocks 2 \
     --data-root $PROJECT_DIR/data \
     --wandb-dir $PROJECT_DIR/wandb \
-    --checkpoint-dir $PROJECT_DIR/checkpoints
+    --checkpoint-dir $PROJECT_DIR/checkpoints \
+    $EXTRA_PYTHON_ARGS
