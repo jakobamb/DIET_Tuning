@@ -3,6 +3,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoModel
+from config.models import MODEL_SPECS
 
 
 def get_dinov2_model(device, model_size="small"):
@@ -18,50 +19,27 @@ def get_dinov3_model(device, model_size="small"):
 def get_dino_model(device, model_size, version="v2"):
     """Create DINOv2 or DINOv3 model."""
 
-    # Model configurations
-    configs = {
-        "v2": {
-            "sizes": {"small": 384, "base": 768, "large": 1024, "giant": 1536},
-            "model_template": "facebook/dinov2-{size}",
-            "feature_key": "cls_token",
-        },
-        "v3": {
-            "sizes": {
-                "small": 384,
-                "base": 768,
-                "large": 1024,
-                "s16": 384,
-                "b16": 768,
-                "l16": 1024,
-                "s16plus": 384,
-                "h16plus": 1280,
-                "7b16": 4096,
-            },
-            "aliases": {"small": "s16", "base": "b16", "large": "l16"},
-            "model_template": "facebook/dinov3-vit{size}-pretrain-lvd1689m",
-            "feature_key": "pooler_output",
-        },
-    }
-
-    if version not in configs:
+    backbone_name = f"dinov{version}"
+    if backbone_name not in MODEL_SPECS:
         raise ValueError(f"Version {version} not supported")
 
-    config = configs[version]
+    spec = MODEL_SPECS[backbone_name]
 
-    # Handle model size and aliases
-    if version == "v3" and model_size in config.get("aliases", {}):
-        actual_size = config["aliases"][model_size]
+    # Handle model size and aliases for DINOv3
+    if version == "v3" and model_size in ["small", "base", "large"]:
+        aliases = {"small": "s16", "base": "b16", "large": "l16"}
+        actual_size = aliases[model_size]
     else:
         actual_size = model_size
 
-    if model_size not in config["sizes"]:
+    if model_size not in spec["sizes"]:
         raise ValueError(f"Model size {model_size} not supported for DINO{version}")
 
-    # Load model
+    # Build model name
     if version == "v2":
-        model_name = config["model_template"].format(size=actual_size)
-    else:
-        model_name = config["model_template"].format(size=actual_size)
+        model_name = f"facebook/dinov2-{actual_size}"
+    else:  # v3
+        model_name = f"facebook/dinov3-vit{actual_size}-pretrain-lvd1689m"
 
     base_model = AutoModel.from_pretrained(model_name)
 
@@ -70,29 +48,25 @@ def get_dino_model(device, model_size, version="v2"):
         param.requires_grad = True
 
     class DINOWrapper(nn.Module):
-        def __init__(self, model, feature_key, im_size=224):
+        def __init__(self, model, version):
             super().__init__()
             self.model = model
-            self.feature_key = feature_key
-            self.im_size = im_size
+            self.version = version
 
         def forward(self, x):
-            if x.shape[-1] != self.im_size:
+            if x.shape[-1] != 224:
                 x = F.interpolate(
-                    x,
-                    size=(self.im_size, self.im_size),
-                    mode="bilinear",
-                    align_corners=False,
+                    x, size=(224, 224), mode="bilinear", align_corners=False
                 )
 
             outputs = self.model(x)
 
-            if self.feature_key == "pooler_output":
+            if self.version == "v3":
                 return outputs.pooler_output
             else:
                 return outputs.last_hidden_state[:, 0]
 
-    model = DINOWrapper(base_model, config["feature_key"]).to(device)
-    embedding_dim = config["sizes"][model_size]
+    model = DINOWrapper(base_model, version).to(device)
+    embedding_dim = spec["embedding_dims"][model_size]
 
     return model, embedding_dim

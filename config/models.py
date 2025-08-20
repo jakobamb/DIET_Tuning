@@ -33,6 +33,30 @@ MODEL_SPECS = {
         "sizes": ["small", "base", "large", "giant"],
         "embedding_dims": {"small": 384, "base": 768, "large": 1024, "giant": 1536},
     },
+    "dinov3": {
+        "sizes": [
+            "small",
+            "base",
+            "large",
+            "s16",
+            "s16plus",
+            "b16",
+            "l16",
+            "h16plus",
+            "7b16",
+        ],
+        "embedding_dims": {
+            "small": 384,
+            "base": 768,
+            "large": 1024,
+            "s16": 384,
+            "s16plus": 384,
+            "b16": 768,
+            "l16": 1024,
+            "h16plus": 1280,
+            "7b16": 4096,
+        },
+    },
     "mae": {
         "sizes": ["base", "large", "huge"],
         "embedding_dims": {"base": 768, "large": 1024, "huge": 1280},
@@ -50,12 +74,12 @@ MODEL_SPECS = {
         },
     },
     "ijepa": {
-        "sizes": ["b16_1k", "b16_22k", "l14_22k", "h14_1k"],
+        "sizes": ["h16_1k", "g16_22k", "h14_22k", "h14_1k"],
         "embedding_dims": {
-            "b16_1k": 1280,
-            "b16_22k": 1280,
-            "l14_22k": 1280,
-            "h14_1k": 1280,
+            "h16_1k": 1408,
+            "g16_22k": 1408,
+            "h14_22k": 1408,
+            "h14_1k": 1408,
         },
     },
     "aim": {
@@ -76,9 +100,10 @@ MODEL_SPECS = {
 FALLBACK_EMBEDDING_DIMS = {
     "resnet50": 2048,
     "dinov2": 384,
+    "dinov3": 384,
     "mae": 768,
     "mambavision": 512,
-    "ijepa": 1280,
+    "ijepa": 1408,
     "aim": 768,
     "simclr": 2048,
 }
@@ -86,6 +111,7 @@ FALLBACK_EMBEDDING_DIMS = {
 # Performance thresholds for sanity checks
 SANITY_CHECK_THRESHOLDS = {
     "dinov2": 0.91,
+    "dinov3": 0.91,
     "mae": 0.85,
     "mambavision": 0.85,
     "ijepa": 0.85,
