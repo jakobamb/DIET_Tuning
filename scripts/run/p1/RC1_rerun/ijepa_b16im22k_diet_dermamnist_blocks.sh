@@ -51,4 +51,5 @@ python -u main.py \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
-    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
+    --seed 69

@@ -257,7 +257,7 @@ def parse_args():
         "--model-size",
         type=str,
         default="resnet50-1x",
-        help="Model size (depends on backbone type). DINOv2: small/base/large/giant, DINOv3: s16/s16plus/b16/l16/h16plus/7b16",
+        help="Model size (depends on backbone type). DINOv2/v3: small/base/large, MAE: base/large/huge",
     )
 
     # Dataset arguments
