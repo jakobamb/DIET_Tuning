@@ -105,12 +105,19 @@ class DIETTrainer:
         self.model.train()
 
         encoder = None
+        layers = None
         model_type = None
 
-        # Check for DINOv2/DINOv3 structure
+        # Check for DINOv2 structure (encoder.layer)
         if hasattr(self.model, "model") and hasattr(self.model.model, "encoder"):
             encoder = self.model.model.encoder
-            model_type = "DINO"
+            if hasattr(encoder, "layer"):
+                layers = encoder.layer
+                model_type = "DINOv2"
+        # Check for DINOv3 structure (direct layer attribute)
+        elif hasattr(self.model, "model") and hasattr(self.model.model, "layer"):
+            layers = self.model.model.layer
+            model_type = "DINOv3"
         # Check for MAE structure
         elif (
             hasattr(self.model, "model")
@@ -118,10 +125,12 @@ class DIETTrainer:
             and hasattr(self.model.model.vit, "encoder")
         ):
             encoder = self.model.model.vit.encoder
-            model_type = "MAE"
+            if hasattr(encoder, "layer"):
+                layers = encoder.layer
+                model_type = "MAE"
 
-        if encoder and hasattr(encoder, "layer"):
-            total_blocks = len(encoder.layer)
+        if layers is not None:
+            total_blocks = len(layers)
             print(f"{model_type} model has {total_blocks} transformer blocks")
 
             if num_trained_blocks == 0:
@@ -139,7 +148,7 @@ class DIETTrainer:
                 start_idx = total_blocks - blocks_to_train
 
                 for i in range(start_idx, total_blocks):
-                    for param in encoder.layer[i].parameters():
+                    for param in layers[i].parameters():
                         param.requires_grad = True
 
                 print(
