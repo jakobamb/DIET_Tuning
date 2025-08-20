@@ -40,7 +40,7 @@ export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
 # Run the training script
 python -u main.py \
-    --wandb-prefix "RC_2block_150e_da2_seed3" \
+    --wandb-prefix "RC1_ijepa" \
     --backbone ijepa \
     --model-size b16_22k \
     --label-smoothing 0.2 \
