@@ -5,26 +5,18 @@ import torch
 import torchvision
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader, Subset
+from torch.utils.data import Dataset, DataLoader, Subset, random_split
 from PIL import Image
 from tqdm import tqdm
 from torchvision.transforms import v2
 from config.data import DATASET_STATS
 
-try:
-    import medmnist
-    from medmnist import INFO
+# HuggingFace datasets
+from datasets import load_dataset
 
-    MEDMNIST_AVAILABLE = True
-except ImportError:
-    MEDMNIST_AVAILABLE = False
-
-try:
-    from datasets import load_dataset
-
-    HAS_DATASETS = True
-except ImportError:
-    HAS_DATASETS = False
+# MedMNIST datasets
+import medmnist
+from medmnist import INFO
 
 
 class TransformDataset(Dataset):
@@ -153,8 +145,13 @@ class RobustGalaxyDataset(Dataset):
 
 
 def get_dataset(dataset_name="cifar10", root="./data"):
-    """Load dataset and return train, validation, test splits."""
-    from torch.utils.data import random_split
+    """Load dataset and return train, validation, test splits.
+
+    Dataset Sources:
+    - Torchvision: cifar10, cifar100 (primary)
+    - HuggingFace: cifar100 (fallback), food101, fgvc_aircraft, plantnet300k, galaxy10_decals, crop14_balance
+    - MedMNIST: All medical datasets (dermamnist, pathmnist, etc.)
+    """
 
     dataset_stats = DATASET_STATS
 
@@ -167,6 +164,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         num_classes = 10
 
     elif dataset_name.lower() == "cifar100":
+        # Try torchvision first, fallback to HuggingFace
         try:
             train_dataset = datasets.CIFAR100(root=root, train=True, download=True)
             test_dataset = datasets.CIFAR100(root=root, train=False, download=True)
@@ -177,8 +175,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             )
             num_classes = 100
         except Exception:
-            if not HAS_DATASETS:
-                raise ImportError("HuggingFace datasets not available")
+            # Fallback to HuggingFace dataset
             dataset = load_dataset(
                 "randall-lab/cifar100", trust_remote_code=True, cache_dir=root
             )
@@ -193,8 +190,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             )
 
     elif dataset_name.lower() == "food101":
-        if not HAS_DATASETS:
-            raise ImportError("HuggingFace datasets not available")
+        # HuggingFace dataset with torchvision fallback
         try:
             dataset = load_dataset(
                 "randall-lab/food101", trust_remote_code=True, cache_dir=root
@@ -219,8 +215,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
             num_classes = 100
 
     elif dataset_name.lower() == "fgvc_aircraft":
-        from datasets import load_dataset
-
+        # HuggingFace dataset
         dataset = load_dataset(
             "randall-lab/fgvc-aircraft", trust_remote_code=True, cache_dir=root
         )
@@ -230,7 +225,8 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         val_dataset = HFImageDataset(dataset["validation"], input_size=input_size)
         test_dataset = HFImageDataset(dataset["test"], input_size=input_size)
 
-    elif MEDMNIST_AVAILABLE and dataset_name.lower() in INFO.keys():
+    elif dataset_name.lower() in INFO.keys():
+        # MedMNIST dataset
         data_flag = dataset_name.lower()
         info = INFO[data_flag]
         DataClass = getattr(medmnist, info["python_class"])
@@ -246,8 +242,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         )
 
     elif dataset_name.lower() == "plantnet300k":
-        from datasets import load_dataset
-
+        # HuggingFace dataset
         dataset = load_dataset("mikehemberger/plantnet300K", cache_dir=root)
         num_classes = 85
         input_size = dataset_stats["plantnet300k"]["input_size"]
@@ -263,8 +258,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         )
 
     elif dataset_name.lower() == "galaxy10_decals":
-        from datasets import load_dataset
-
+        # HuggingFace dataset
         dataset = load_dataset("matthieulel/galaxy10_decals", cache_dir=root)
         num_classes = 10
         input_size = dataset_stats["galaxy10_decals"]["input_size"]
@@ -277,9 +271,7 @@ def get_dataset(dataset_name="cifar10", root="./data"):
         )
 
     elif dataset_name.lower() == "crop14_balance":
-        from datasets import load_dataset
-        from torch.utils.data import Subset
-
+        # HuggingFace dataset
         dataset = load_dataset("gary109/crop14_balance", cache_dir=root)
         train_dataset_hf = dataset["train"]
         val_dataset_hf = dataset["validation"]
@@ -528,8 +520,6 @@ def prepare_data_loaders(
         print("\n===== REBUILDING GALAXY DATASET FROM SCRATCH =====")
 
         # Get the raw dataset again
-        from datasets import load_dataset
-
         raw_dataset = load_dataset("matthieulel/galaxy10_decals")
         train_data = raw_dataset["train"]
         test_data = raw_dataset["test"]
