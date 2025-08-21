@@ -216,7 +216,9 @@ def get_dataset(dataset_name="cifar10", root="./data"):
 
     elif dataset_name.lower() == "fgvc_aircraft":
         # HuggingFace dataset
-        dataset = load_dataset("JimmyUnleashed/FGCV_Aircraft_Dataset")
+        dataset = load_dataset(
+            "randall-lab/fgvc-aircraft", trust_remote_code=True, cache_dir=root
+        )
         num_classes = 102
         input_size = dataset_stats["fgvc_aircraft"]["input_size"]
         train_dataset = HFImageDataset(dataset["train"], input_size=input_size)
