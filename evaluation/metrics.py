@@ -23,7 +23,7 @@ def zero_shot_eval(
     num_classes,
     device,
     probe_lr=1e-3,
-    probe_steps=10000,
+    probe_steps=20000,
 ):
     """Evaluate model using zero-shot methods with proper train/test split.
 
@@ -121,9 +121,27 @@ def zero_shot_eval(
     ytr = torch.as_tensor(train_labels, dtype=torch.long, device=device)
     Xte = torch.as_tensor(test_features, dtype=torch.float32, device=device)
 
-    for _ in range(probe_steps):
+    batch_size = 512
+    n_samples = Xtr.shape[0]
+    n_batches = (n_samples + batch_size - 1) // batch_size
+    indices = torch.randperm(n_samples, device=device)
+
+    for step in range(probe_steps):
+        # Shuffle indices for each epoch
+        if step % n_batches == 0:
+            indices = torch.randperm(n_samples, device=device)
+
+        # Get current batch
+        batch_idx = step % n_batches
+        start_idx = batch_idx * batch_size
+        end_idx = min(start_idx + batch_size, n_samples)
+        batch_indices = indices[start_idx:end_idx]
+
+        X_batch = Xtr[batch_indices]
+        y_batch = ytr[batch_indices]
+
         opt.zero_grad()
-        loss = crit(clf(Xtr), ytr)
+        loss = crit(clf(X_batch), y_batch)
         loss.backward()
         opt.step()
 
