@@ -386,7 +386,7 @@ def log_metrics_table(
     # If initial and final results are provided, create summary tables
     if initial_results and final_results:
         # Basic summary table
-        summary_columns = ["metric", "initial", "final", "change", "relative_change"]
+        summary_columns = ["run", "metric", "initial", "final", "change", "relative_change"]
         summary_table = wandb.Table(columns=summary_columns)
 
         for metric in metrics_list:
@@ -395,7 +395,7 @@ def log_metrics_table(
             change = final - initial
             rel_change = (change / initial) * 100 if initial > 0 else float("inf")
 
-            summary_table.add_data(metric, initial, final, change, rel_change)
+            summary_table.add_data(run.name, metric, initial, final, change, rel_change)
 
         # Log the summary table
         run.log({"zero_shot_summary_table": summary_table})
