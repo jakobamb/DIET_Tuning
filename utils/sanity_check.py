@@ -326,13 +326,17 @@ def unified_sanity_check(
     # Filter k_values to ensure we don't use more neighbors than available samples
     n_train_samples = train_features.shape[0]
     valid_k_values = [k for k in k_values if k <= n_train_samples]
-    
+
     if len(valid_k_values) != len(k_values):
         filtered_out = [k for k in k_values if k > n_train_samples]
-        print(f"Warning: Filtered out k values {filtered_out} due to insufficient training samples ({n_train_samples})")
-    
+        print(
+            f"Warning: Filtered out k values {filtered_out} due to insufficient training samples ({n_train_samples})"
+        )
+
     if not valid_k_values:
-        print(f"Error: No valid k values for {n_train_samples} training samples. Minimum k=1 required.")
+        print(
+            f"Error: No valid k values for {n_train_samples} training samples. Minimum k=1 required."
+        )
         valid_k_values = [1]  # Fallback to k=1
 
     # Run k-NN evaluation
@@ -554,7 +558,10 @@ def unified_sanity_check(
             # Plot k-NN results
             plt.subplot(1, 2, 1)
             plt.plot(
-                valid_k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
+                valid_k_values,
+                [acc * 100 for acc in accuracies],
+                marker="o",
+                linewidth=2,
             )
             plt.axhline(
                 y=expected_threshold * 100,
@@ -592,7 +599,10 @@ def unified_sanity_check(
         else:
             # Only k-NN plot
             plt.plot(
-                valid_k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
+                valid_k_values,
+                [acc * 100 for acc in accuracies],
+                marker="o",
+                linewidth=2,
             )
             plt.axhline(
                 y=expected_threshold * 100,

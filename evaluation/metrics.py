@@ -95,13 +95,17 @@ def zero_shot_eval(
 
     print("Running k-NN evaluation...")
     t0 = time.time()
-    
+
     # Dynamically set n_neighbors to avoid error when training set is small
     n_train_samples = train_features.shape[0]
     n_neighbors = min(20, n_train_samples)
-    print(f"Using {n_neighbors} neighbors (max of 20 or available training samples: {n_train_samples})")
-    
-    knn = KNeighborsClassifier(n_neighbors=n_neighbors, metric="cosine", weights="distance")
+    print(
+        f"Using {n_neighbors} neighbors (max of 20 or available training samples: {n_train_samples})"
+    )
+
+    knn = KNeighborsClassifier(
+        n_neighbors=n_neighbors, metric="cosine", weights="distance"
+    )
     train_features = normalize(train_features)  # L2
     test_features = normalize(test_features)
     knn.fit(train_features, train_labels)
