@@ -323,6 +323,18 @@ def unified_sanity_check(
         test_features, axis=1, keepdims=True
     )
 
+    # Filter k_values to ensure we don't use more neighbors than available samples
+    n_train_samples = train_features.shape[0]
+    valid_k_values = [k for k in k_values if k <= n_train_samples]
+    
+    if len(valid_k_values) != len(k_values):
+        filtered_out = [k for k in k_values if k > n_train_samples]
+        print(f"Warning: Filtered out k values {filtered_out} due to insufficient training samples ({n_train_samples})")
+    
+    if not valid_k_values:
+        print(f"Error: No valid k values for {n_train_samples} training samples. Minimum k=1 required.")
+        valid_k_values = [1]  # Fallback to k=1
+
     # Run k-NN evaluation
     if run_linear_probe:
         print("\\n" + "=" * 50)
@@ -346,7 +358,7 @@ def unified_sanity_check(
         except Exception as e:
             print(f"Failed to create WandB table for k-NN: {e}")
 
-    for k in k_values:
+    for k in valid_k_values:
         try:
             knn = KNeighborsClassifier(
                 n_neighbors=k, metric="cosine"
@@ -542,7 +554,7 @@ def unified_sanity_check(
             # Plot k-NN results
             plt.subplot(1, 2, 1)
             plt.plot(
-                k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
+                valid_k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
             )
             plt.axhline(
                 y=expected_threshold * 100,
@@ -555,7 +567,7 @@ def unified_sanity_check(
             plt.title(f"{model_type.upper()} Zero-Shot k-NN Performance on CIFAR10")
             plt.grid(True)
             plt.legend()
-            plt.xticks(k_values)
+            plt.xticks(valid_k_values)
 
             # Plot comparison of methods
             plt.subplot(1, 2, 2)
@@ -580,7 +592,7 @@ def unified_sanity_check(
         else:
             # Only k-NN plot
             plt.plot(
-                k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
+                valid_k_values, [acc * 100 for acc in accuracies], marker="o", linewidth=2
             )
             plt.axhline(
                 y=expected_threshold * 100,
@@ -593,7 +605,7 @@ def unified_sanity_check(
             plt.title(f"{model_type.upper()} Zero-Shot k-NN Performance on CIFAR10")
             plt.grid(True)
             plt.legend()
-            plt.xticks(k_values)
+            plt.xticks(valid_k_values)
 
         plt.tight_layout()
 
@@ -613,7 +625,7 @@ def unified_sanity_check(
     # Prepare return value
     results = {
         "accuracies": accuracies,
-        "k_values": k_values,
+        "k_values": valid_k_values,
         "best_acc": best_acc,
         "best_k": best_k,
         "passed_check": passed_check,
