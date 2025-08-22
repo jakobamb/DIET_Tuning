@@ -90,7 +90,7 @@ class HFImageDataset(Dataset):
             idx = int(idx.item())
 
         item = self.dataset[idx]
-        
+
         # Handle both tuple and dictionary formats
         if isinstance(item, tuple):
             image, label = item[0], item[1]
@@ -132,8 +132,17 @@ class RobustGalaxyDataset(Dataset):
         original_idx = self.indices[idx]
         sample = self.dataset[original_idx]
 
-        image = sample["image"]
-        label = torch.tensor([sample["label"]], dtype=torch.long)
+        # Handle both tuple and dictionary formats
+        if isinstance(sample, tuple):
+            image, label = sample[0], sample[1]
+        else:
+            image = sample["image"]
+            label = sample["label"]
+
+        if not isinstance(label, torch.Tensor):
+            label = torch.tensor([label], dtype=torch.long)
+        elif label.dim() == 0:
+            label = torch.tensor([label.item()], dtype=torch.long)
 
         if not isinstance(image, Image.Image):
             try:
