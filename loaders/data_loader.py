@@ -90,8 +90,13 @@ class HFImageDataset(Dataset):
             idx = int(idx.item())
 
         item = self.dataset[idx]
-        image = item["image"]
-        label = item.get("label", item.get("labels"))
+        
+        # Handle both tuple and dictionary formats
+        if isinstance(item, tuple):
+            image, label = item[0], item[1]
+        else:
+            image = item["image"]
+            label = item.get("label", item.get("labels"))
 
         if not isinstance(image, Image.Image):
             try:
