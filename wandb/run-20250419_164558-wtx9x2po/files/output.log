@@ -1,0 +1,27 @@
+WandB initialized for sanity check: sanity_check_dinov2_small
+Loading fresh dinov2 model...
+Loading DINOv2-small model...
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.48, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Unfreezing all DINOv2 parameters...
+Unfrozen 223 parameters in DINOv2 backbone
+DINOv2-small loaded. Embedding dimension: 384
+Extracting features from CIFAR10 training set...
+Extracting train features: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 196/196 [01:34<00:00,  2.07it/s]
+Extracting features from CIFAR10 test set...
+Extracting test features: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 40/40 [00:19<00:00,  2.10it/s]
+Features extracted: (50000, 384) train, (10000, 384) test
+\nEvaluating k-NN performance:
+--------------------------------------------------
+k value    Accuracy
+--------------------------------------------------
+1          93.59%
+5          94.46%
+20         94.49%
+50         94.15%
+100        93.64%
+200        93.00%
+--------------------------------------------------
+\nBest k-NN accuracy: 94.49% (k=20)
+Sanity check status: PASSED ✓
+Expected accuracy: >91.0%, Achieved: 94.49%
+======================================================================

@@ -1,0 +1,33 @@
+{"time":"2025-04-14T10:55:40.1745552-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"c:\\Users\\Bryan\\Desktop\\ResearchAI\\wandb\\run-20250414_105540-ddsfynqc\\logs\\debug-core.log"}
+{"time":"2025-04-14T10:55:40.2985774-04:00","level":"INFO","msg":"created new stream","id":"ddsfynqc"}
+{"time":"2025-04-14T10:55:40.2990774-04:00","level":"INFO","msg":"sender: started","stream_id":"ddsfynqc"}
+{"time":"2025-04-14T10:55:40.2990774-04:00","level":"INFO","msg":"stream: started","id":"ddsfynqc"}
+{"time":"2025-04-14T10:55:40.2990774-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ddsfynqc"}
+{"time":"2025-04-14T10:55:40.2990774-04:00","level":"INFO","msg":"handler: started","stream_id":"ddsfynqc"}
+{"time":"2025-04-14T10:55:40.5906275-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-14T10:58:05.3017934-04:00","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-04-14T10:58:05.317505-04:00","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-04-14T10:58:05.744797-04:00","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-04-14T10:58:05.7570873-04:00","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-04-14T11:00:56.7119802-04:00","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-04-14T11:00:56.7299834-04:00","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-04-14T11:00:56.7326947-04:00","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-04-14T11:00:56.7699902-04:00","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-04-14T13:18:11.6238878-04:00","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-04-14T13:56:06.7587727-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}
+{"time":"2025-04-14T17:08:25.775783-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-14T17:08:27.8347126-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.1.189:55020->35.186.228.49:443: wsarecv: An existing connection was forcibly closed by the remote host."}
+{"time":"2025-04-14T18:37:08.5640756-04:00","level":"INFO","msg":"api: retrying HTTP error","status":502,"url":"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream","body":"\n<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<title>502 Server Error</title>\n</head>\n<body text=#000000 bgcolor=#ffffff>\n<h1>Error: Server Error</h1>\n<h2>The server encountered a temporary error and could not complete your request.<p>Please try again in 30 seconds.</h2>\n<h2></h2>\n</body></html>\n"}
+{"time":"2025-04-14T22:04:12.7557744-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-14T23:01:38.5122144-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-14T23:01:50.8825676-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": read tcp 192.168.1.189:59896->35.186.228.49:443: wsarecv: An existing connection was forcibly closed by the remote host."}
+{"time":"2025-04-14T23:59:32.7587445-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"}
+{"time":"2025-04-14T23:59:32.7587445-04:00","level":"WARN","msg":"sender: taking a long time","seconds":1950.4171117,"work":"WorkRecord(*service_go_proto.Request_StopStatus); Control(local:true  mailbox_slot:\"4426fugat2xm\"  connection_id:\"127.0.0.1:51029\")"}
+{"time":"2025-04-14T23:59:32.7717474-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-14T23:59:35.1492561-04:00","level":"INFO","msg":"sender: succeeded after taking longer than expected","seconds":1953.0661675,"work":"WorkRecord(*service_go_proto.Request_StopStatus); Control(local:true  mailbox_slot:\"4426fugat2xm\"  connection_id:\"127.0.0.1:51029\")"}
+{"time":"2025-04-15T01:04:36.5106956-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-15T01:04:38.7574575-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-15T01:04:39.1665272-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-15T01:04:41.2198801-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-15T01:04:43.4110887-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/files/brodas1-fordham-university/diet_finetuning/ddsfynqc/file_stream\": dial tcp: lookup api.wandb.ai: no such host"}
+{"time":"2025-04-15T01:04:45.3224174-04:00","level":"INFO","msg":"api: retrying error","error":"Post \"https://api.wandb.ai/graphql\": dial tcp: lookup api.wandb.ai: no such host"}

@@ -1,0 +1,17 @@
+Experiment Summary: mae on dermamnist
+==================================================
+
+Key Hyperparameters:
+- Learning Rate: 0.0005
+- DIET Classes: 100
+- Label Smoothing: 0.3
+- Weight Decay: 0.05
+
+Zero-Shot Performance:
+--------------------------------------------------
+Metric          Initial    Final      Change     Relative %
+--------------------------------------------------
+knn_acc         0.7481     0.7776     +0.0294     +3.93%
+kmeans_ari      0.0332     0.1583     +0.1251     +376.83%
+kmeans_nmi      0.1182     0.2107     +0.0925     +78.24%
+linear_acc      0.6690     0.7388     +0.0698     +10.43%

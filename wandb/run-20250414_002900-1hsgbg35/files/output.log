@@ -1,0 +1,106 @@
+WandB initialized: DIET_dinov2_small_crop14_balance_20250414_002859
+
+==========================
+Starting epoch 1/30 at 00:29:01
+==========================
+
+Initializing training loop...
+Batch 0: Unpacked as (x, y, n)
+Batch 1: Unpacked as (x, y, n)
+Batch 2: Unpacked as (x, y, n)
+Batch 3: Unpacked as (x, y, n)
+Batch 4: Unpacked as (x, y, n)
+Batch 5: Unpacked as (x, y, n)
+Batch 6: Unpacked as (x, y, n)
+Batch 7: Unpacked as (x, y, n)
+Batch 8: Unpacked as (x, y, n)
+Batch 9: Unpacked as (x, y, n)
+Batch 10: Unpacked as (x, y, n)
+Batch 11: Unpacked as (x, y, n)
+Batch 12: Unpacked as (x, y, n)
+Batch 13: Unpacked as (x, y, n)
+Batch 14: Unpacked as (x, y, n)
+Batch 15: Unpacked as (x, y, n)
+Batch 16: Unpacked as (x, y, n)
+Batch 17: Unpacked as (x, y, n)
+Batch 18: Unpacked as (x, y, n)
+Batch 19: Unpacked as (x, y, n)
+Batch 20: Unpacked as (x, y, n)
+Batch 21: Unpacked as (x, y, n)
+Batch 22: Unpacked as (x, y, n)
+Batch 23: Unpacked as (x, y, n)
+Batch 24: Unpacked as (x, y, n)
+Batch 25: Unpacked as (x, y, n)
+Batch 26: Unpacked as (x, y, n)
+Batch 27: Unpacked as (x, y, n)
+Batch 28: Unpacked as (x, y, n)
+Batch 29: Unpacked as (x, y, n)
+Batch 30: Unpacked as (x, y, n)
+Batch 31: Unpacked as (x, y, n)
+Batch 32: Unpacked as (x, y, n)
+Batch 33: Unpacked as (x, y, n)
+Batch 34: Unpacked as (x, y, n)
+Batch 35: Unpacked as (x, y, n)
+Batch 36: Unpacked as (x, y, n)
+Batch 37: Unpacked as (x, y, n)
+Batch 38: Unpacked as (x, y, n)
+Batch 39: Unpacked as (x, y, n)
+Batch 40: Unpacked as (x, y, n)
+Batch 41: Unpacked as (x, y, n)
+Batch 42: Unpacked as (x, y, n)
+Batch 43: Unpacked as (x, y, n)
+Batch 44: Unpacked as (x, y, n)
+Batch 45: Unpacked as (x, y, n)
+Batch 46: Unpacked as (x, y, n)
+Batch 47: Unpacked as (x, y, n)
+Batch 48: Unpacked as (x, y, n)
+Batch 49: Unpacked as (x, y, n)
+
+Epoch 1 completed in 84.53s
+
+Learning rate updated to: 0.000499
+Epoch 1 Metrics - DIET Loss: 2.3031e+00, Probe Loss: 3.8046e+00, Accuracy: 0.0760
+Test Batch 0: Unpacked as (x, y)
+Test Batch 0: Accuracy=0.0000
+Test Batch 1: Unpacked as (x, y)
+Test Batch 1: Accuracy=0.0000
+Test Batch 2: Unpacked as (x, y)
+Test Batch 2: Accuracy=0.0500
+Test Batch 3: Unpacked as (x, y)
+Test Batch 3: Accuracy=0.1000
+Test Batch 4: Unpacked as (x, y)
+Test Batch 4: Accuracy=0.0500
+Test Batch 5: Unpacked as (x, y)
+Test Batch 5: Accuracy=0.0000
+Test Batch 6: Unpacked as (x, y)
+Test Batch 6: Accuracy=0.0000
+Test Batch 7: Unpacked as (x, y)
+Test Batch 7: Accuracy=0.1000
+Test Batch 8: Unpacked as (x, y)
+Test Batch 8: Accuracy=0.0500
+Test Batch 9: Unpacked as (x, y)
+Test Batch 9: Accuracy=0.2000
+Test Batch 10: Unpacked as (x, y)
+Test Batch 10: Accuracy=0.0500
+Test Batch 11: Unpacked as (x, y)
+Test Batch 11: Accuracy=0.0500
+Test Batch 12: Unpacked as (x, y)
+Test Batch 12: Accuracy=0.0500
+Test Batch 13: Unpacked as (x, y)
+Test Batch 13: Accuracy=0.1000
+Test Batch 14: Unpacked as (x, y)
+Test Batch 14: Accuracy=0.0000
+Test Batch 15: Unpacked as (x, y)
+Test Batch 15: Accuracy=0.0000
+Test Batch 16: Unpacked as (x, y)
+Test Batch 16: Accuracy=0.1500
+Test Batch 17: Unpacked as (x, y)
+Test Batch 17: Accuracy=0.1000
+Test Batch 18: Unpacked as (x, y)
+Test Batch 18: Accuracy=0.0500
+Test Batch 19: Unpacked as (x, y)
+Test Batch 19: Accuracy=0.1000
+Test Batch 20: Unpacked as (x, y)
+Test Batch 20: Accuracy=0.0500
+Test Batch 21: Unpacked as (x, y)
+Test Batch 21: Accuracy=0.2000

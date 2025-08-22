@@ -1,0 +1,17 @@
+Experiment Summary: dinov2_small on dermamnist
+==================================================
+
+Key Hyperparameters:
+- Learning Rate: 1e-05
+- DIET Classes: 100
+- Label Smoothing: 0.3
+- Weight Decay: 0.05
+
+Zero-Shot Performance:
+--------------------------------------------------
+Metric          Initial    Final      Change     Relative %
+--------------------------------------------------
+knn_acc         0.7486     0.7491     +0.0005     +0.07%
+kmeans_ari      0.0724     0.0725     +0.0001     +0.16%
+kmeans_nmi      0.1402     0.1401     -0.0001     -0.08%
+linear_acc      0.6849     0.7079     +0.0229     +3.35%

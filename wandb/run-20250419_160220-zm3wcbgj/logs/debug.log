@@ -1,0 +1,43 @@
+2025-04-19 16:02:20,324 INFO    MainThread:23192 [wandb_setup.py:_flush():67] Current SDK version is 0.19.7
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_setup.py:_flush():67] Configure stats pid to 23192
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_setup.py:_flush():67] Loading settings from C:\Users\Bryan\.config\wandb\settings
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_setup.py:_flush():67] Loading settings from C:\Users\Bryan\Desktop\ResearchAI\wandb\settings
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_setup.py:_flush():67] Loading settings from environment variables
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:setup_run_log_directory():647] Logging user logs to C:\Users\Bryan\Desktop\ResearchAI\wandb\run-20250419_160220-zm3wcbgj\logs\debug.log
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:setup_run_log_directory():648] Logging internal logs to C:\Users\Bryan\Desktop\ResearchAI\wandb\run-20250419_160220-zm3wcbgj\logs\debug-internal.log
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:init():761] calling init triggers
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:init():766] wandb.init called with sweep_config: {}
+config: {'backbone_type': 'dinov2', 'model_size': 'small', 'embedding_dim': 384, 'projection_dim': 256, 'dataset_name': 'cifar10', 'num_classes': 10, 'num_diet_classes': 10, 'input_size': 32, 'is_rgb': True, 'limit_data': 1000, 'num_epoch': 30, 'batch_size': 20, 'lr': 0.0005, 'weight_decay': 0.05, 'da_strength': 1, 'label_smoothing': 0.3, 'resume_from': None, 'start_epoch': 0, 'is_diet_active': True, '_wandb': {'code_path': 'code/main.py'}}
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:init():784] starting backend
+2025-04-19 16:02:20,325 INFO    MainThread:23192 [wandb_init.py:init():788] sending inform_init request
+2025-04-19 16:02:20,352 INFO    MainThread:23192 [wandb_init.py:init():803] backend started and connected
+2025-04-19 16:02:20,354 INFO    MainThread:23192 [wandb_init.py:init():896] updated telemetry
+2025-04-19 16:02:20,354 INFO    MainThread:23192 [wandb_init.py:init():920] communicating run to backend with 90.0 second timeout
+2025-04-19 16:02:21,469 INFO    MainThread:23192 [wandb_init.py:init():995] starting run threads in backend
+2025-04-19 16:02:21,646 INFO    MainThread:23192 [wandb_run.py:_console_start():2377] atexit reg
+2025-04-19 16:02:21,646 INFO    MainThread:23192 [wandb_run.py:_redirect():2227] redirect: wrap_raw
+2025-04-19 16:02:21,647 INFO    MainThread:23192 [wandb_run.py:_redirect():2292] Wrapping output streams.
+2025-04-19 16:02:21,647 INFO    MainThread:23192 [wandb_run.py:_redirect():2317] Redirects installed.
+2025-04-19 16:02:21,649 INFO    MainThread:23192 [wandb_init.py:init():1037] run started, returning control to user process
+2025-04-19 16:03:54,191 WARNING MsgRouterThr:23192 [router.py:message_loop():77] message_loop has been closed
+Traceback (most recent call last):
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\interface\router_sock.py", line 28, in _read_message
+    resp = self._sock_client.read_server_response(timeout=1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\lib\sock_client.py", line 285, in read_server_response
+    data = self._read_packet_bytes(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\lib\sock_client.py", line 270, in _read_packet_bytes
+    raise SockClientClosedError
+wandb.sdk.lib.sock_client.SockClientClosedError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\interface\router.py", line 70, in message_loop
+    msg = self._read_message()
+          ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\interface\router_sock.py", line 30, in _read_message
+    raise MessageRouterClosedError from e
+wandb.sdk.interface.router.MessageRouterClosedError
+2025-04-19 16:03:54,193 INFO    MsgRouterThr:23192 [mailbox.py:close():115] Closing mailbox, abandoning 5 handles.

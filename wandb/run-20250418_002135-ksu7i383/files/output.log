@@ -1,0 +1,2399 @@
+WandB initialized: DIET_dinov2_small_cifar10_20250418_002134
+
+==================================================
+INITIAL ZERO-SHOT EVALUATION (BEFORE TRAINING)
+==================================================
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: -8114831389726325224 (should change between evaluations)
+Features extracted: (10000, 384), time: 21.05s
+Running k-NN evaluation...
+k-NN accuracy: 0.9414, time: 0.46s
+Running k-means clustering evaluation...
+k-means ARI: 0.6247, NMI: 0.7445, time: 1.21s
+Running linear probe evaluation...
+Linear probe accuracy: 0.9234, time: 0.09s
+Total zero-shot evaluation time: 22.81s
+Initial evaluation completed in 22.81s
+
+==========================
+Starting epoch 1/30 at 00:21:58
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=98.0329 across 22310154 trainable params
+Batch 10: grad_norm=8.1374 across 22310154 trainable params
+Batch 20: grad_norm=7.0867 across 22310154 trainable params
+Batch 30: grad_norm=7.4940 across 22310154 trainable params
+Batch 40: grad_norm=3.4471 across 22310154 trainable params
+
+Epoch 1 completed in 7.51s
+
+Learning rate updated to: 0.000499
+Epoch 1 Metrics - DIET Loss: 2.3097e+00, Probe Loss: 2.9072e+00, Accuracy: 0.1140
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.1000
+Test Batch 10: Accuracy=0.0500
+Test Batch 20: Accuracy=0.1500
+Test Batch 30: Accuracy=0.1000
+Test Batch 40: Accuracy=0.2000
+Test Batch 50: Accuracy=0.0500
+Test Batch 60: Accuracy=0.1000
+Test Batch 70: Accuracy=0.1000
+Test Batch 80: Accuracy=0.3500
+Test Batch 90: Accuracy=0.0500
+Test Batch 100: Accuracy=0.0500
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.2000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.1000
+Test Batch 150: Accuracy=0.1000
+Test Batch 160: Accuracy=0.0000
+Test Batch 170: Accuracy=0.1000
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.1500
+Test Batch 200: Accuracy=0.0500
+Test Batch 210: Accuracy=0.1000
+Test Batch 220: Accuracy=0.1500
+Test Batch 230: Accuracy=0.2500
+Test Batch 240: Accuracy=0.2000
+Test Batch 250: Accuracy=0.1000
+Test Batch 260: Accuracy=0.3000
+Test Batch 270: Accuracy=0.1000
+Test Batch 280: Accuracy=0.0500
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.1000
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.0500
+Test Batch 330: Accuracy=0.0000
+Test Batch 340: Accuracy=0.0000
+Test Batch 350: Accuracy=0.2500
+Test Batch 360: Accuracy=0.3000
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.0500
+Test Batch 390: Accuracy=0.0500
+Test Batch 400: Accuracy=0.1000
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.0500
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.2000
+Test Batch 450: Accuracy=0.0000
+Test Batch 460: Accuracy=0.1000
+Test Batch 470: Accuracy=0.0500
+Test Batch 480: Accuracy=0.0000
+Test Batch 490: Accuracy=0.1500
+
+Overall Test Accuracy: 0.1110
+Epoch 1/30 summary:
+  Train - DIET loss: 2.3097e+00, Probe loss: 2.9072e+00, Acc: 0.1140
+  Test  - Acc: 0.1110
+
+==========================
+Starting epoch 2/30 at 00:22:28
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.1480 across 22310154 trainable params
+Batch 10: grad_norm=4.9887 across 22310154 trainable params
+Batch 20: grad_norm=4.3281 across 22310154 trainable params
+Batch 30: grad_norm=4.5605 across 22310154 trainable params
+Batch 40: grad_norm=5.2247 across 22310154 trainable params
+
+Epoch 2 completed in 7.33s
+
+Learning rate updated to: 0.000495
+Epoch 2 Metrics - DIET Loss: 2.3107e+00, Probe Loss: 2.3772e+00, Accuracy: 0.1340
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.1000
+Test Batch 10: Accuracy=0.1000
+Test Batch 20: Accuracy=0.1000
+Test Batch 30: Accuracy=0.1000
+Test Batch 40: Accuracy=0.0500
+Test Batch 50: Accuracy=0.2000
+Test Batch 60: Accuracy=0.1000
+Test Batch 70: Accuracy=0.3500
+Test Batch 80: Accuracy=0.1500
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.1000
+Test Batch 110: Accuracy=0.0500
+Test Batch 120: Accuracy=0.0000
+Test Batch 130: Accuracy=0.1500
+Test Batch 140: Accuracy=0.1500
+Test Batch 150: Accuracy=0.1000
+Test Batch 160: Accuracy=0.0500
+Test Batch 170: Accuracy=0.1000
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.0500
+Test Batch 200: Accuracy=0.1000
+Test Batch 210: Accuracy=0.2500
+Test Batch 220: Accuracy=0.0500
+Test Batch 230: Accuracy=0.2000
+Test Batch 240: Accuracy=0.0500
+Test Batch 250: Accuracy=0.0500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.0500
+Test Batch 280: Accuracy=0.0500
+Test Batch 290: Accuracy=0.1000
+Test Batch 300: Accuracy=0.0500
+Test Batch 310: Accuracy=0.0500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.0500
+Test Batch 340: Accuracy=0.2000
+Test Batch 350: Accuracy=0.2500
+Test Batch 360: Accuracy=0.1000
+Test Batch 370: Accuracy=0.1000
+Test Batch 380: Accuracy=0.0500
+Test Batch 390: Accuracy=0.1000
+Test Batch 400: Accuracy=0.1000
+Test Batch 410: Accuracy=0.1000
+Test Batch 420: Accuracy=0.0500
+Test Batch 430: Accuracy=0.1000
+Test Batch 440: Accuracy=0.1000
+Test Batch 450: Accuracy=0.1000
+Test Batch 460: Accuracy=0.1000
+Test Batch 470: Accuracy=0.0000
+Test Batch 480: Accuracy=0.1500
+Test Batch 490: Accuracy=0.3500
+
+Overall Test Accuracy: 0.1040
+Epoch 2/30 summary:
+  Train - DIET loss: 2.3107e+00, Probe loss: 2.3772e+00, Acc: 0.1340
+  Test  - Acc: 0.1040
+
+==========================
+Starting epoch 3/30 at 00:22:57
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.2891 across 22310154 trainable params
+Batch 10: grad_norm=4.4791 across 22310154 trainable params
+Batch 20: grad_norm=5.2197 across 22310154 trainable params
+Batch 30: grad_norm=6.4467 across 22310154 trainable params
+Batch 40: grad_norm=3.8628 across 22310154 trainable params
+
+Epoch 3 completed in 7.49s
+
+Learning rate updated to: 0.000488
+Epoch 3 Metrics - DIET Loss: 2.3114e+00, Probe Loss: 2.2399e+00, Accuracy: 0.1790
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3000
+Test Batch 10: Accuracy=0.0500
+Test Batch 20: Accuracy=0.2000
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.0500
+Test Batch 50: Accuracy=0.3500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.1500
+Test Batch 90: Accuracy=0.2000
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.0500
+Test Batch 120: Accuracy=0.1500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.3000
+Test Batch 150: Accuracy=0.3000
+Test Batch 160: Accuracy=0.1000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.3000
+Test Batch 190: Accuracy=0.0500
+Test Batch 200: Accuracy=0.1000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.1500
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.1500
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.0500
+Test Batch 280: Accuracy=0.1500
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.1500
+Test Batch 310: Accuracy=0.1000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.0000
+Test Batch 340: Accuracy=0.4500
+Test Batch 350: Accuracy=0.3000
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.1000
+Test Batch 380: Accuracy=0.1000
+Test Batch 390: Accuracy=0.1500
+Test Batch 400: Accuracy=0.1500
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.2000
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.1500
+Test Batch 460: Accuracy=0.1500
+Test Batch 470: Accuracy=0.2000
+Test Batch 480: Accuracy=0.2000
+Test Batch 490: Accuracy=0.4000
+
+Overall Test Accuracy: 0.1859
+Epoch 3/30 summary:
+  Train - DIET loss: 2.3114e+00, Probe loss: 2.2399e+00, Acc: 0.1790
+  Test  - Acc: 0.1859
+
+==========================
+Starting epoch 4/30 at 00:23:27
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.3777 across 22310154 trainable params
+Batch 10: grad_norm=4.4209 across 22310154 trainable params
+Batch 20: grad_norm=3.1358 across 22310154 trainable params
+Batch 30: grad_norm=4.5882 across 22310154 trainable params
+Batch 40: grad_norm=3.9754 across 22310154 trainable params
+
+Epoch 4 completed in 7.43s
+
+Learning rate updated to: 0.000479
+Epoch 4 Metrics - DIET Loss: 2.3134e+00, Probe Loss: 2.2051e+00, Accuracy: 0.1760
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.1500
+Test Batch 10: Accuracy=0.1000
+Test Batch 20: Accuracy=0.2500
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.1500
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.1000
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.1500
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.1500
+Test Batch 130: Accuracy=0.3000
+Test Batch 140: Accuracy=0.2500
+Test Batch 150: Accuracy=0.1500
+Test Batch 160: Accuracy=0.1000
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.2000
+Test Batch 190: Accuracy=0.1000
+Test Batch 200: Accuracy=0.0500
+Test Batch 210: Accuracy=0.4500
+Test Batch 220: Accuracy=0.1000
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.0500
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.1000
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.0500
+Test Batch 320: Accuracy=0.3000
+Test Batch 330: Accuracy=0.1000
+Test Batch 340: Accuracy=0.3000
+Test Batch 350: Accuracy=0.2000
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1000
+Test Batch 380: Accuracy=0.1500
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.1500
+Test Batch 410: Accuracy=0.1000
+Test Batch 420: Accuracy=0.1000
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.1000
+Test Batch 450: Accuracy=0.1000
+Test Batch 460: Accuracy=0.1500
+Test Batch 470: Accuracy=0.0000
+Test Batch 480: Accuracy=0.2000
+Test Batch 490: Accuracy=0.3500
+
+Overall Test Accuracy: 0.1812
+Epoch 4/30 summary:
+  Train - DIET loss: 2.3134e+00, Probe loss: 2.2051e+00, Acc: 0.1760
+  Test  - Acc: 0.1812
+
+==========================
+Starting epoch 5/30 at 00:23:56
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.3840 across 22310154 trainable params
+Batch 10: grad_norm=3.3142 across 22310154 trainable params
+Batch 20: grad_norm=3.4134 across 22310154 trainable params
+Batch 30: grad_norm=3.5809 across 22310154 trainable params
+Batch 40: grad_norm=4.8350 across 22310154 trainable params
+
+Epoch 5 completed in 7.72s
+
+Learning rate updated to: 0.000467
+Epoch 5 Metrics - DIET Loss: 2.3127e+00, Probe Loss: 2.0977e+00, Accuracy: 0.2020
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.2500
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.2000
+Test Batch 50: Accuracy=0.1500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.1500
+Test Batch 80: Accuracy=0.1500
+Test Batch 90: Accuracy=0.2000
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.3000
+Test Batch 120: Accuracy=0.1500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.0500
+Test Batch 150: Accuracy=0.0500
+Test Batch 160: Accuracy=0.0500
+Test Batch 170: Accuracy=0.1000
+Test Batch 180: Accuracy=0.0500
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.2000
+Test Batch 220: Accuracy=0.1500
+Test Batch 230: Accuracy=0.1000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.0500
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.0500
+Test Batch 310: Accuracy=0.1000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2500
+Test Batch 340: Accuracy=0.0500
+Test Batch 350: Accuracy=0.2000
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.3000
+Test Batch 390: Accuracy=0.2500
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.2500
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.0500
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.2500
+Test Batch 470: Accuracy=0.2000
+Test Batch 480: Accuracy=0.2500
+Test Batch 490: Accuracy=0.1500
+
+Overall Test Accuracy: 0.1839
+Epoch 5/30 summary:
+  Train - DIET loss: 2.3127e+00, Probe loss: 2.0977e+00, Acc: 0.2020
+  Test  - Acc: 0.1839
+
+Running zero-shot evaluation at epoch 5...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: -9098372163114816848 (should change between evaluations)
+Features extracted: (10000, 384), time: 20.28s
+Running k-NN evaluation...
+k-NN accuracy: 0.4049, time: 0.30s
+Running k-means clustering evaluation...
+k-means ARI: 0.0703, NMI: 0.1378, time: 1.38s
+Running linear probe evaluation...
+Linear probe accuracy: 0.2566, time: 0.04s
+Total zero-shot evaluation time: 22.00s
+
+==========================
+Starting epoch 6/30 at 00:24:47
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.1813 across 22310154 trainable params
+Batch 10: grad_norm=2.8469 across 22310154 trainable params
+Batch 20: grad_norm=3.8445 across 22310154 trainable params
+Batch 30: grad_norm=2.6988 across 22310154 trainable params
+Batch 40: grad_norm=2.4847 across 22310154 trainable params
+
+Epoch 6 completed in 7.41s
+
+Learning rate updated to: 0.000453
+Epoch 6 Metrics - DIET Loss: 2.3069e+00, Probe Loss: 2.1020e+00, Accuracy: 0.2200
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.2500
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.3000
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.1000
+Test Batch 50: Accuracy=0.3000
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.2000
+Test Batch 80: Accuracy=0.0500
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.2000
+Test Batch 130: Accuracy=0.1500
+Test Batch 140: Accuracy=0.1500
+Test Batch 150: Accuracy=0.1500
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.1000
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.1000
+Test Batch 210: Accuracy=0.0500
+Test Batch 220: Accuracy=0.2500
+Test Batch 230: Accuracy=0.1500
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.1500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.1000
+Test Batch 290: Accuracy=0.1000
+Test Batch 300: Accuracy=0.1000
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.1000
+Test Batch 330: Accuracy=0.0500
+Test Batch 340: Accuracy=0.4000
+Test Batch 350: Accuracy=0.2000
+Test Batch 360: Accuracy=0.0500
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.1500
+Test Batch 390: Accuracy=0.1500
+Test Batch 400: Accuracy=0.1500
+Test Batch 410: Accuracy=0.1500
+Test Batch 420: Accuracy=0.4000
+Test Batch 430: Accuracy=0.1000
+Test Batch 440: Accuracy=0.2500
+Test Batch 450: Accuracy=0.2500
+Test Batch 460: Accuracy=0.4500
+Test Batch 470: Accuracy=0.2000
+Test Batch 480: Accuracy=0.2000
+Test Batch 490: Accuracy=0.1500
+
+Overall Test Accuracy: 0.1907
+Epoch 6/30 summary:
+  Train - DIET loss: 2.3069e+00, Probe loss: 2.1020e+00, Acc: 0.2200
+  Test  - Acc: 0.1907
+
+==========================
+Starting epoch 7/30 at 00:25:17
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.0564 across 22310154 trainable params
+Batch 10: grad_norm=3.5394 across 22310154 trainable params
+Batch 20: grad_norm=3.4425 across 22310154 trainable params
+Batch 30: grad_norm=2.0861 across 22310154 trainable params
+Batch 40: grad_norm=2.3617 across 22310154 trainable params
+
+Epoch 7 completed in 7.35s
+
+Learning rate updated to: 0.000437
+Epoch 7 Metrics - DIET Loss: 2.3040e+00, Probe Loss: 2.0887e+00, Accuracy: 0.2030
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4500
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.2000
+Test Batch 30: Accuracy=0.3000
+Test Batch 40: Accuracy=0.1000
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.1000
+Test Batch 90: Accuracy=0.3000
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.1000
+Test Batch 120: Accuracy=0.1500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.2500
+Test Batch 150: Accuracy=0.5000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.3000
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.2000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.3000
+Test Batch 230: Accuracy=0.1500
+Test Batch 240: Accuracy=0.3000
+Test Batch 250: Accuracy=0.2500
+Test Batch 260: Accuracy=0.1000
+Test Batch 270: Accuracy=0.0500
+Test Batch 280: Accuracy=0.3000
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.3500
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.6000
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.2500
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.2000
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.4000
+Test Batch 460: Accuracy=0.2500
+Test Batch 470: Accuracy=0.3000
+Test Batch 480: Accuracy=0.3500
+Test Batch 490: Accuracy=0.2500
+
+Overall Test Accuracy: 0.2416
+Epoch 7/30 summary:
+  Train - DIET loss: 2.3040e+00, Probe loss: 2.0887e+00, Acc: 0.2030
+  Test  - Acc: 0.2416
+
+==========================
+Starting epoch 8/30 at 00:25:46
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.3861 across 22310154 trainable params
+Batch 10: grad_norm=2.1803 across 22310154 trainable params
+Batch 20: grad_norm=2.6021 across 22310154 trainable params
+Batch 30: grad_norm=2.5855 across 22310154 trainable params
+Batch 40: grad_norm=4.2066 across 22310154 trainable params
+
+Epoch 8 completed in 7.40s
+
+Learning rate updated to: 0.000419
+Epoch 8 Metrics - DIET Loss: 2.3030e+00, Probe Loss: 2.0497e+00, Accuracy: 0.2400
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.1500
+Test Batch 10: Accuracy=0.1500
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.1000
+Test Batch 40: Accuracy=0.3000
+Test Batch 50: Accuracy=0.3500
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.3500
+Test Batch 120: Accuracy=0.2000
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.1500
+Test Batch 150: Accuracy=0.2000
+Test Batch 160: Accuracy=0.1000
+Test Batch 170: Accuracy=0.3500
+Test Batch 180: Accuracy=0.2000
+Test Batch 190: Accuracy=0.1500
+Test Batch 200: Accuracy=0.2000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.2000
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.1500
+Test Batch 250: Accuracy=0.3000
+Test Batch 260: Accuracy=0.3500
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.1000
+Test Batch 300: Accuracy=0.1000
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.1500
+Test Batch 340: Accuracy=0.1500
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.1000
+Test Batch 370: Accuracy=0.3500
+Test Batch 380: Accuracy=0.1500
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.2500
+Test Batch 410: Accuracy=0.3000
+Test Batch 420: Accuracy=0.2000
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.1000
+Test Batch 450: Accuracy=0.2500
+Test Batch 460: Accuracy=0.3000
+Test Batch 470: Accuracy=0.1000
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.3000
+
+Overall Test Accuracy: 0.2204
+Epoch 8/30 summary:
+  Train - DIET loss: 2.3030e+00, Probe loss: 2.0497e+00, Acc: 0.2400
+  Test  - Acc: 0.2204
+
+==========================
+Starting epoch 9/30 at 00:26:14
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.6495 across 22310154 trainable params
+Batch 10: grad_norm=3.0099 across 22310154 trainable params
+Batch 20: grad_norm=2.1206 across 22310154 trainable params
+Batch 30: grad_norm=3.7728 across 22310154 trainable params
+Batch 40: grad_norm=3.3206 across 22310154 trainable params
+
+Epoch 9 completed in 7.26s
+
+Learning rate updated to: 0.000399
+Epoch 9 Metrics - DIET Loss: 2.3011e+00, Probe Loss: 2.0854e+00, Accuracy: 0.2330
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3500
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.3000
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.2500
+Test Batch 50: Accuracy=0.5000
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.1000
+Test Batch 150: Accuracy=0.2500
+Test Batch 160: Accuracy=0.1000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.0500
+Test Batch 190: Accuracy=0.1000
+Test Batch 200: Accuracy=0.2000
+Test Batch 210: Accuracy=0.2500
+Test Batch 220: Accuracy=0.2000
+Test Batch 230: Accuracy=0.2000
+Test Batch 240: Accuracy=0.1500
+Test Batch 250: Accuracy=0.5000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.1500
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.1000
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.1000
+Test Batch 330: Accuracy=0.3500
+Test Batch 340: Accuracy=0.3000
+Test Batch 350: Accuracy=0.4000
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3500
+Test Batch 400: Accuracy=0.1500
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.2000
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.1500
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.3000
+Test Batch 470: Accuracy=0.2000
+Test Batch 480: Accuracy=0.4000
+Test Batch 490: Accuracy=0.0500
+
+Overall Test Accuracy: 0.2278
+Epoch 9/30 summary:
+  Train - DIET loss: 2.3011e+00, Probe loss: 2.0854e+00, Acc: 0.2330
+  Test  - Acc: 0.2278
+
+==========================
+Starting epoch 10/30 at 00:26:43
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.8047 across 22310154 trainable params
+Batch 10: grad_norm=1.5969 across 22310154 trainable params
+Batch 20: grad_norm=3.3078 across 22310154 trainable params
+Batch 30: grad_norm=2.9692 across 22310154 trainable params
+Batch 40: grad_norm=1.6139 across 22310154 trainable params
+
+Epoch 10 completed in 7.30s
+
+Learning rate updated to: 0.000377
+Epoch 10 Metrics - DIET Loss: 2.3000e+00, Probe Loss: 2.0182e+00, Accuracy: 0.2270
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.1500
+Test Batch 10: Accuracy=0.3000
+Test Batch 20: Accuracy=0.2500
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.2500
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3500
+Test Batch 70: Accuracy=0.4000
+Test Batch 80: Accuracy=0.1500
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.2500
+Test Batch 150: Accuracy=0.4000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.4000
+Test Batch 220: Accuracy=0.2500
+Test Batch 230: Accuracy=0.2500
+Test Batch 240: Accuracy=0.3000
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.1500
+Test Batch 280: Accuracy=0.4500
+Test Batch 290: Accuracy=0.2500
+Test Batch 300: Accuracy=0.1500
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.3000
+Test Batch 350: Accuracy=0.2000
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.1000
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.3000
+Test Batch 410: Accuracy=0.1000
+Test Batch 420: Accuracy=0.1500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.0500
+Test Batch 450: Accuracy=0.2500
+Test Batch 460: Accuracy=0.3000
+Test Batch 470: Accuracy=0.2500
+Test Batch 480: Accuracy=0.4000
+Test Batch 490: Accuracy=0.3500
+
+Overall Test Accuracy: 0.2432
+Epoch 10/30 summary:
+  Train - DIET loss: 2.3000e+00, Probe loss: 2.0182e+00, Acc: 0.2270
+  Test  - Acc: 0.2432
+
+Running zero-shot evaluation at epoch 10...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: -2578293554269114217 (should change between evaluations)
+Features extracted: (10000, 384), time: 21.77s
+Running k-NN evaluation...
+k-NN accuracy: 0.4161, time: 0.33s
+Running k-means clustering evaluation...
+k-means ARI: 0.0723, NMI: 0.1472, time: 1.41s
+Running linear probe evaluation...
+Linear probe accuracy: 0.2800, time: 0.04s
+Total zero-shot evaluation time: 23.55s
+
+==========================
+Starting epoch 11/30 at 00:27:36
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.0396 across 22310154 trainable params
+Batch 10: grad_norm=3.1611 across 22310154 trainable params
+Batch 20: grad_norm=2.2767 across 22310154 trainable params
+Batch 30: grad_norm=2.3914 across 22310154 trainable params
+Batch 40: grad_norm=3.0843 across 22310154 trainable params
+
+Epoch 11 completed in 7.89s
+
+Learning rate updated to: 0.000355
+Epoch 11 Metrics - DIET Loss: 2.2970e+00, Probe Loss: 1.9860e+00, Accuracy: 0.2550
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3500
+Test Batch 10: Accuracy=0.3000
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.1000
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.2000
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.1500
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2000
+Test Batch 150: Accuracy=0.4000
+Test Batch 160: Accuracy=0.3000
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.3000
+Test Batch 200: Accuracy=0.2500
+Test Batch 210: Accuracy=0.3500
+Test Batch 220: Accuracy=0.3000
+Test Batch 230: Accuracy=0.2000
+Test Batch 240: Accuracy=0.3000
+Test Batch 250: Accuracy=0.2500
+Test Batch 260: Accuracy=0.1000
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2500
+Test Batch 340: Accuracy=0.5500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.2500
+Test Batch 400: Accuracy=0.2000
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.3500
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.4500
+Test Batch 460: Accuracy=0.3500
+Test Batch 470: Accuracy=0.3500
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.1000
+
+Overall Test Accuracy: 0.2643
+Epoch 11/30 summary:
+  Train - DIET loss: 2.2970e+00, Probe loss: 1.9860e+00, Acc: 0.2550
+  Test  - Acc: 0.2643
+
+==========================
+Starting epoch 12/30 at 00:28:07
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.3002 across 22310154 trainable params
+Batch 10: grad_norm=2.6235 across 22310154 trainable params
+Batch 20: grad_norm=2.1699 across 22310154 trainable params
+Batch 30: grad_norm=2.1042 across 22310154 trainable params
+Batch 40: grad_norm=2.7113 across 22310154 trainable params
+
+Epoch 12 completed in 7.59s
+
+Learning rate updated to: 0.000331
+Epoch 12 Metrics - DIET Loss: 2.3026e+00, Probe Loss: 1.9585e+00, Accuracy: 0.2510
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3500
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.2000
+Test Batch 30: Accuracy=0.1500
+Test Batch 40: Accuracy=0.1500
+Test Batch 50: Accuracy=0.5000
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.1000
+Test Batch 80: Accuracy=0.3000
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.1500
+Test Batch 140: Accuracy=0.1000
+Test Batch 150: Accuracy=0.3000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.0000
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.0000
+Test Batch 220: Accuracy=0.3000
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.1500
+Test Batch 260: Accuracy=0.4000
+Test Batch 270: Accuracy=0.1000
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.1000
+Test Batch 300: Accuracy=0.1000
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.2500
+Test Batch 330: Accuracy=0.1500
+Test Batch 340: Accuracy=0.1500
+Test Batch 350: Accuracy=0.1500
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.2000
+Test Batch 410: Accuracy=0.4000
+Test Batch 420: Accuracy=0.3000
+Test Batch 430: Accuracy=0.1000
+Test Batch 440: Accuracy=0.1500
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.4000
+Test Batch 470: Accuracy=0.3000
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.2000
+
+Overall Test Accuracy: 0.2247
+Epoch 12/30 summary:
+  Train - DIET loss: 2.3026e+00, Probe loss: 1.9585e+00, Acc: 0.2510
+  Test  - Acc: 0.2247
+
+==========================
+Starting epoch 13/30 at 00:28:35
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.0679 across 22310154 trainable params
+Batch 10: grad_norm=2.1137 across 22310154 trainable params
+Batch 20: grad_norm=2.9115 across 22310154 trainable params
+Batch 30: grad_norm=2.2673 across 22310154 trainable params
+Batch 40: grad_norm=1.8010 across 22310154 trainable params
+
+Epoch 13 completed in 7.26s
+
+Learning rate updated to: 0.000306
+Epoch 13 Metrics - DIET Loss: 2.2949e+00, Probe Loss: 1.9555e+00, Accuracy: 0.2810
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3500
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.4000
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.1500
+Test Batch 50: Accuracy=0.6000
+Test Batch 60: Accuracy=0.1500
+Test Batch 70: Accuracy=0.2500
+Test Batch 80: Accuracy=0.2000
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.1500
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2000
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.3500
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.0500
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.2000
+Test Batch 210: Accuracy=0.2000
+Test Batch 220: Accuracy=0.2000
+Test Batch 230: Accuracy=0.2000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.2500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.3500
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.1000
+Test Batch 340: Accuracy=0.3000
+Test Batch 350: Accuracy=0.3000
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.3000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.3000
+Test Batch 430: Accuracy=0.1000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.4000
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.2500
+Test Batch 490: Accuracy=0.1500
+
+Overall Test Accuracy: 0.2516
+Epoch 13/30 summary:
+  Train - DIET loss: 2.2949e+00, Probe loss: 1.9555e+00, Acc: 0.2810
+  Test  - Acc: 0.2516
+
+==========================
+Starting epoch 14/30 at 00:29:04
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.9231 across 22310154 trainable params
+Batch 10: grad_norm=1.8899 across 22310154 trainable params
+Batch 20: grad_norm=2.3329 across 22310154 trainable params
+Batch 30: grad_norm=2.4686 across 22310154 trainable params
+Batch 40: grad_norm=3.3367 across 22310154 trainable params
+
+Epoch 14 completed in 7.39s
+
+Learning rate updated to: 0.000281
+Epoch 14 Metrics - DIET Loss: 2.2942e+00, Probe Loss: 1.9361e+00, Accuracy: 0.2430
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.2000
+Test Batch 10: Accuracy=0.1500
+Test Batch 20: Accuracy=0.4000
+Test Batch 30: Accuracy=0.2000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.2000
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.4500
+Test Batch 90: Accuracy=0.1500
+Test Batch 100: Accuracy=0.1000
+Test Batch 110: Accuracy=0.3500
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2000
+Test Batch 150: Accuracy=0.3000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.2000
+Test Batch 190: Accuracy=0.1500
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.4000
+Test Batch 230: Accuracy=0.4000
+Test Batch 240: Accuracy=0.3000
+Test Batch 250: Accuracy=0.4000
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.1500
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.4500
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.2500
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.2500
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.3500
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.3500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.3000
+Test Batch 410: Accuracy=0.3000
+Test Batch 420: Accuracy=0.2000
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.2500
+Test Batch 460: Accuracy=0.2500
+Test Batch 470: Accuracy=0.2000
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.3000
+
+Overall Test Accuracy: 0.2727
+Epoch 14/30 summary:
+  Train - DIET loss: 2.2942e+00, Probe loss: 1.9361e+00, Acc: 0.2430
+  Test  - Acc: 0.2727
+
+==========================
+Starting epoch 15/30 at 00:29:34
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.1310 across 22310154 trainable params
+Batch 10: grad_norm=2.3622 across 22310154 trainable params
+Batch 20: grad_norm=3.1679 across 22310154 trainable params
+Batch 30: grad_norm=2.6093 across 22310154 trainable params
+Batch 40: grad_norm=2.6096 across 22310154 trainable params
+
+Epoch 15 completed in 7.22s
+
+Learning rate updated to: 0.000255
+Epoch 15 Metrics - DIET Loss: 2.2923e+00, Probe Loss: 1.9197e+00, Accuracy: 0.2620
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4500
+Test Batch 10: Accuracy=0.3000
+Test Batch 20: Accuracy=0.4500
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.2500
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.3500
+Test Batch 70: Accuracy=0.3500
+Test Batch 80: Accuracy=0.2000
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.2000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.1500
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.3000
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.2000
+Test Batch 210: Accuracy=0.3500
+Test Batch 220: Accuracy=0.2000
+Test Batch 230: Accuracy=0.1500
+Test Batch 240: Accuracy=0.3500
+Test Batch 250: Accuracy=0.4000
+Test Batch 260: Accuracy=0.1000
+Test Batch 270: Accuracy=0.1000
+Test Batch 280: Accuracy=0.3500
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.3500
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.3500
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.5500
+Test Batch 350: Accuracy=0.5000
+Test Batch 360: Accuracy=0.2500
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.2500
+Test Batch 400: Accuracy=0.2500
+Test Batch 410: Accuracy=0.4000
+Test Batch 420: Accuracy=0.2500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.4000
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.4500
+Test Batch 470: Accuracy=0.3500
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.3500
+
+Overall Test Accuracy: 0.2800
+Epoch 15/30 summary:
+  Train - DIET loss: 2.2923e+00, Probe loss: 1.9197e+00, Acc: 0.2620
+  Test  - Acc: 0.2800
+
+Running zero-shot evaluation at epoch 15...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: 5751076187764847348 (should change between evaluations)
+Features extracted: (10000, 384), time: 20.39s
+Running k-NN evaluation...
+k-NN accuracy: 0.4276, time: 0.33s
+Running k-means clustering evaluation...
+k-means ARI: 0.0780, NMI: 0.1627, time: 1.49s
+Running linear probe evaluation...
+Linear probe accuracy: 0.3002, time: 0.04s
+Total zero-shot evaluation time: 22.25s
+
+==========================
+Starting epoch 16/30 at 00:30:26
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=1.9216 across 22310154 trainable params
+Batch 10: grad_norm=4.2675 across 22310154 trainable params
+Batch 20: grad_norm=4.0416 across 22310154 trainable params
+Batch 30: grad_norm=3.0030 across 22310154 trainable params
+Batch 40: grad_norm=3.2249 across 22310154 trainable params
+
+Epoch 16 completed in 7.46s
+
+Learning rate updated to: 0.000229
+Epoch 16 Metrics - DIET Loss: 2.2883e+00, Probe Loss: 1.9118e+00, Accuracy: 0.2730
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.3000
+Test Batch 20: Accuracy=0.2000
+Test Batch 30: Accuracy=0.3000
+Test Batch 40: Accuracy=0.4000
+Test Batch 50: Accuracy=0.3500
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.2000
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.3000
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.3000
+Test Batch 120: Accuracy=0.2000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2000
+Test Batch 150: Accuracy=0.1500
+Test Batch 160: Accuracy=0.2500
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.1000
+Test Batch 190: Accuracy=0.1000
+Test Batch 200: Accuracy=0.4000
+Test Batch 210: Accuracy=0.1000
+Test Batch 220: Accuracy=0.1500
+Test Batch 230: Accuracy=0.1000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.4000
+Test Batch 260: Accuracy=0.2500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.2000
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.1500
+Test Batch 310: Accuracy=0.3000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2500
+Test Batch 340: Accuracy=0.2000
+Test Batch 350: Accuracy=0.1500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.3000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.3000
+Test Batch 430: Accuracy=0.2500
+Test Batch 440: Accuracy=0.1000
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.3000
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.2500
+Test Batch 490: Accuracy=0.1500
+
+Overall Test Accuracy: 0.2457
+Epoch 16/30 summary:
+  Train - DIET loss: 2.2883e+00, Probe loss: 1.9118e+00, Acc: 0.2730
+  Test  - Acc: 0.2457
+
+==========================
+Starting epoch 17/30 at 00:30:54
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.0270 across 22310154 trainable params
+Batch 10: grad_norm=4.7016 across 22310154 trainable params
+Batch 20: grad_norm=5.2580 across 22310154 trainable params
+Batch 30: grad_norm=3.5424 across 22310154 trainable params
+Batch 40: grad_norm=3.6420 across 22310154 trainable params
+
+Epoch 17 completed in 7.28s
+
+Learning rate updated to: 0.000204
+Epoch 17 Metrics - DIET Loss: 2.2876e+00, Probe Loss: 1.9343e+00, Accuracy: 0.2640
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.1000
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.1500
+Test Batch 50: Accuracy=0.3500
+Test Batch 60: Accuracy=0.1500
+Test Batch 70: Accuracy=0.2500
+Test Batch 80: Accuracy=0.3500
+Test Batch 90: Accuracy=0.2000
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.1500
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.1500
+Test Batch 140: Accuracy=0.3500
+Test Batch 150: Accuracy=0.3000
+Test Batch 160: Accuracy=0.2500
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.1500
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.2500
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.2000
+Test Batch 290: Accuracy=0.3500
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.1000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.4000
+Test Batch 350: Accuracy=0.5000
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.3500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.2500
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.3500
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.3000
+Test Batch 470: Accuracy=0.3000
+Test Batch 480: Accuracy=0.3500
+Test Batch 490: Accuracy=0.0500
+
+Overall Test Accuracy: 0.2623
+Epoch 17/30 summary:
+  Train - DIET loss: 2.2876e+00, Probe loss: 1.9343e+00, Acc: 0.2640
+  Test  - Acc: 0.2623
+
+==========================
+Starting epoch 18/30 at 00:31:22
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.8172 across 22310154 trainable params
+Batch 10: grad_norm=2.8786 across 22310154 trainable params
+Batch 20: grad_norm=3.1187 across 22310154 trainable params
+Batch 30: grad_norm=3.7699 across 22310154 trainable params
+Batch 40: grad_norm=3.0308 across 22310154 trainable params
+
+Epoch 18 completed in 7.37s
+
+Learning rate updated to: 0.000179
+Epoch 18 Metrics - DIET Loss: 2.2899e+00, Probe Loss: 1.8602e+00, Accuracy: 0.3030
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.1500
+Test Batch 20: Accuracy=0.3000
+Test Batch 30: Accuracy=0.3000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.6500
+Test Batch 60: Accuracy=0.3500
+Test Batch 70: Accuracy=0.3500
+Test Batch 80: Accuracy=0.3500
+Test Batch 90: Accuracy=0.0500
+Test Batch 100: Accuracy=0.3000
+Test Batch 110: Accuracy=0.3000
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.1500
+Test Batch 150: Accuracy=0.2000
+Test Batch 160: Accuracy=0.1500
+Test Batch 170: Accuracy=0.3500
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.4500
+Test Batch 210: Accuracy=0.2500
+Test Batch 220: Accuracy=0.3000
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.4000
+Test Batch 250: Accuracy=0.3000
+Test Batch 260: Accuracy=0.2500
+Test Batch 270: Accuracy=0.3500
+Test Batch 280: Accuracy=0.2000
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.3500
+Test Batch 310: Accuracy=0.3000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.3000
+Test Batch 340: Accuracy=0.1500
+Test Batch 350: Accuracy=0.2500
+Test Batch 360: Accuracy=0.4500
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.4000
+Test Batch 410: Accuracy=0.3000
+Test Batch 420: Accuracy=0.2500
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.2500
+Test Batch 450: Accuracy=0.4000
+Test Batch 460: Accuracy=0.4000
+Test Batch 470: Accuracy=0.2500
+Test Batch 480: Accuracy=0.4000
+Test Batch 490: Accuracy=0.3000
+
+Overall Test Accuracy: 0.2765
+Epoch 18/30 summary:
+  Train - DIET loss: 2.2899e+00, Probe loss: 1.8602e+00, Acc: 0.3030
+  Test  - Acc: 0.2765
+
+==========================
+Starting epoch 19/30 at 00:31:51
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.4108 across 22310154 trainable params
+Batch 10: grad_norm=2.9530 across 22310154 trainable params
+Batch 20: grad_norm=2.4426 across 22310154 trainable params
+Batch 30: grad_norm=2.4271 across 22310154 trainable params
+Batch 40: grad_norm=3.7194 across 22310154 trainable params
+
+Epoch 19 completed in 7.54s
+
+Learning rate updated to: 0.000155
+Epoch 19 Metrics - DIET Loss: 2.2848e+00, Probe Loss: 1.8706e+00, Accuracy: 0.2810
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3000
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.3000
+Test Batch 30: Accuracy=0.4000
+Test Batch 40: Accuracy=0.1500
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.2500
+Test Batch 70: Accuracy=0.1000
+Test Batch 80: Accuracy=0.3000
+Test Batch 90: Accuracy=0.2000
+Test Batch 100: Accuracy=0.2000
+Test Batch 110: Accuracy=0.1500
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2500
+Test Batch 150: Accuracy=0.4000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.0500
+Test Batch 180: Accuracy=0.2000
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.2000
+Test Batch 220: Accuracy=0.1500
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.3500
+Test Batch 250: Accuracy=0.3000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.2500
+Test Batch 290: Accuracy=0.3000
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.2500
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.3000
+Test Batch 390: Accuracy=0.4500
+Test Batch 400: Accuracy=0.2500
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.2500
+Test Batch 440: Accuracy=0.4000
+Test Batch 450: Accuracy=0.4500
+Test Batch 460: Accuracy=0.2500
+Test Batch 470: Accuracy=0.3500
+Test Batch 480: Accuracy=0.3500
+Test Batch 490: Accuracy=0.1000
+
+Overall Test Accuracy: 0.2725
+Epoch 19/30 summary:
+  Train - DIET loss: 2.2848e+00, Probe loss: 1.8706e+00, Acc: 0.2810
+  Test  - Acc: 0.2725
+
+==========================
+Starting epoch 20/30 at 00:32:21
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.4289 across 22310154 trainable params
+Batch 10: grad_norm=2.9800 across 22310154 trainable params
+Batch 20: grad_norm=3.2279 across 22310154 trainable params
+Batch 30: grad_norm=3.7377 across 22310154 trainable params
+Batch 40: grad_norm=2.6348 across 22310154 trainable params
+
+Epoch 20 completed in 7.44s
+
+Learning rate updated to: 0.000133
+Epoch 20 Metrics - DIET Loss: 2.2831e+00, Probe Loss: 1.8132e+00, Accuracy: 0.3290
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3000
+Test Batch 10: Accuracy=0.3500
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.4000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.5500
+Test Batch 60: Accuracy=0.2500
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.3000
+Test Batch 90: Accuracy=0.3000
+Test Batch 100: Accuracy=0.4000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.2500
+Test Batch 130: Accuracy=0.3000
+Test Batch 140: Accuracy=0.2000
+Test Batch 150: Accuracy=0.2000
+Test Batch 160: Accuracy=0.1500
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.3500
+Test Batch 220: Accuracy=0.3000
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.3000
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.2000
+Test Batch 280: Accuracy=0.3500
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.3000
+Test Batch 320: Accuracy=0.1000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.2500
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.2000
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.5000
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.2500
+Test Batch 430: Accuracy=0.2500
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.5000
+Test Batch 470: Accuracy=0.3000
+Test Batch 480: Accuracy=0.4000
+Test Batch 490: Accuracy=0.4000
+
+Overall Test Accuracy: 0.2848
+Epoch 20/30 summary:
+  Train - DIET loss: 2.2831e+00, Probe loss: 1.8132e+00, Acc: 0.3290
+  Test  - Acc: 0.2848
+
+Running zero-shot evaluation at epoch 20...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: 4374293067773226007 (should change between evaluations)
+Features extracted: (10000, 384), time: 20.47s
+Running k-NN evaluation...
+k-NN accuracy: 0.4399, time: 0.33s
+Running k-means clustering evaluation...
+k-means ARI: 0.0877, NMI: 0.1709, time: 1.43s
+Running linear probe evaluation...
+Linear probe accuracy: 0.3262, time: 0.04s
+Total zero-shot evaluation time: 22.26s
+
+==========================
+Starting epoch 21/30 at 00:33:13
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.5461 across 22310154 trainable params
+Batch 10: grad_norm=3.1053 across 22310154 trainable params
+Batch 20: grad_norm=2.8702 across 22310154 trainable params
+Batch 30: grad_norm=3.3849 across 22310154 trainable params
+Batch 40: grad_norm=3.5372 across 22310154 trainable params
+
+Epoch 21 completed in 7.56s
+
+Learning rate updated to: 0.000111
+Epoch 21 Metrics - DIET Loss: 2.2831e+00, Probe Loss: 1.7930e+00, Accuracy: 0.3230
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.4500
+Test Batch 30: Accuracy=0.3500
+Test Batch 40: Accuracy=0.2000
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.3500
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.4000
+Test Batch 150: Accuracy=0.2000
+Test Batch 160: Accuracy=0.2500
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.1000
+Test Batch 190: Accuracy=0.3500
+Test Batch 200: Accuracy=0.4000
+Test Batch 210: Accuracy=0.1000
+Test Batch 220: Accuracy=0.2500
+Test Batch 230: Accuracy=0.3000
+Test Batch 240: Accuracy=0.4000
+Test Batch 250: Accuracy=0.1500
+Test Batch 260: Accuracy=0.2500
+Test Batch 270: Accuracy=0.3500
+Test Batch 280: Accuracy=0.4000
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.2500
+Test Batch 350: Accuracy=0.2500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.3000
+Test Batch 390: Accuracy=0.2000
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.1500
+Test Batch 420: Accuracy=0.3000
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.4000
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.2000
+
+Overall Test Accuracy: 0.2839
+Epoch 21/30 summary:
+  Train - DIET loss: 2.2831e+00, Probe loss: 1.7930e+00, Acc: 0.3230
+  Test  - Acc: 0.2839
+
+==========================
+Starting epoch 22/30 at 00:33:42
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.4290 across 22310154 trainable params
+Batch 10: grad_norm=3.2704 across 22310154 trainable params
+Batch 20: grad_norm=3.0386 across 22310154 trainable params
+Batch 30: grad_norm=3.2301 across 22310154 trainable params
+Batch 40: grad_norm=2.6453 across 22310154 trainable params
+
+Epoch 22 completed in 7.36s
+
+Learning rate updated to: 0.000091
+Epoch 22 Metrics - DIET Loss: 2.2765e+00, Probe Loss: 1.7242e+00, Accuracy: 0.3300
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3500
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.4500
+Test Batch 30: Accuracy=0.4000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.3500
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.1500
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.2500
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.2500
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.5000
+Test Batch 210: Accuracy=0.2000
+Test Batch 220: Accuracy=0.4500
+Test Batch 230: Accuracy=0.4500
+Test Batch 240: Accuracy=0.5000
+Test Batch 250: Accuracy=0.5000
+Test Batch 260: Accuracy=0.2500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.4500
+Test Batch 290: Accuracy=0.2500
+Test Batch 300: Accuracy=0.3000
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.3500
+Test Batch 330: Accuracy=0.1500
+Test Batch 340: Accuracy=0.4500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.3500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.3000
+Test Batch 420: Accuracy=0.3500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.4500
+Test Batch 460: Accuracy=0.5000
+Test Batch 470: Accuracy=0.4500
+Test Batch 480: Accuracy=0.4000
+Test Batch 490: Accuracy=0.2500
+
+Overall Test Accuracy: 0.3085
+Epoch 22/30 summary:
+  Train - DIET loss: 2.2765e+00, Probe loss: 1.7242e+00, Acc: 0.3300
+  Test  - Acc: 0.3085
+
+==========================
+Starting epoch 23/30 at 00:34:11
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.4889 across 22310154 trainable params
+Batch 10: grad_norm=2.2276 across 22310154 trainable params
+Batch 20: grad_norm=2.4832 across 22310154 trainable params
+Batch 30: grad_norm=2.4927 across 22310154 trainable params
+Batch 40: grad_norm=3.3101 across 22310154 trainable params
+
+Epoch 23 completed in 7.22s
+
+Learning rate updated to: 0.000073
+Epoch 23 Metrics - DIET Loss: 2.2771e+00, Probe Loss: 1.7525e+00, Accuracy: 0.3360
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.3000
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.3500
+Test Batch 30: Accuracy=0.3500
+Test Batch 40: Accuracy=0.3000
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.2500
+Test Batch 70: Accuracy=0.2500
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.2500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.4000
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.3000
+Test Batch 150: Accuracy=0.2000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.1500
+Test Batch 180: Accuracy=0.2000
+Test Batch 190: Accuracy=0.2500
+Test Batch 200: Accuracy=0.3000
+Test Batch 210: Accuracy=0.1500
+Test Batch 220: Accuracy=0.4000
+Test Batch 230: Accuracy=0.4000
+Test Batch 240: Accuracy=0.2500
+Test Batch 250: Accuracy=0.3000
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.3000
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.3500
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.3000
+Test Batch 330: Accuracy=0.2500
+Test Batch 340: Accuracy=0.5000
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.1500
+Test Batch 380: Accuracy=0.3500
+Test Batch 390: Accuracy=0.3500
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.3000
+Test Batch 420: Accuracy=0.4000
+Test Batch 430: Accuracy=0.1000
+Test Batch 440: Accuracy=0.4500
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.2500
+Test Batch 470: Accuracy=0.3000
+Test Batch 480: Accuracy=0.2500
+Test Batch 490: Accuracy=0.2000
+
+Overall Test Accuracy: 0.2834
+Epoch 23/30 summary:
+  Train - DIET loss: 2.2771e+00, Probe loss: 1.7525e+00, Acc: 0.3360
+  Test  - Acc: 0.2834
+
+==========================
+Starting epoch 24/30 at 00:34:40
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.9608 across 22310154 trainable params
+Batch 10: grad_norm=2.9254 across 22310154 trainable params
+Batch 20: grad_norm=3.7020 across 22310154 trainable params
+Batch 30: grad_norm=2.9886 across 22310154 trainable params
+Batch 40: grad_norm=2.1026 across 22310154 trainable params
+
+Epoch 24 completed in 7.28s
+
+Learning rate updated to: 0.000057
+Epoch 24 Metrics - DIET Loss: 2.2745e+00, Probe Loss: 1.7385e+00, Accuracy: 0.3420
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.5000
+Test Batch 30: Accuracy=0.3500
+Test Batch 40: Accuracy=0.2000
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.3000
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.3500
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.3000
+Test Batch 140: Accuracy=0.3000
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.1000
+Test Batch 200: Accuracy=0.5000
+Test Batch 210: Accuracy=0.2500
+Test Batch 220: Accuracy=0.4500
+Test Batch 230: Accuracy=0.4000
+Test Batch 240: Accuracy=0.4500
+Test Batch 250: Accuracy=0.4000
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.5000
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.1500
+Test Batch 320: Accuracy=0.2000
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.2000
+Test Batch 350: Accuracy=0.3500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.3500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.3500
+Test Batch 470: Accuracy=0.5000
+Test Batch 480: Accuracy=0.3000
+Test Batch 490: Accuracy=0.3500
+
+Overall Test Accuracy: 0.3089
+Epoch 24/30 summary:
+  Train - DIET loss: 2.2745e+00, Probe loss: 1.7385e+00, Acc: 0.3420
+  Test  - Acc: 0.3089
+
+==========================
+Starting epoch 25/30 at 00:35:10
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=6.9800 across 22310154 trainable params
+Batch 10: grad_norm=3.9794 across 22310154 trainable params
+Batch 20: grad_norm=3.3170 across 22310154 trainable params
+Batch 30: grad_norm=4.9977 across 22310154 trainable params
+Batch 40: grad_norm=4.6689 across 22310154 trainable params
+
+Epoch 25 completed in 7.69s
+
+Learning rate updated to: 0.000043
+Epoch 25 Metrics - DIET Loss: 2.2773e+00, Probe Loss: 1.7250e+00, Accuracy: 0.3630
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.2000
+Test Batch 20: Accuracy=0.5000
+Test Batch 30: Accuracy=0.3500
+Test Batch 40: Accuracy=0.2500
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3500
+Test Batch 70: Accuracy=0.3000
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.2000
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.3000
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.3000
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.2500
+Test Batch 170: Accuracy=0.3000
+Test Batch 180: Accuracy=0.1000
+Test Batch 190: Accuracy=0.3500
+Test Batch 200: Accuracy=0.4500
+Test Batch 210: Accuracy=0.0500
+Test Batch 220: Accuracy=0.4500
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.4000
+Test Batch 250: Accuracy=0.2500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.2500
+Test Batch 280: Accuracy=0.3500
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.3000
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.2500
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.3500
+Test Batch 350: Accuracy=0.4000
+Test Batch 360: Accuracy=0.2500
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.4500
+Test Batch 390: Accuracy=0.2500
+Test Batch 400: Accuracy=0.3500
+Test Batch 410: Accuracy=0.2500
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.1500
+Test Batch 440: Accuracy=0.4500
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.5000
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.3500
+Test Batch 490: Accuracy=0.3000
+
+Overall Test Accuracy: 0.3060
+Epoch 25/30 summary:
+  Train - DIET loss: 2.2773e+00, Probe loss: 1.7250e+00, Acc: 0.3630
+  Test  - Acc: 0.3060
+
+Running zero-shot evaluation at epoch 25...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: 8403487726422557295 (should change between evaluations)
+Features extracted: (10000, 384), time: 20.77s
+Running k-NN evaluation...
+k-NN accuracy: 0.4563, time: 0.34s
+Running k-means clustering evaluation...
+k-means ARI: 0.0837, NMI: 0.1737, time: 1.54s
+Running linear probe evaluation...
+Linear probe accuracy: 0.3334, time: 0.05s
+Total zero-shot evaluation time: 22.69s
+
+==========================
+Starting epoch 26/30 at 00:36:02
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=2.9719 across 22310154 trainable params
+Batch 10: grad_norm=4.3587 across 22310154 trainable params
+Batch 20: grad_norm=3.7558 across 22310154 trainable params
+Batch 30: grad_norm=4.5887 across 22310154 trainable params
+Batch 40: grad_norm=3.8514 across 22310154 trainable params
+
+Epoch 26 completed in 7.64s
+
+Learning rate updated to: 0.000031
+Epoch 26 Metrics - DIET Loss: 2.2733e+00, Probe Loss: 1.6987e+00, Accuracy: 0.3540
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4500
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.4500
+Test Batch 30: Accuracy=0.3500
+Test Batch 40: Accuracy=0.2500
+Test Batch 50: Accuracy=0.5000
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.4000
+Test Batch 150: Accuracy=0.5000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.3000
+Test Batch 200: Accuracy=0.5000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.3500
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.5500
+Test Batch 250: Accuracy=0.3500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.3500
+Test Batch 280: Accuracy=0.4500
+Test Batch 290: Accuracy=0.2000
+Test Batch 300: Accuracy=0.2500
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.4500
+Test Batch 330: Accuracy=0.2000
+Test Batch 340: Accuracy=0.3500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3500
+Test Batch 400: Accuracy=0.3000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.3500
+Test Batch 460: Accuracy=0.4500
+Test Batch 470: Accuracy=0.4500
+Test Batch 480: Accuracy=0.4500
+Test Batch 490: Accuracy=0.5000
+
+Overall Test Accuracy: 0.3203
+Epoch 26/30 summary:
+  Train - DIET loss: 2.2733e+00, Probe loss: 1.6987e+00, Acc: 0.3540
+  Test  - Acc: 0.3203
+
+==========================
+Starting epoch 27/30 at 00:36:32
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.6629 across 22310154 trainable params
+Batch 10: grad_norm=4.0620 across 22310154 trainable params
+Batch 20: grad_norm=3.5383 across 22310154 trainable params
+Batch 30: grad_norm=4.2562 across 22310154 trainable params
+Batch 40: grad_norm=3.4702 across 22310154 trainable params
+
+Epoch 27 completed in 7.22s
+
+Learning rate updated to: 0.000022
+Epoch 27 Metrics - DIET Loss: 2.2690e+00, Probe Loss: 1.6199e+00, Accuracy: 0.4020
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4500
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.5500
+Test Batch 30: Accuracy=0.3000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.5000
+Test Batch 60: Accuracy=0.4500
+Test Batch 70: Accuracy=0.5500
+Test Batch 80: Accuracy=0.2000
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.3000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.4000
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.3500
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.3000
+Test Batch 200: Accuracy=0.4500
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.2500
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.5000
+Test Batch 250: Accuracy=0.2000
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.3000
+Test Batch 280: Accuracy=0.4000
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.2000
+Test Batch 310: Accuracy=0.2500
+Test Batch 320: Accuracy=0.2500
+Test Batch 330: Accuracy=0.1000
+Test Batch 340: Accuracy=0.3000
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.4000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.4000
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.4000
+Test Batch 460: Accuracy=0.4500
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.3500
+Test Batch 490: Accuracy=0.4500
+
+Overall Test Accuracy: 0.3101
+Epoch 27/30 summary:
+  Train - DIET loss: 2.2690e+00, Probe loss: 1.6199e+00, Acc: 0.4020
+  Test  - Acc: 0.3101
+
+==========================
+Starting epoch 28/30 at 00:37:00
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.8491 across 22310154 trainable params
+Batch 10: grad_norm=3.9030 across 22310154 trainable params
+Batch 20: grad_norm=4.3406 across 22310154 trainable params
+Batch 30: grad_norm=3.8384 across 22310154 trainable params
+Batch 40: grad_norm=4.3067 across 22310154 trainable params
+
+Epoch 28 completed in 7.38s
+
+Learning rate updated to: 0.000015
+Epoch 28 Metrics - DIET Loss: 2.2723e+00, Probe Loss: 1.6082e+00, Accuracy: 0.3770
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4000
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.5000
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.3000
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.4000
+Test Batch 70: Accuracy=0.5000
+Test Batch 80: Accuracy=0.2000
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.3000
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.4000
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.1500
+Test Batch 170: Accuracy=0.2500
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.2000
+Test Batch 200: Accuracy=0.3500
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.3500
+Test Batch 230: Accuracy=0.2500
+Test Batch 240: Accuracy=0.4500
+Test Batch 250: Accuracy=0.3500
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.4000
+Test Batch 280: Accuracy=0.4000
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.3000
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.3500
+Test Batch 330: Accuracy=0.3000
+Test Batch 340: Accuracy=0.3500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2000
+Test Batch 370: Accuracy=0.3000
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.4500
+Test Batch 410: Accuracy=0.1500
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.3000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.4000
+Test Batch 460: Accuracy=0.4000
+Test Batch 470: Accuracy=0.4000
+Test Batch 480: Accuracy=0.4500
+Test Batch 490: Accuracy=0.4500
+
+Overall Test Accuracy: 0.3218
+Epoch 28/30 summary:
+  Train - DIET loss: 2.2723e+00, Probe loss: 1.6082e+00, Acc: 0.3770
+  Test  - Acc: 0.3218
+
+==========================
+Starting epoch 29/30 at 00:37:30
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=4.2042 across 22310154 trainable params
+Batch 10: grad_norm=4.3743 across 22310154 trainable params
+Batch 20: grad_norm=4.0489 across 22310154 trainable params
+Batch 30: grad_norm=4.4082 across 22310154 trainable params
+Batch 40: grad_norm=3.7607 across 22310154 trainable params
+
+Epoch 29 completed in 7.33s
+
+Learning rate updated to: 0.000011
+Epoch 29 Metrics - DIET Loss: 2.2738e+00, Probe Loss: 1.5838e+00, Accuracy: 0.4210
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.5000
+Test Batch 10: Accuracy=0.3500
+Test Batch 20: Accuracy=0.5000
+Test Batch 30: Accuracy=0.3000
+Test Batch 40: Accuracy=0.3500
+Test Batch 50: Accuracy=0.4500
+Test Batch 60: Accuracy=0.3000
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.3000
+Test Batch 90: Accuracy=0.3500
+Test Batch 100: Accuracy=0.2500
+Test Batch 110: Accuracy=0.2000
+Test Batch 120: Accuracy=0.3000
+Test Batch 130: Accuracy=0.2500
+Test Batch 140: Accuracy=0.3000
+Test Batch 150: Accuracy=0.3500
+Test Batch 160: Accuracy=0.3000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.2500
+Test Batch 190: Accuracy=0.3000
+Test Batch 200: Accuracy=0.5000
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.3500
+Test Batch 230: Accuracy=0.3500
+Test Batch 240: Accuracy=0.4500
+Test Batch 250: Accuracy=0.3500
+Test Batch 260: Accuracy=0.2000
+Test Batch 270: Accuracy=0.3000
+Test Batch 280: Accuracy=0.4500
+Test Batch 290: Accuracy=0.2500
+Test Batch 300: Accuracy=0.3500
+Test Batch 310: Accuracy=0.3000
+Test Batch 320: Accuracy=0.3500
+Test Batch 330: Accuracy=0.3000
+Test Batch 340: Accuracy=0.3500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.1500
+Test Batch 370: Accuracy=0.2500
+Test Batch 380: Accuracy=0.3000
+Test Batch 390: Accuracy=0.3000
+Test Batch 400: Accuracy=0.4000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.3500
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.5000
+Test Batch 470: Accuracy=0.4500
+Test Batch 480: Accuracy=0.4500
+Test Batch 490: Accuracy=0.4500
+
+Overall Test Accuracy: 0.3216
+Epoch 29/30 summary:
+  Train - DIET loss: 2.2738e+00, Probe loss: 1.5838e+00, Acc: 0.4210
+  Test  - Acc: 0.3216
+
+==========================
+Starting epoch 30/30 at 00:37:59
+==========================
+
+Initializing training loop...
+
+
+Batch 0: grad_norm=3.8707 across 22310154 trainable params
+Batch 10: grad_norm=5.1817 across 22310154 trainable params
+Batch 20: grad_norm=3.8295 across 22310154 trainable params
+Batch 30: grad_norm=4.5622 across 22310154 trainable params
+Batch 40: grad_norm=4.2109 across 22310154 trainable params
+
+Epoch 30 completed in 7.47s
+
+Learning rate updated to: 0.000010
+Epoch 30 Metrics - DIET Loss: 2.2752e+00, Probe Loss: 1.5754e+00, Accuracy: 0.4420
+
+Starting evaluation on test set:
+Test Batch 0: Accuracy=0.4500
+Test Batch 10: Accuracy=0.2500
+Test Batch 20: Accuracy=0.5000
+Test Batch 30: Accuracy=0.2500
+Test Batch 40: Accuracy=0.3000
+Test Batch 50: Accuracy=0.4000
+Test Batch 60: Accuracy=0.2500
+Test Batch 70: Accuracy=0.4500
+Test Batch 80: Accuracy=0.2500
+Test Batch 90: Accuracy=0.4000
+Test Batch 100: Accuracy=0.3000
+Test Batch 110: Accuracy=0.2500
+Test Batch 120: Accuracy=0.3500
+Test Batch 130: Accuracy=0.2000
+Test Batch 140: Accuracy=0.4000
+Test Batch 150: Accuracy=0.5000
+Test Batch 160: Accuracy=0.2000
+Test Batch 170: Accuracy=0.2000
+Test Batch 180: Accuracy=0.1500
+Test Batch 190: Accuracy=0.3000
+Test Batch 200: Accuracy=0.5500
+Test Batch 210: Accuracy=0.3000
+Test Batch 220: Accuracy=0.4000
+Test Batch 230: Accuracy=0.2500
+Test Batch 240: Accuracy=0.5000
+Test Batch 250: Accuracy=0.3500
+Test Batch 260: Accuracy=0.1500
+Test Batch 270: Accuracy=0.3000
+Test Batch 280: Accuracy=0.4000
+Test Batch 290: Accuracy=0.1500
+Test Batch 300: Accuracy=0.3000
+Test Batch 310: Accuracy=0.2000
+Test Batch 320: Accuracy=0.2500
+Test Batch 330: Accuracy=0.3000
+Test Batch 340: Accuracy=0.2500
+Test Batch 350: Accuracy=0.4500
+Test Batch 360: Accuracy=0.2500
+Test Batch 370: Accuracy=0.2000
+Test Batch 380: Accuracy=0.2500
+Test Batch 390: Accuracy=0.3500
+Test Batch 400: Accuracy=0.4000
+Test Batch 410: Accuracy=0.2000
+Test Batch 420: Accuracy=0.4500
+Test Batch 430: Accuracy=0.2000
+Test Batch 440: Accuracy=0.3000
+Test Batch 450: Accuracy=0.3000
+Test Batch 460: Accuracy=0.5000
+Test Batch 470: Accuracy=0.4500
+Test Batch 480: Accuracy=0.4500
+Test Batch 490: Accuracy=0.4000
+
+Overall Test Accuracy: 0.3212
+Epoch 30/30 summary:
+  Train - DIET loss: 2.2752e+00, Probe loss: 1.5754e+00, Acc: 0.4420
+  Test  - Acc: 0.3212
+
+Running zero-shot evaluation at epoch 30...
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: 4015287664573245048 (should change between evaluations)
+Features extracted: (10000, 384), time: 20.95s
+Running k-NN evaluation...
+k-NN accuracy: 0.4538, time: 0.31s
+Running k-means clustering evaluation...
+k-means ARI: 0.0837, NMI: 0.1715, time: 1.46s
+Running linear probe evaluation...
+Linear probe accuracy: 0.3440, time: 0.04s
+Total zero-shot evaluation time: 22.77s
+
+Training completed in 1012.86s
+
+==================================================
+FINAL ZERO-SHOT EVALUATION (AFTER TRAINING)
+==================================================
+Extracting features for zero-shot evaluation...
+Extracting features:   0%|          | 0/500 [00:00<?, ?it/s]
+Feature hash: 4015287664573245048 (should change between evaluations)
+Features extracted: (10000, 384), time: 21.41s
+Running k-NN evaluation...
+k-NN accuracy: 0.4538, time: 0.30s
+Running k-means clustering evaluation...
+k-means ARI: 0.0837, NMI: 0.1715, time: 1.42s
+Running linear probe evaluation...
+Linear probe accuracy: 0.3454, time: 0.04s
+Total zero-shot evaluation time: 23.18s
+Final evaluation completed in 23.18s
+
+==================================================
+EXPERIMENT RESULTS SUMMARY
+==================================================
+Number of classes: 10
+DIET label smoothing: 0.3 (DIET active)
+
+Zero-shot performance:
+------------------------------------------------------------
+Metric          Initial    Final      Improvement Relative %
+------------------------------------------------------------
+knn_acc         0.9414     0.4538     -0.4876     -51.80%
+kmeans_ari      0.6247     0.0837     -0.5410     -86.60%
+kmeans_nmi      0.7445     0.1715     -0.5730     -76.96%
+linear_acc      0.9234     0.3454     -0.5780     -62.59%
+
+CONCLUSION:
+DIET finetuning did not improve zero-shot performance
+Traceback (most recent call last):
+  File "c:\Users\Bryan\Desktop\ResearchAI\main.py", line 259, in <module>
+    main()
+  File "c:\Users\Bryan\Desktop\ResearchAI\main.py", line 256, in main
+    train(args)
+  File "c:\Users\Bryan\Desktop\ResearchAI\main.py", line 190, in train
+    create_experiment_dashboard(run, metrics_history, initial_results, final_results, experiment_config)
+  File "c:\Users\Bryan\Desktop\ResearchAI\utils\wandb_logger.py", line 539, in create_experiment_dashboard
+    log_figure_to_wandb(run, training_fig, "training_progress")
+  File "c:\Users\Bryan\Desktop\ResearchAI\utils\wandb_logger.py", line 228, in log_figure_to_wandb
+    run.log({name: wandb.Image(buf)})
+                   ^^^^^^^^^^^^^^^^
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\data_types\image.py", line 179, in __init__
+    self._initialize_from_data(data_or_path, mode, file_type)
+  File "C:\Users\Bryan\miniconda3\envs\research\Lib\site-packages\wandb\sdk\data_types\image.py", line 321, in _initialize_from_data
+    if data.ndim > 2:
+       ^^^^^^^^^
+AttributeError: '_io.BytesIO' object has no attribute 'ndim'

@@ -1,0 +1,17 @@
+Experiment Summary: dinov2_small on galaxy10_decals
+==================================================
+
+Key Hyperparameters:
+- Learning Rate: 0.0005
+- DIET Classes: 10
+- Label Smoothing: 0.3
+- Weight Decay: 0.05
+
+Zero-Shot Performance:
+--------------------------------------------------
+Metric          Initial    Final      Change     Relative %
+--------------------------------------------------
+knn_acc         0.5378     0.4617     -0.0761     -14.15%
+kmeans_ari      0.0662     0.1134     +0.0472     +71.26%
+kmeans_nmi      0.1453     0.2134     +0.0681     +46.89%
+linear_acc      0.4126     0.3766     -0.0361     -8.74%

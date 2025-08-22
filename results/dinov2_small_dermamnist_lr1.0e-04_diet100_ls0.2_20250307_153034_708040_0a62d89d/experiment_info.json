@@ -1,0 +1,18 @@
+{
+  "model": "dinov2_small",
+  "dataset": "dermamnist",
+  "experiment_id": "20250307_153034_708040_0a62d89d",
+  "timestamp": "20250307_153034_708040",
+  "hyperparameters": {
+    "num_epoch": 30,
+    "batch_size": 128,
+    "da_strength": 1,
+    "lr": 0.0001,
+    "weight_decay": 0.01,
+    "label_smoothing": 0.2,
+    "num_diet_classes": 100,
+    "temperature": 0.1,
+    "model_size": "small",
+    "freezing_layers": "last2"
+  }
+}
