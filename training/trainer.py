@@ -72,6 +72,10 @@ class DIETTrainer:
             "test_acc": [],
             "zero_shot_metrics": {},
         }
+        
+        # Debug: Track features across batches during DIET-only phase
+        self.prev_features_hash = None
+        self.diet_loss_history = []  # Track loss progression
 
     def _freeze_backbone(self):
         """Freeze backbone model for DIET-only training."""
@@ -342,6 +346,60 @@ class DIETTrainer:
 
                 loss = loss_diet
 
+                # Debug: Print detailed info during DIET-only phase
+                if backbone_frozen and i == 0:  # First batch of each epoch
+                    print(f"\n=== DIET-ONLY PHASE DEBUGGING (Epoch {epoch+1}, Batch {i}) ===")
+                    print(f"Input shape: {x.shape}")
+                    print(f"Features shape: {z.shape}")
+                    print(f"Normalized features shape: {z_norm.shape}")
+                    print(f"DIET logits shape: {logits_diet.shape}")
+                    print(f"DIET classes shape: {diet_idx.shape}")
+                    print(f"DIET classes range: {diet_idx.min().item()} to {diet_idx.max().item()}")
+                    print(f"Num DIET classes in head: {logits_diet.shape[1]}")
+                    print(f"DIET loss: {loss_diet.item():.6f}")
+                    print(f"Features norm (first sample): {z_norm[0].norm().item():.6f}")
+                    print(f"Features mean: {z_norm.mean().item():.6f}")
+                    print(f"Features std: {z_norm.std().item():.6f}")
+                    print(f"Logits mean: {logits_diet.mean().item():.6f}")
+                    print(f"Logits std: {logits_diet.std().item():.6f}")
+                    print(f"Label smoothing: {self.label_smoothing}")
+                    
+                    # Check if any DIET indices are out of bounds
+                    if diet_idx.max().item() >= logits_diet.shape[1]:
+                        print(f"ERROR: DIET class {diet_idx.max().item()} >= num_classes {logits_diet.shape[1]}")
+                    
+                    # Check if backbone is really frozen
+                    backbone_grads = any(p.grad is not None for p in self.model.parameters() if p.requires_grad)
+                    print(f"Backbone has gradients: {backbone_grads}")
+                    print(f"Backbone requires_grad: {any(p.requires_grad for p in self.model.parameters())}")
+                    
+                    # Check for potential issues with normalization
+                    if torch.isnan(z_norm).any():
+                        print("WARNING: NaN in normalized features!")
+                    if torch.isinf(z_norm).any():
+                        print("WARNING: Inf in normalized features!")
+                    if torch.isnan(logits_diet).any():
+                        print("WARNING: NaN in DIET logits!")
+                    if torch.isnan(loss_diet):
+                        print("WARNING: NaN in DIET loss!")
+                    
+                    # Check if features are changing between batches (determinism check)
+                    current_features_hash = hash(tuple(z_norm[0].detach().cpu().numpy().flatten()[:10]))
+                    if self.prev_features_hash is not None and current_features_hash == self.prev_features_hash:
+                        print("WARNING: Features appear identical to previous batch!")
+                    self.prev_features_hash = current_features_hash
+                    
+                    # Track loss progression
+                    self.diet_loss_history.append(loss_diet.item())
+                    if len(self.diet_loss_history) > 1:
+                        recent_losses = self.diet_loss_history[-10:]  # Last 10 batches
+                        loss_std = torch.tensor(recent_losses).std().item()
+                        loss_trend = recent_losses[-1] - recent_losses[0] if len(recent_losses) > 1 else 0
+                        print(f"Loss progression - Current: {loss_diet.item():.6f}, "
+                              f"Std(last 10): {loss_std:.6f}, Trend: {loss_trend:.6f}")
+                    
+                    print("--- End DIET debug ---\n")
+
                 # Backward pass and optimization
                 self.optimizer.zero_grad()
                 loss.backward()
@@ -365,6 +423,22 @@ class DIETTrainer:
                         total_grad_norm += param_norm.item() ** 2
                 total_grad_norm = total_grad_norm**0.5
 
+                # Debug: Check DIET head gradients and parameters during frozen phase
+                if backbone_frozen and i == 0:
+                    diet_head_grad_norm = 0.0
+                    diet_head_param_norm = 0.0
+                    for p in self.diet_head.parameters():
+                        if p.grad is not None:
+                            diet_head_grad_norm += p.grad.data.norm(2).item() ** 2
+                        diet_head_param_norm += p.data.norm(2).item() ** 2
+                    diet_head_grad_norm = diet_head_grad_norm ** 0.5
+                    diet_head_param_norm = diet_head_param_norm ** 0.5
+                    
+                    print(f"DIET head gradient norm: {diet_head_grad_norm:.6f}")
+                    print(f"DIET head parameter norm: {diet_head_param_norm:.6f}")
+                    print(f"Learning rate: {self.optimizer.param_groups[0]['lr']:.8f}")
+                    print("=== END DEBUGGING ===\n")
+
                 # Update parameters
                 self.optimizer.step()
 
@@ -383,10 +457,31 @@ class DIETTrainer:
                         p.numel() for p in trainable_params if p.requires_grad
                     )
                     phase_description = "DIET-head-only" if backbone_frozen else "full"
-                    print(
-                        f"Batch {i}: grad_norm={total_grad_norm:.4f} "
-                        f"({phase_description} training, {current_trainable} params)"
-                    )
+                    
+                    # Additional debugging for DIET-only phase
+                    if backbone_frozen:
+                        diet_head_grad_norm = 0.0
+                        for p in self.diet_head.parameters():
+                            if p.grad is not None:
+                                diet_head_grad_norm += p.grad.data.norm(2).item() ** 2
+                        diet_head_grad_norm = diet_head_grad_norm ** 0.5
+                        
+                        # Check if DIET head parameters are actually changing
+                        diet_head_param_norm = sum(
+                            p.data.norm(2).item() ** 2 for p in self.diet_head.parameters()
+                        ) ** 0.5
+                        
+                        print(
+                            f"Batch {i}: loss={loss_diet.item():.4f}, "
+                            f"diet_grad_norm={diet_head_grad_norm:.4f}, "
+                            f"diet_param_norm={diet_head_param_norm:.4f} "
+                            f"({phase_description} training, {current_trainable} params)"
+                        )
+                    else:
+                        print(
+                            f"Batch {i}: grad_norm={total_grad_norm:.4f} "
+                            f"({phase_description} training, {current_trainable} params)"
+                        )
 
             # End of epoch processing
             epoch_time = time.time() - epoch_start
