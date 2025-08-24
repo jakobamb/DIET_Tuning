@@ -27,12 +27,7 @@ from utils.wandb_logger import (
     log_model_architecture,
 )
 from utils.sanity_check import unified_sanity_check
-from utils.lr_schedule import (
-    create_warmup_cosine_scheduler,
-    create_diet_warmup_cosine_scheduler,
-    get_scheduler_info,
-    get_diet_scheduler_info,
-)
+from utils.lr_schedule import create_warmup_cosine_scheduler, get_scheduler_info
 
 # Model implementations
 from models.aim import get_aim_model
@@ -141,48 +136,21 @@ def train(args):
         weight_decay=args.weight_decay,
     )
 
-    # Add learning rate scheduler with DIET-only constant phase + warmup + cosine
-    diet_only_epochs = int(args.diet_head_only_epochs * args.num_epochs)
+    # Add learning rate scheduler with warmup
+    scheduler_info = get_scheduler_info(args.num_epochs, warmup_ratio=0.1)
+    print("Creating learning rate scheduler (warmup + cosine annealing)")
+    print(
+        f"Warmup epochs: {scheduler_info['warmup_epochs']}, "
+        f"Total epochs: {scheduler_info['total_epochs']}"
+    )
 
-    if diet_only_epochs > 0:
-        # Use DIET scheduler: constant LR for DIET-only, then warmup + cosine
-        scheduler_info = get_diet_scheduler_info(
-            args.num_epochs, diet_only_epochs, warmup_ratio=0.1
-        )
-        print(
-            "Creating DIET learning rate scheduler (constant DIET-only + warmup + cosine)"
-        )
-        print(
-            f"DIET-only epochs: {scheduler_info['diet_only_epochs']}, "
-            f"Warmup epochs: {scheduler_info['warmup_epochs']}, "
-            f"Cosine epochs: {scheduler_info['cosine_epochs']}"
-        )
-
-        scheduler = create_diet_warmup_cosine_scheduler(
-            optimizer=optimizer,
-            num_epochs=args.num_epochs,
-            base_lr=args.lr,
-            diet_only_epochs=diet_only_epochs,
-            diet_lr=1e-3,  # Higher LR for DIET-only phase
-            warmup_ratio=0.1,
-            eta_min=1e-5,
-        )
-    else:
-        # Use regular scheduler: warmup + cosine
-        scheduler_info = get_scheduler_info(args.num_epochs, warmup_ratio=0.1)
-        print("Creating learning rate scheduler (warmup + cosine annealing)")
-        print(
-            f"Warmup epochs: {scheduler_info['warmup_epochs']}, "
-            f"Total epochs: {scheduler_info['total_epochs']}"
-        )
-
-        scheduler = create_warmup_cosine_scheduler(
-            optimizer=optimizer,
-            num_epochs=args.num_epochs,
-            base_lr=args.lr,
-            warmup_ratio=0.1,
-            eta_min=1e-5,
-        )
+    scheduler = create_warmup_cosine_scheduler(
+        optimizer=optimizer,
+        num_epochs=args.num_epochs,
+        base_lr=args.lr,
+        warmup_ratio=0.1,
+        eta_min=1e-5,
+    )
 
     # Load from checkpoint if specified
     start_epoch = 0
