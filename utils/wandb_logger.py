@@ -545,7 +545,7 @@ def create_experiment_dashboard(
 
     Args:
         run: The wandb run object
-        metrics_history: Dictionary with metrics history
+        metrics_history: Dictionary with metrics history (can be None)
         initial_results: Dictionary with initial zero-shot metrics
         final_results: Dictionary with final zero-shot metrics
         experiment_config: Dictionary with experiment configuration
@@ -626,26 +626,50 @@ def create_experiment_dashboard(
     # Log this summary as HTML
     run.log({"experiment_dashboard": wandb.Html(summary_text)})
 
-    # Create and log the combined figures
-    # First create the training progress plot
-    training_fig = create_training_progress_plot(metrics_history)
-    log_figure_to_wandb(run, training_fig, "training_progress")
+    # Only create and log plots if metrics_history is available
+    if metrics_history is not None:
+        # Create and log the combined figures
+        # First create the training progress plot
+        training_fig = create_training_progress_plot(metrics_history)
+        log_figure_to_wandb(run, training_fig, "training_progress")
 
-    # Then create the zero-shot progression plot
-    tracked_epochs = sorted(metrics_history["zero_shot_metrics"].keys())
-    zero_shot_fig = create_zero_shot_progression_plot(
-        metrics_history, tracked_epochs, metrics_list
-    )
-    log_figure_to_wandb(run, zero_shot_fig, "zero_shot_progression")
+        # Then create the zero-shot progression plot
+        tracked_epochs = sorted(metrics_history["zero_shot_metrics"].keys())
+        zero_shot_fig = create_zero_shot_progression_plot(
+            metrics_history, tracked_epochs, metrics_list
+        )
+        log_figure_to_wandb(run, zero_shot_fig, "zero_shot_progression")
 
-    # Log tables
-    log_metrics_table(
-        run, metrics_history, initial_results, final_results, enhanced=True
-    )
+        # Log tables with full metrics history
+        log_metrics_table(
+            run, metrics_history, initial_results, final_results, enhanced=True
+        )
 
-    # Log individual components instead of trying to create a mixed-type table
+        # Log individual components
+        run.log({"training_progress_final": wandb.Image(training_fig)})
+        run.log({"zero_shot_progression_final": wandb.Image(zero_shot_fig)})
+    else:
+        # If no metrics history, just log a simple summary table
+        summary_columns = [
+            "metric",
+            "initial",
+            "final",
+            "absolute_change",
+            "percent_change",
+        ]
+        simple_table = wandb.Table(columns=summary_columns)
+
+        for metric in metrics_list:
+            initial = initial_results[metric]
+            final = final_results[metric]
+            change = final - initial
+            percent = (change / initial) * 100 if initial > 0 else 0
+
+            simple_table.add_data(metric, initial, final, change, percent)
+
+        run.log({"zero_shot_summary_simple": simple_table})
+
+    # Always log the experiment summary
     run.log({"experiment_summary": wandb.Html(summary_text)})
-    run.log({"training_progress_final": wandb.Image(training_fig)})
-    run.log({"zero_shot_progression_final": wandb.Image(zero_shot_fig)})
 
     return
