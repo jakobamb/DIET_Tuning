@@ -357,6 +357,11 @@ def log_metrics_table(
     # Create a more user-friendly table for viewing trends
     metric_names = {
         "knn_acc": "K-NN Accuracy",
+        "knn_f1": "K-NN F1 Score",
+        "knn_roc_auc": "K-NN ROC AUC",
+        "linear_acc": "Linear Probe Accuracy",
+        "linear_f1": "Linear Probe F1 Score",
+        "linear_roc_auc": "Linear Probe ROC AUC",
         "kmeans_ari": "K-Means ARI",
         "kmeans_nmi": "K-Means NMI",
     }
@@ -386,7 +391,14 @@ def log_metrics_table(
     # If initial and final results are provided, create summary tables
     if initial_results and final_results:
         # Basic summary table
-        summary_columns = ["run", "metric", "initial", "final", "change", "relative_change"]
+        summary_columns = [
+            "run",
+            "metric",
+            "initial",
+            "final",
+            "change",
+            "relative_change",
+        ]
         summary_table = wandb.Table(columns=summary_columns)
 
         for metric in metrics_list:
