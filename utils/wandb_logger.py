@@ -196,7 +196,7 @@ def log_inference_metrics_summary_table(
     inference_table.add_data(*row_data)
 
     # Log the table to wandb
-    run.log({"inference_metrics_summary": inference_table})
+    run.log({"inference_metrics_summary_final": inference_table})
 
 
 def save_model_checkpoint(
