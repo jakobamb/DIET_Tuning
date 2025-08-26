@@ -19,9 +19,10 @@ cd /home/jambsdor/projects/DIET_Tuning
 source .venv/bin/activate
 
 PROJECT_DIR=/home/jambsdor/projects/DIET_Tuning
+DATA_DIR=/data/people/jambsdor/diet_data
 
 # Set environment variables
-export WANDB_DATA_DIR=$PROJECT_DIR/wandb
+export WANDB_DATA_DIR=$DATA_DIR/wandb
 
 # Get the wandb ID for this array task
 CSV_FILE="$1"
@@ -41,9 +42,9 @@ echo "Starting inference at $(date)"
 # Run the inference
 srun python -u test.py \
     --wandb-id "$WANDB_ID" \
-    --data-root $PROJECT_DIR/data \
-    --wandb-dir $PROJECT_DIR/wandb \
-    --checkpoint-dir $PROJECT_DIR/checkpoints \
+    --data-root $DATA_DIR \
+    --wandb-dir $WANDB_DATA_DIR \
+    --checkpoint-dir $DATA_DIR/checkpoints \
     $PYTHON_ARGS
 
 echo "Completed inference at $(date)"
