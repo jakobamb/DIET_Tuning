@@ -97,7 +97,9 @@ def log_evaluation_metrics(run, metrics, epoch):
     run.log(log_dict, step=epoch)
 
 
-def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
+def log_zero_shot_metrics(
+    run, metrics, epoch, initial_metrics=None, is_inference=False
+):
     """Log zero-shot evaluation metrics to wandb
 
     Args:
@@ -108,9 +110,14 @@ def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
     """
     log_dict = {"epoch": epoch}
 
+    if is_inference:
+        log_key = "zero_shot_inference"
+    else:
+        log_key = "zero_shot"
+
     # Log each zero-shot metric
     for metric_name, value in metrics.items():
-        log_dict[f"zero_shot/{metric_name}"] = value
+        log_dict[f"{log_key}/{metric_name}"] = value
 
         # Log improvements if initial metrics are provided
         if initial_metrics is not None:
@@ -120,8 +127,8 @@ def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
                 if initial_metrics[metric_name] > 0
                 else float("inf")
             )
-            log_dict[f"zero_shot/{metric_name}_improvement"] = improvement
-            log_dict[f"zero_shot/{metric_name}_relative_improvement"] = (
+            log_dict[f"{log_key}/{metric_name}_improvement"] = improvement
+            log_dict[f"{log_key}/{metric_name}_relative_improvement"] = (
                 relative_improvement
             )
 
@@ -129,7 +136,7 @@ def log_zero_shot_metrics(run, metrics, epoch, initial_metrics=None):
     if initial_metrics is not None:
         improvements = [metrics[m] - initial_metrics[m] for m in metrics.keys()]
         avg_improvement = np.mean(improvements)
-        log_dict["zero_shot/average_improvement"] = avg_improvement
+        log_dict[f"{log_key}/average_improvement"] = avg_improvement
 
     # Log metrics to wandb
     run.log(log_dict, step=epoch)

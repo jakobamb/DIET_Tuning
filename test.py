@@ -9,7 +9,7 @@ import time
 
 # Third-party imports
 import numpy as np
-import torch
+import wandb
 
 # Configuration imports
 from config import create_experiment_config_from_args, DEVICE
@@ -19,10 +19,10 @@ from loaders.data_loader import prepare_data_loaders
 
 # Utility modules
 from utils.wandb_logger import (
-    init_wandb,
     create_experiment_dashboard,
     log_zero_shot_metrics,
 )
+from utils.checkpoint_utils import download_final_checkpoint
 from models.utils import set_reproducibility_seeds, get_model
 from evaluation.metrics import zero_shot_eval
 
@@ -30,18 +30,54 @@ from evaluation.metrics import zero_shot_eval
 def test(args):
     """Main inference function"""
     print("\n" + "=" * 70)
-    backbone_info = f"{args.backbone.upper()}-{args.model_size}"
-    print(f"DIET FINETUNING INFERENCE: {backbone_info} on {args.dataset}")
+    print("DIET FINETUNING INFERENCE (backbone and dataset from wandb config)")
     print("=" * 70)
 
     # Basic settings
     device = DEVICE
     print(f"Using device: {device}")
 
+    # Download checkpoint from wandb if wandb_id is provided
+    if args.wandb_id:
+        print(f"\nDownloading checkpoint from wandb run: {args.wandb_id}")
+        checkpoint_path, epoch, checkpoint, run_config = download_final_checkpoint(
+            wandb_id=args.wandb_id,
+            target_dir=args.checkpoint_dir,
+            return_loaded=True,
+            map_location=str(device),
+            entity=args.wandb_entity,
+            project=args.wandb_project,
+        )
+        print(f"Downloaded checkpoint from epoch {epoch}: {checkpoint_path}")
+        if checkpoint is None:
+            raise ValueError("Failed to load checkpoint from wandb")
+
+        # Get required values from wandb config
+        required_keys = ["dataset_name", "backbone_type", "model_size"]
+        for key in required_keys:
+            if key not in run_config:
+                raise ValueError(f"{key} not found in wandb run config")
+
+        dataset_name = run_config["dataset_name"]
+        backbone_type = run_config["backbone_type"]
+        model_size = run_config["model_size"]
+
+        # Update args object with inferred values for config creation
+        args.dataset = dataset_name
+        args.backbone = backbone_type
+        args.model_size = model_size
+
+        print("Inferred from wandb config:")
+        print(f"  - Dataset: {dataset_name}")
+        print(f"  - Backbone: {backbone_type}")
+        print(f"  - Model size: {model_size}")
+    else:
+        raise ValueError("--wandb-id is required for inference")
+
     # Load data
-    print(f"\nLoading {args.dataset} dataset...")
+    print(f"\nLoading {dataset_name} dataset...")
     train_loader, val_loader, test_loader, dataset_info = prepare_data_loaders(
-        dataset_name=args.dataset,
+        dataset_name=dataset_name,
         batch_size=args.batch_size,
         da_strength=args.da_strength,
         limit_data=np.inf,  # not limiting train data for kNN and LP eval
@@ -55,21 +91,14 @@ def test(args):
 
     # Create the backbone model
     net, embedding_dim = get_model(
-        args.backbone, args.model_size, args.run_sanity_check, args.use_wandb
+        backbone_type, model_size, args.run_sanity_check, args.use_wandb
     )
-    print(f"Created backbone with embedding dimension: {embedding_dim}")
+    print(f"Created {backbone_type} backbone with size {model_size}")
+    print(f"Embedding dimension: {embedding_dim}")
 
     # Ensure embedding_dim is valid
     if embedding_dim is None:
         raise ValueError("embedding_dim cannot be None")
-
-    checkpoint_path = (
-        os.path.join(args.checkpoint_dir, args.resume_from)
-        if not os.path.isabs(args.resume_from)
-        else args.resume_from
-    )
-
-    assert os.path.exists(checkpoint_path)
 
     # Create experiment configuration
     config = create_experiment_config_from_args(args)
@@ -77,10 +106,23 @@ def test(args):
     # Convert to wandb format for logging
     experiment_config = config.to_wandb_config()
 
-    # Initialize wandb if enabled
+    # Initialize wandb if enabled - resume the original training run
     run = None
     if args.use_wandb:
-        run = init_wandb(experiment_config)
+        # Resume the original wandb run for inference logging
+        print(f"Resuming wandb run: {args.wandb_id}")
+        run = wandb.init(
+            project=args.wandb_project,
+            id=args.wandb_id,
+            resume="allow",  # Resume if exists, create if doesn't
+            entity=args.wandb_entity,
+            dir=args.wandb_dir,
+            settings=wandb.Settings(start_method="thread"),
+        )
+        print(f"Resumed wandb run: {run.name}")
+
+        # Log that we're starting inference
+        run.log({"inference_started": True}, commit=False)
 
     # initial kNN and LP eval
     print("\n" + "=" * 50)
@@ -100,10 +142,7 @@ def test(args):
     print(f"Initial evaluation completed in {time.time() - initial_time:.2f}s")
 
     if run is not None:
-        log_zero_shot_metrics(run, initial_results, 0)
-
-    print(f"\nLoading checkpoint from {checkpoint_path}")
-    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+        log_zero_shot_metrics(run, initial_results, 0, is_inference=True)
 
     # Loading only model, no need to load optimizer + DIET head
     net.load_state_dict(checkpoint["model_state_dict"])
@@ -123,7 +162,7 @@ def test(args):
     print(f"Final evaluation completed in {time.time() - initial_time:.2f}s")
 
     if run is not None:
-        log_zero_shot_metrics(run, final_results, 1)
+        log_zero_shot_metrics(run, final_results, 1, is_inference=True)
 
     # Create experiment dashboard in wandb
     if args.use_wandb and run is not None:
@@ -131,8 +170,12 @@ def test(args):
             run, None, initial_results, final_results, experiment_config
         )
 
+        # Log that inference is complete
+        run.log({"inference_completed": True})
+
         # Finish the wandb run
         run.finish()
+        print("Inference results logged to the original wandb run")
 
     return initial_results, final_results
 
@@ -141,24 +184,10 @@ def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="DIET Finetuning Framework")
 
-    # Model arguments
-    parser.add_argument(
-        "--backbone",
-        type=str,
-        default="simclr",
-        choices=["resnet50", "dinov2", "dinov3", "mae", "mambavision", "ijepa", "aim"],
-        help="Backbone model type",
-    )
-    parser.add_argument(
-        "--model-size",
-        type=str,
-        default="resnet50-1x",
-        help="Model size (depends on backbone type). "
-        "DINOv2/v3: small/base/large, MAE: base/large/huge",
-    )
+    # Model arguments - now inferred from wandb config
+    # (backbone and model-size are extracted from the checkpoint's run config)
 
     # Dataset arguments
-    parser.add_argument("--dataset", type=str, default="cifar10", help="Dataset name")
     parser.add_argument(
         "--data-root",
         type=str,
@@ -194,10 +223,10 @@ def parse_args():
         help="Data augmentation strength (0-3)",
     )
     parser.add_argument(
-        "--resume-from",
+        "--wandb-id",
         type=str,
         default=None,
-        help="Resume training from a checkpoint file (e.g., checkpoint_epoch_25.pt)",
+        help="Wandb run ID to download the final checkpoint from",
     )
 
     # DIET arguments
@@ -269,8 +298,20 @@ def parse_args():
     parser.add_argument(
         "--wandb-prefix",
         type=str,
-        default="DIET",
+        default="DIET_INFERENCE",
         help="Prefix for wandb experiment names",
+    )
+    parser.add_argument(
+        "--wandb-entity",
+        type=str,
+        default="jakobamb",
+        help="Wandb entity (username/team) for checkpoint download",
+    )
+    parser.add_argument(
+        "--wandb-project",
+        type=str,
+        default="DIET-Finetuning_v3",
+        help="Wandb project name for checkpoint download",
     )
 
     return parser.parse_args()
