@@ -150,6 +150,55 @@ def log_zero_shot_metrics(
         run.log(log_dict)  # Let wandb use the current step
 
 
+def log_inference_metrics_summary_table(
+    run, wandb_id, backbone_type, model_size, dataset, initial_metrics, final_metrics
+):
+    """Log inference metrics as a summary table to wandb
+
+    Args:
+        run: wandb run object
+        wandb_id: The wandb run ID
+        backbone_type: Model backbone type (e.g., dinov2, mae)
+        model_size: Model size (e.g., small, base, large)
+        dataset: Dataset name
+        initial_metrics: Dictionary of initial zero-shot metrics
+        final_metrics: Dictionary of final zero-shot metrics
+    """
+    # Get all metric names from the dictionaries
+    metric_names = list(initial_metrics.keys())
+
+    # Create column headers
+    columns = ["wandb_id", "backbone_type", "model_size", "dataset"]
+
+    # Add columns for initial metrics
+    for metric in metric_names:
+        columns.append(f"initial_{metric}")
+
+    # Add columns for final metrics
+    for metric in metric_names:
+        columns.append(f"final_{metric}")
+
+    # Create the table
+    inference_table = wandb.Table(columns=columns)
+
+    # Create the row data
+    row_data = [wandb_id, backbone_type, model_size, dataset]
+
+    # Add initial metric values
+    for metric in metric_names:
+        row_data.append(initial_metrics[metric])
+
+    # Add final metric values
+    for metric in metric_names:
+        row_data.append(final_metrics[metric])
+
+    # Add the row to the table
+    inference_table.add_data(*row_data)
+
+    # Log the table to wandb
+    run.log({"inference_metrics_summary": inference_table})
+
+
 def save_model_checkpoint(
     run,
     model,

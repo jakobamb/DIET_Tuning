@@ -20,7 +20,7 @@ from loaders.data_loader import prepare_data_loaders
 # Utility modules
 from utils.wandb_logger import (
     create_experiment_dashboard,
-    log_zero_shot_metrics,
+    log_inference_metrics_summary_table,
 )
 from utils.checkpoint_utils import download_final_checkpoint
 from models.utils import set_reproducibility_seeds, get_model
@@ -141,9 +141,6 @@ def test(args):
     )
     print(f"Initial evaluation completed in {time.time() - initial_time:.2f}s")
 
-    if run is not None:
-        log_zero_shot_metrics(run, initial_results, is_inference=True)
-
     # Loading only model, no need to load optimizer + DIET head
     net.load_state_dict(checkpoint["model_state_dict"])
 
@@ -161,8 +158,17 @@ def test(args):
 
     print(f"Final evaluation completed in {time.time() - initial_time:.2f}s")
 
+    # Log inference metrics summary table
     if run is not None:
-        log_zero_shot_metrics(run, final_results, is_inference=True)
+        log_inference_metrics_summary_table(
+            run=run,
+            wandb_id=args.wandb_id,
+            backbone_type=backbone_type,
+            model_size=model_size,
+            dataset=dataset_name,
+            initial_metrics=initial_results,
+            final_metrics=final_results,
+        )
 
     # Create experiment dashboard in wandb
     if args.use_wandb and run is not None:
