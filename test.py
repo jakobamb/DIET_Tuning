@@ -5,6 +5,7 @@ Inference for DIET finetuning experiments.
 # Standard library imports
 import os
 import argparse
+import shutil
 import time
 
 # Third-party imports
@@ -143,6 +144,17 @@ def test(args):
 
     # Loading only model, no need to load optimizer + DIET head
     net.load_state_dict(checkpoint["model_state_dict"])
+
+    # Clean up downloaded checkpoint immediately after loading to save disk space
+    try:
+        checkpoint_dir = os.path.dirname(checkpoint_path)
+        # Remove the entire wandb_id subdirectory
+        wandb_subdir = f"wandb_{args.wandb_id}"
+        if os.path.exists(checkpoint_dir) and wandb_subdir in checkpoint_dir:
+            shutil.rmtree(checkpoint_dir)
+            print(f"Cleaned up checkpoint directory: {checkpoint_dir}")
+    except Exception as e:
+        print(f"Warning: Could not clean up checkpoint directory: {e}")
 
     initial_time = time.time()
 
