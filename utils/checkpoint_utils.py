@@ -91,8 +91,9 @@ def download_final_checkpoint(
 
     pathlib.Path(target_dir).mkdir(parents=True, exist_ok=True)
 
-    # Download the entire artifact and then get the specific file
-    artifact_dir = chosen.download(root=target_dir)
+    # Download the entire artifact to a unique subdirectory based on wandb_id
+    unique_target_dir = os.path.join(target_dir, f"wandb_{wandb_id}")
+    artifact_dir = chosen.download(root=unique_target_dir)
     local_path = os.path.join(artifact_dir, match_key)
     local_abs = os.path.abspath(local_path)
 
