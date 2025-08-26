@@ -142,7 +142,7 @@ def test(args):
     print(f"Initial evaluation completed in {time.time() - initial_time:.2f}s")
 
     if run is not None:
-        log_zero_shot_metrics(run, initial_results, 0, is_inference=True)
+        log_zero_shot_metrics(run, initial_results, is_inference=True)
 
     # Loading only model, no need to load optimizer + DIET head
     net.load_state_dict(checkpoint["model_state_dict"])
@@ -162,7 +162,7 @@ def test(args):
     print(f"Final evaluation completed in {time.time() - initial_time:.2f}s")
 
     if run is not None:
-        log_zero_shot_metrics(run, final_results, 1, is_inference=True)
+        log_zero_shot_metrics(run, final_results, is_inference=True)
 
     # Create experiment dashboard in wandb
     if args.use_wandb and run is not None:

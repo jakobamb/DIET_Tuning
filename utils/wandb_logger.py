@@ -98,17 +98,22 @@ def log_evaluation_metrics(run, metrics, epoch):
 
 
 def log_zero_shot_metrics(
-    run, metrics, epoch, initial_metrics=None, is_inference=False
+    run, metrics, epoch=None, initial_metrics=None, is_inference=False
 ):
     """Log zero-shot evaluation metrics to wandb
 
     Args:
         run: wandb run object
         metrics: Dictionary of zero-shot metrics
-        epoch: Current epoch number
+        epoch: Current epoch number (optional, uses current step if None)
         initial_metrics: Initial zero-shot metrics for comparison (optional)
+        is_inference: Whether this is inference logging
     """
-    log_dict = {"epoch": epoch}
+    log_dict = {}
+
+    # Only include epoch in log_dict if provided
+    if epoch is not None:
+        log_dict["epoch"] = epoch
 
     if is_inference:
         log_key = "zero_shot_inference"
@@ -139,7 +144,10 @@ def log_zero_shot_metrics(
         log_dict[f"{log_key}/average_improvement"] = avg_improvement
 
     # Log metrics to wandb
-    run.log(log_dict, step=epoch)
+    if epoch is not None:
+        run.log(log_dict, step=epoch)
+    else:
+        run.log(log_dict)  # Let wandb use the current step
 
 
 def save_model_checkpoint(
