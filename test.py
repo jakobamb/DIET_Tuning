@@ -328,7 +328,7 @@ def parse_args():
     parser.add_argument(
         "--wandb-project",
         type=str,
-        default="DIET-Finetuning_v3",
+        default="DIET-Finetuning_v4",
         help="Wandb project name for checkpoint download",
     )
 

@@ -315,6 +315,12 @@ def parse_args():
         default="DIET",
         help="Prefix for wandb experiment names",
     )
+    parser.add_argument(
+        "--wandb-project",
+        type=str,
+        default="DIET-Finetuning_v4",
+        help="Wandb project name",
+    )
 
     return parser.parse_args()
 

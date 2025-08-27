@@ -38,7 +38,7 @@ def init_wandb(args):
 
     # Initialize wandb run
     run = wandb.init(
-        project="DIET-Finetuning_v3",
+        project=args.wandb_project,
         name=experiment_name,
         config=args,
         settings=wandb.Settings(start_method="thread"),
