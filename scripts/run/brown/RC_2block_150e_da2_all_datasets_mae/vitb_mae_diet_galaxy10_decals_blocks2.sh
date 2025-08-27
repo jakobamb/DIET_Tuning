@@ -43,5 +43,4 @@ srun python -u main.py \
     --data-root $DATA_DIR/data \
     --wandb-dir $DATA_DIR/wandb \
     --checkpoint-dir $DATA_DIR/checkpoints \
-    --seed 69 \
     $EXTRA_PYTHON_ARGS
