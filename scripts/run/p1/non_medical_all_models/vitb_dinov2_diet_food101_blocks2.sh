@@ -38,7 +38,7 @@ source /dtu/p1/jakambs/diet_env/bin/activate
 export CUDA_VISIBLE_DEVICES=0
 export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
-# Run the training script
+# Run the training scripts in background with different seeds
 python -u main.py \
     --wandb-prefix "p1_non_medical" \
     --backbone dinov2 \
@@ -52,4 +52,37 @@ python -u main.py \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
-    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints 
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
+    --seed 42 &
+
+python -u main.py \
+    --wandb-prefix "p1_non_medical" \
+    --backbone dinov2 \
+    --model-size base \
+    --label-smoothing 0.2 \
+    --da-strength 2 \
+    --diet-head-only-epochs 0.05 \
+    --dataset food101 \
+    --num-epochs 150 \
+    --eval-frequency 50 \
+    --num-trained-blocks 2 \
+    --data-root /dtu/p1/jakambs/diet/data \
+    --wandb-dir /dtu/p1/jakambs/diet/wandb \
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
+    --seed 420 &
+
+python -u main.py \
+    --wandb-prefix "p1_non_medical" \
+    --backbone dinov2 \
+    --model-size base \
+    --label-smoothing 0.2 \
+    --da-strength 2 \
+    --diet-head-only-epochs 0.05 \
+    --dataset food101 \
+    --num-epochs 150 \
+    --eval-frequency 50 \
+    --num-trained-blocks 2 \
+    --data-root /dtu/p1/jakambs/diet/data \
+    --wandb-dir /dtu/p1/jakambs/diet/wandb \
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
+    --seed 69 &
