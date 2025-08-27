@@ -9,7 +9,6 @@ import shutil
 import time
 
 # Third-party imports
-import numpy as np
 import wandb
 
 # Configuration imports
@@ -81,7 +80,7 @@ def test(args):
         dataset_name=dataset_name,
         batch_size=args.batch_size,
         da_strength=args.da_strength,
-        limit_data=np.inf,  # not limiting train data for kNN and LP eval
+        limit_data=args.limit_data,
         root=args.data_root,
     )
 
@@ -216,7 +215,7 @@ def parse_args():
         "--limit-data",
         type=int,
         default=1000,
-        help="Maximum number of training samples",
+        help="Maximum number of training samples for kNN/LP training set",
     )
 
     # Training arguments
