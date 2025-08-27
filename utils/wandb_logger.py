@@ -14,7 +14,7 @@ from evaluation.metrics import (
 )
 
 
-def init_wandb(args):
+def init_wandb(wandb_cfg):
     """Initialize wandb for experiment tracking
 
     Args:
@@ -25,29 +25,29 @@ def init_wandb(args):
     """
     # Set wandb data directory to prevent pollution of home directory
     # This controls where artifacts staging and cache are stored
-    wandb_dir = args.get("wandb_dir", "wandb")
+    wandb_dir = wandb_cfg.get("wandb_dir", "wandb")
     os.environ["WANDB_DATA_DIR"] = wandb_dir
 
     # Create experiment name with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    wandb_prefix = args.get("wandb_prefix", "DIET")
+    wandb_prefix = wandb_cfg.get("wandb_prefix", "DIET")
     experiment_name = (
-        f"{wandb_prefix}_{args['backbone_type']}_"
-        f"{args['model_size']}_{args['dataset_name']}_{timestamp}"
+        f"{wandb_prefix}_{wandb_cfg['backbone_type']}_"
+        f"{wandb_cfg['model_size']}_{wandb_cfg['dataset_name']}_{timestamp}"
     )
 
     # Initialize wandb run
     run = wandb.init(
-        project=args.wandb_project,
+        project=wandb_cfg["wandb_project"],
         name=experiment_name,
-        config=args,
+        config=wandb_cfg,
         settings=wandb.Settings(start_method="thread"),
         dir=wandb_dir,
         tags=[
-            args["backbone_type"],
-            args["model_size"],
-            args["dataset_name"],
-            "DIET" if args["label_smoothing"] > 0 else "Baseline",
+            wandb_cfg["backbone_type"],
+            wandb_cfg["model_size"],
+            wandb_cfg["dataset_name"],
+            "DIET" if wandb_cfg["label_smoothing"] > 0 else "Baseline",
         ],
     )
 
