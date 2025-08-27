@@ -151,7 +151,14 @@ def log_zero_shot_metrics(
 
 
 def log_inference_metrics_summary_table(
-    run, wandb_id, backbone_type, model_size, dataset, initial_metrics, final_metrics
+    run,
+    wandb_id,
+    backbone_type,
+    model_size,
+    dataset,
+    initial_metrics,
+    final_metrics,
+    table_name="inference_metrics_summary_final",
 ):
     """Log inference metrics as a summary table to wandb
 
@@ -196,7 +203,7 @@ def log_inference_metrics_summary_table(
     inference_table.add_data(*row_data)
 
     # Log the table to wandb
-    run.log({"inference_metrics_summary_final": inference_table})
+    run.log({table_name: inference_table})
 
 
 def save_model_checkpoint(

@@ -6,6 +6,7 @@ import time
 from tqdm import tqdm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import normalize
 from sklearn.metrics import (
     accuracy_score,
     adjusted_rand_score,
@@ -92,8 +93,6 @@ def zero_shot_eval(
     results = {}
 
     # ---------- k-NN ----------
-    from sklearn.preprocessing import normalize
-
     print("Running k-NN evaluation...")
     t0 = time.time()
 

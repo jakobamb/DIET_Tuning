@@ -7,17 +7,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
+from typing import Optional
 from utils.wandb_logger import (
     log_training_metrics,
     log_evaluation_metrics,
     log_zero_shot_metrics,
     save_final_checkpoint,
+    log_inference_metrics_summary_table,
 )
 from evaluation.metrics import zero_shot_eval
 from training.metrics_utils import (
     MetricsTracker,
     aggregate_metrics,
 )
+from config.experiment import ExperimentConfig
 
 
 class DIETTrainer:
@@ -29,8 +32,8 @@ class DIETTrainer:
         diet_head,
         device,
         optimizer,
+        config: ExperimentConfig,
         scheduler=None,
-        config=None,
     ):
         """Initialize the trainer.
 
@@ -40,11 +43,8 @@ class DIETTrainer:
             device: The device to use
             optimizer: The optimizer
             scheduler: Optional learning rate scheduler
-            config: TrainerConfig object with all training settings
+            config: ExperimentConfig object with all training settings
         """
-        if config is None:
-            raise ValueError("config parameter is required")
-
         self.model = model
         self.diet_head = diet_head
         self.device = device
@@ -553,8 +553,18 @@ class DIETTrainer:
                 f"DIET finetuning {'did not improve' if self.is_diet_active else 'would likely not improve'} zero-shot performance"
             )
 
-        # Save final checkpoint
+        # Save final checkpoint and summary table
         if run is not None:
+            log_inference_metrics_summary_table(
+                run,
+                run.wandb_id,
+                self.config.model.backbone_type,
+                self.config.model.model_size,
+                self.config.data.dataset_name,
+                initial_results,
+                final_results,
+                table_name="inference_metrics_val",
+            )
             final_checkpoint_metrics = {
                 "final_knn_acc": final_results.get("knn_acc", 0),
                 "final_linear_acc": final_results.get("linear_acc", 0),
