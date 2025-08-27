@@ -557,7 +557,7 @@ class DIETTrainer:
         if run is not None:
             log_inference_metrics_summary_table(
                 run,
-                run.wandb_id,
+                run.id,
                 self.config.model.backbone_type,
                 self.config.model.model_size,
                 self.config.data.dataset_name,
