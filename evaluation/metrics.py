@@ -208,6 +208,22 @@ def zero_shot_eval(
     print(f"Linear probe F1 (macro): {results['linear_f1']:.4f}")
     print(f"Linear probe ROC AUC: {results['linear_roc_auc']:.4f}")
 
+    # ---------- k-means clustering ----------
+    print("Running k-means clustering evaluation...")
+    t0 = time.time()
+
+    # Use normalized test features for clustering
+    kmeans = KMeans(n_clusters=num_classes, random_state=42, n_init=10)
+    kmeans_pred = kmeans.fit_predict(test_features)
+
+    # Calculate k-means metrics
+    results["kmeans_ari"] = adjusted_rand_score(test_labels, kmeans_pred)
+    results["kmeans_nmi"] = normalized_mutual_info_score(test_labels, kmeans_pred)
+
+    print(f"k-means ARI: {results['kmeans_ari']:.4f}")
+    print(f"k-means NMI: {results['kmeans_nmi']:.4f}")
+    print(f"k-means time: {time.time() - t0:.2f}s")
+
     print(f"Total zero-shot evaluation time: {time.time() - start_time:.2f}s")
     return results
 
