@@ -11,7 +11,7 @@
 ### -- Select the resources: 1 gpu in exclusive process mode --
 #BSUB -gpu "num=1:mode=exclusive_process"
 ### -- set walltime limit: hh:mm --  maximum 24 hours for GPU-queues right now
-#BSUB -W 6:00
+#BSUB -W 12:00
 # request 5GB of system-memory
 #BSUB -R "rusage[mem=20GB]"
 ### -- set the email address --
@@ -35,21 +35,21 @@ cd /zhome/6a/3/198677/projects/DIET_Tuning
 # Activate conda environment
 source /dtu/p1/jakambs/diet_env/bin/activate
 
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=0
 export WANDB_DATA_DIR=/dtu/p1/jakambs/diet/wandb
 
 # Run the training script
 python -u main.py \
-    --wandb-prefix "test" \
-    --backbone dinov2 \
-    --model-size small \
+    --wandb-prefix "p1_non_medical" \
+    --backbone mae \
+    --model-size base \
     --label-smoothing 0.2 \
     --da-strength 2 \
     --diet-head-only-epochs 0.05 \
-    --dataset fgvc_aircraft \
+    --dataset galaxy10_decals \
     --num-epochs 150 \
+    --eval-frequency 50 \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
-    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints \
-    --seed 69
+    --checkpoint-dir /dtu/p1/jakambs/diet/checkpoints 
