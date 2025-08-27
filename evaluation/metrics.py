@@ -282,55 +282,6 @@ def evaluate_test_set(net, test_loader, device, W_probe):
     return test_acc
 
 
-def create_zero_shot_progression_plot(metrics_history, tracked_epochs, metrics_list):
-    """Create zero-shot metrics progression plot
-
-    Args:
-        metrics_history: Dictionary of metrics history
-        tracked_epochs: List of epochs to track
-        metrics_list: List of metric names to include
-
-    Returns:
-        fig: Matplotlib figure
-    """
-    # Create figure
-    fig = Figure(figsize=(15, 10))
-
-    # Plot each metric's progression
-    for i, metric in enumerate(metrics_list):
-        ax = fig.add_subplot(2, 2, i + 1)
-        values = [
-            metrics_history["zero_shot_metrics"][e][metric] for e in tracked_epochs
-        ]
-        ax.plot(tracked_epochs, values, marker="o", linewidth=2)
-        ax.set_xlabel("Epoch")
-        ax.set_ylabel(f"{metric} Score")
-        ax.set_title(f"Zero-shot {metric} Progression")
-        ax.grid(True)
-
-        # Add initial and final values as text annotations
-        ax.annotate(
-            f"{values[0]:.4f}",
-            (tracked_epochs[0], values[0]),
-            textcoords="offset points",
-            xytext=(0, 10),
-            ha="center",
-        )
-        ax.annotate(
-            f"{values[-1]:.4f}",
-            (tracked_epochs[-1], values[-1]),
-            textcoords="offset points",
-            xytext=(0, 10),
-            ha="center",
-        )
-
-    fig.tight_layout()
-    fig.suptitle("Zero-shot Metrics Progression During Training", fontsize=16)
-    fig.subplots_adjust(top=0.9)
-
-    return fig
-
-
 def create_training_progress_plot(metrics_history):
     """Create training progress plot
 

@@ -9,7 +9,6 @@ from io import BytesIO
 
 # Import from our metrics module
 from evaluation.metrics import (
-    create_zero_shot_progression_plot,
     create_training_progress_plot,
 )
 
@@ -704,13 +703,6 @@ def create_experiment_dashboard(
         training_fig = create_training_progress_plot(metrics_history)
         log_figure_to_wandb(run, training_fig, "training_progress")
 
-        # Then create the zero-shot progression plot
-        tracked_epochs = sorted(metrics_history["zero_shot_metrics"].keys())
-        zero_shot_fig = create_zero_shot_progression_plot(
-            metrics_history, tracked_epochs, metrics_list
-        )
-        log_figure_to_wandb(run, zero_shot_fig, "zero_shot_progression")
-
         # Log tables with full metrics history
         log_metrics_table(
             run, metrics_history, initial_results, final_results, enhanced=True
@@ -718,7 +710,6 @@ def create_experiment_dashboard(
 
         # Log individual components
         run.log({"training_progress_final": wandb.Image(training_fig)})
-        run.log({"zero_shot_progression_final": wandb.Image(zero_shot_fig)})
     else:
         # If no metrics history, just log a simple summary table
         summary_columns = [
