@@ -1,5 +1,6 @@
 """Evaluation utilities for DIET finetuning framework."""
 
+import os
 import numpy as np
 import torch
 import time
@@ -26,6 +27,7 @@ def zero_shot_eval(
     device,
     probe_lr=1e-3,
     probe_steps=20000,
+    store_embeddings=False,
 ):
     """Evaluate model using zero-shot methods with proper train/test split.
 
@@ -82,6 +84,14 @@ def zero_shot_eval(
     # Extract train and test features separately
     train_features, train_labels = extract_features(train_loader, "train")
     test_features, test_labels = extract_features(test_loader, "test")
+
+    if store_embeddings:
+        store_path = f"data/embeddings/\
+            {model.__class__.__name__}_{time.strftime('%Y%m%d-%H%M%S')}/"
+        os.makedirs(store_path, exist_ok=True)
+        np.save(f"{store_path}train_features.npy", train_features)
+        np.save(f"{store_path}train_labels.npy", train_labels)
+        print(f"Stored train features and labels in {store_path}")
 
     print(
         f"Train features: {train_features.shape}, "

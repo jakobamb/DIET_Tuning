@@ -138,6 +138,7 @@ def test(args):
         device=device,
         probe_lr=1e-3,
         probe_steps=10000,
+        store_embeddings=args.store_embeddings,
     )
     print(f"Initial evaluation completed in {time.time() - initial_time:.2f}s")
 
@@ -165,6 +166,7 @@ def test(args):
         device=device,
         probe_lr=1e-3,
         probe_steps=10000,
+        store_embeddings=args.store_embeddings,
     )
 
     print(f"Final evaluation completed in {time.time() - initial_time:.2f}s")
@@ -307,6 +309,11 @@ def parse_args():
         help="Run the initial k-NN sanity check on CIFAR10.",
     )
     parser.add_argument(
+        "--store-embeddings",
+        action="store_true",
+        help="Whether to store embeddings from the model",
+    )
+    parser.add_argument(
         "--wandb-dir",
         type=str,
         default="wandb",
@@ -327,7 +334,7 @@ def parse_args():
     parser.add_argument(
         "--wandb-project",
         type=str,
-        default="DIET-Finetuning_v4",
+        default="DIET-Finetuning_v3",
         help="Wandb project name for checkpoint download",
     )
 
