@@ -86,7 +86,7 @@ def zero_shot_eval(
     test_features, test_labels = extract_features(test_loader, "test")
 
     if store_embeddings:
-        store_path = f"data/embeddings/dinov2_{time.strftime('%Y%m%d-%H%M%S')}/"
+        store_path = f"data/embeddings/mae_{time.strftime('%Y%m%d-%H%M%S')}/"
         os.makedirs(store_path, exist_ok=True)
         np.save(f"{store_path}train_features.npy", train_features)
         np.save(f"{store_path}train_labels.npy", train_labels)
