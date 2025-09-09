@@ -23,7 +23,6 @@ def zero_shot_eval(
     model,
     train_loader,
     test_loader,
-    num_classes,
     device,
     probe_lr=1e-3,
     probe_steps=20000,
@@ -92,11 +91,8 @@ def zero_shot_eval(
         np.save(f"{store_path}train_labels.npy", train_labels)
         print(f"Stored train features and labels in {store_path}")
 
-    print(
-        f"Train features: {train_features.shape}, "
-        f"Train labels: {train_labels.shape}"
-    )
-    print(f"Test features: {test_features.shape}, " f"Test labels: {test_labels.shape}")
+    print(f"Train features: {train_features.shape}, Train labels: {train_labels.shape}")
+    print(f"Test features: {test_features.shape}, Test labels: {test_labels.shape}")
     print(f"Time: {time.time() - start_time:.2f}s")
 
     results = {}
@@ -127,6 +123,8 @@ def zero_shot_eval(
     )
 
     # ROC AUC calculation - handle binary vs multiclass
+
+    num_classes = len(np.unique(train_labels))
     try:
         if num_classes == 2:
             # For binary classification, use positive class probabilities
@@ -140,7 +138,7 @@ def zero_shot_eval(
         print(f"Warning: Could not compute ROC AUC for k-NN: {e}")
         results["knn_roc_auc"] = 0.0
 
-    print(f"k-NN accuracy: {results['knn_acc']:.4f}, " f"time: {time.time() - t0:.2f}s")
+    print(f"k-NN accuracy: {results['knn_acc']:.4f}, time: {time.time() - t0:.2f}s")
     print(f"k-NN F1 (macro): {results['knn_f1']:.4f}")
     print(f"k-NN ROC AUC: {results['knn_roc_auc']:.4f}")
 

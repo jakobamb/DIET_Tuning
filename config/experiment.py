@@ -159,6 +159,7 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         dataset_name=args.dataset,
         batch_size=getattr(args, "batch_size", 32),
         limit_data=getattr(args, "limit_data", 1000),
+        num_diet_classes=None,  # This will be computed dynamically (min(limit_data, len(dataset)))
     )
 
     training_config = TrainingConfig(

@@ -52,11 +52,7 @@ class DIETTrainer:
         self.scheduler = scheduler
         self.config = config
 
-        # Extract all settings from config
-        import pdb
-
-        pdb.set_trace()
-        # self.num_diet_classes = config.
+        self.num_diet_classes = config.data.num_diet_classes
         self.label_smoothing = config.training.label_smoothing
         self.checkpoint_dir = config.checkpoint_dir
         self.is_diet_active = config.training.label_smoothing > 0
@@ -96,14 +92,15 @@ class DIETTrainer:
         if mixup_enabled:
             transforms.append(
                 v2.MixUp(
-                    num_classes=self.num_classes, alpha=self.config.training.mixup_alpha
+                    num_classes=self.num_diet_classes,
+                    alpha=self.config.training.mixup_alpha,
                 )
             )
 
         if cutmix_enabled:
             transforms.append(
                 v2.CutMix(
-                    num_classes=self.num_classes,
+                    num_classes=self.num_diet_classes,
                     alpha=self.config.training.cutmix_alpha,
                 )
             )
@@ -280,7 +277,6 @@ class DIETTrainer:
             model=self.model,
             train_loader=train_loader,
             test_loader=test_loader,
-            num_classes=self.num_classes,
             device=self.device,
             probe_lr=1e-3,
             probe_steps=10000,
@@ -533,7 +529,6 @@ class DIETTrainer:
                         model=self.model,
                         train_loader=train_loader,
                         test_loader=test_loader,
-                        num_classes=self.num_classes,
                         device=self.device,
                         probe_lr=1e-3,
                         probe_steps=10000,
@@ -566,7 +561,6 @@ class DIETTrainer:
             model=self.model,
             train_loader=train_loader,
             test_loader=test_loader,
-            num_classes=self.num_classes,
             device=self.device,
             probe_lr=1e-3,
             probe_steps=10000,

@@ -131,6 +131,9 @@ def train(args):
 
     # Create experiment configuration
     config = create_experiment_config_from_args(args)
+    config.data.num_diet_classes = (
+        num_diet_classes  # Update diet classes based on dataset
+    )
 
     # Convert to wandb format for logging
     experiment_config = config.to_wandb_config()

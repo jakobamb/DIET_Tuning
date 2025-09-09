@@ -2,6 +2,7 @@
 """
 Inference for DIET finetuning experiments.
 """
+
 # Standard library imports
 import os
 import argparse
@@ -134,7 +135,6 @@ def test(args):
         model=net,
         train_loader=train_loader,
         test_loader=(test_loader if args.eval_on_test else val_loader),
-        num_classes=num_classes,
         device=device,
         probe_lr=1e-3,
         probe_steps=10000,
@@ -162,7 +162,6 @@ def test(args):
         model=net,
         train_loader=train_loader,
         test_loader=(test_loader if args.eval_on_test else val_loader),
-        num_classes=num_classes,
         device=device,
         probe_lr=1e-3,
         probe_steps=10000,
