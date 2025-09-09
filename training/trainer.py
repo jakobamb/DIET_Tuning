@@ -92,20 +92,22 @@ class DIETTrainer:
         transforms = []
 
         if mixup_enabled:
-            mixup = v2.MixUp(
-                num_classes=self.num_classes, alpha=self.config.training.mixup_alpha
+            transforms.append(
+                v2.MixUp(
+                    num_classes=self.num_classes, alpha=self.config.training.mixup_alpha
+                )
             )
-            transforms.append(mixup)
 
         if cutmix_enabled:
-            cutmix = v2.CutMix(
-                num_classes=self.num_classes, alpha=self.config.training.cutmix_alpha
+            transforms.append(
+                v2.CutMix(
+                    num_classes=self.num_classes,
+                    alpha=self.config.training.cutmix_alpha,
+                )
             )
-            transforms.append(cutmix)
 
         # Create final transform
         if len(transforms) == 1:
-            # Only one transform active
             base_transform = transforms[0]
         else:
             # Both transforms active - use RandomChoice with switch probability
@@ -398,10 +400,7 @@ class DIETTrainer:
 
                 # Apply mixup/cutmix if enabled
                 if self.mixup_cutmix_transform is not None:
-                    # Apply mixup/cutmix to images and labels
-                    x, y = self.mixup_cutmix_transform(x, y)
-                    # Also apply to diet_idx for DIET loss
-                    _, diet_idx = self.mixup_cutmix_transform(x, diet_idx)
+                    x, diet_idx = self.mixup_cutmix_transform(x, diet_idx)
 
                 # Forward pass
                 z = self.model(x)  # Original features
