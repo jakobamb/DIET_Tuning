@@ -51,7 +51,7 @@ python -u main.py \
     --diet-head-only-epochs 0.05 \
     --dataset galaxy10_decals \
     --num-epochs 150 \
-    --eval-frequency 50 \
+    --eval-frequency 10 \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
@@ -70,7 +70,7 @@ python -u main.py \
     --diet-head-only-epochs 0.05 \
     --dataset galaxy10_decals \
     --num-epochs 150 \
-    --eval-frequency 50 \
+    --eval-frequency 10 \
     --num-trained-blocks 2 \
     --data-root /dtu/p1/jakambs/diet/data \
     --wandb-dir /dtu/p1/jakambs/diet/wandb \
