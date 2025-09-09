@@ -1,7 +1,7 @@
 """Consolidated training configuration for DIET finetuning."""
 
 from typing import Dict, Any, Union, Tuple
-from config.base_config import BaseConfig, GLOBAL_DEFAULTS
+from config.base_config import BaseConfig
 from config.models import ModelConfig
 from config.data import DataConfig
 import dataclasses
@@ -184,8 +184,8 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         training=training_config,
         checkpoint_dir=getattr(args, "checkpoint_dir", "checkpoints"),
         results_dir=getattr(args, "results_dir", "results"),
-        enable_wandb=getattr(args, "use_wandb", GLOBAL_DEFAULTS["enable_wandb"]),
-        wandb_project=getattr(args, "wandb_project", GLOBAL_DEFAULTS["wandb_project"]),
+        enable_wandb=getattr(args, "use_wandb", False),
+        wandb_project=getattr(args, "wandb_project", "diet"),
         wandb_dir=getattr(args, "wandb_dir", "wandb"),
         wandb_prefix=getattr(args, "wandb_prefix", ""),
         eval_on_test=getattr(args, "eval_on_test", False),
