@@ -46,7 +46,7 @@ python -u main.py \
     --mixup-cutmix-switch-prob 0.0 \
     --backbone dinov3 \
     --model-size base \
-    --label-smoothing 0.2 \
+    --label-smoothing 0.0 \
     --da-strength 2 \
     --diet-head-only-epochs 0.05 \
     --dataset fgvc_aircraft \
@@ -65,7 +65,7 @@ python -u main.py \
     --num-trained-blocks 4 \
     --backbone dinov3 \
     --model-size base \
-    --label-smoothing 0.2 \
+    --label-smoothing 0.0 \
     --da-strength 2 \
     --diet-head-only-epochs 0.05 \
     --dataset fgvc_aircraft \
