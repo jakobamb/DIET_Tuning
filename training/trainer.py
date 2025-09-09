@@ -61,6 +61,9 @@ class DIETTrainer:
 
         self.criterion_diet = nn.CrossEntropyLoss(label_smoothing=self.label_smoothing)
 
+        # Initialize mixup/cutmix transforms
+        self._setup_mixup_cutmix()
+
         # Initialize metrics tracker
         self.metrics_tracker = MetricsTracker()
 
@@ -72,6 +75,55 @@ class DIETTrainer:
             "test_acc": [],
             "zero_shot_metrics": {},
         }
+
+    def _setup_mixup_cutmix(self):
+        """Initialize mixup/cutmix transforms based on configuration."""
+        from torchvision.transforms import v2
+
+        # Check if mixup/cutmix should be enabled
+        mixup_enabled = self.config.training.mixup_alpha > 0
+        cutmix_enabled = self.config.training.cutmix_alpha > 0
+
+        if not (mixup_enabled or cutmix_enabled):
+            self.mixup_cutmix_transform = None
+            return
+
+        # Create transform list
+        transforms = []
+
+        if mixup_enabled:
+            mixup = v2.MixUp(
+                num_classes=self.num_classes, alpha=self.config.training.mixup_alpha
+            )
+            transforms.append(mixup)
+
+        if cutmix_enabled:
+            cutmix = v2.CutMix(
+                num_classes=self.num_classes, alpha=self.config.training.cutmix_alpha
+            )
+            transforms.append(cutmix)
+
+        # Create final transform
+        if len(transforms) == 1:
+            # Only one transform active
+            base_transform = transforms[0]
+        else:
+            # Both transforms active - use RandomChoice with switch probability
+            base_transform = v2.RandomChoice(
+                transforms,
+                p=[
+                    1 - self.config.training.mixup_cutmix_switch_prob,
+                    self.config.training.mixup_cutmix_switch_prob,
+                ],
+            )
+
+        # Wrap with probability control
+        if self.config.training.mixup_cutmix_prob < 1.0:
+            self.mixup_cutmix_transform = v2.RandomApply(
+                [base_transform], p=self.config.training.mixup_cutmix_prob
+            )
+        else:
+            self.mixup_cutmix_transform = base_transform
 
     def _freeze_backbone(self):
         """Freeze backbone model for DIET-only training."""
@@ -153,7 +205,7 @@ class DIETTrainer:
 
                 print(
                     f"Training last {blocks_to_train} blocks "
-                    f"(blocks {start_idx} to {total_blocks-1})"
+                    f"(blocks {start_idx} to {total_blocks - 1})"
                 )
         else:
             # Add diagnostic info to help debug model structure
@@ -203,6 +255,18 @@ class DIETTrainer:
         Returns:
             metrics_history: Dictionary of training metrics
         """
+        # Log data augmentation settings
+        if self.mixup_cutmix_transform is not None:
+            print(
+                f"\nData augmentation: mixup (α={self.config.training.mixup_alpha}) "
+                f"+ cutmix (α={self.config.training.cutmix_alpha})"
+            )
+            print(f"Augmentation probability: {self.config.training.mixup_cutmix_prob}")
+            switch_prob = self.config.training.mixup_cutmix_switch_prob
+            print(f"Cutmix selection probability: {switch_prob}")
+        else:
+            print("\nData augmentation: standard only (no mixup/cutmix)")
+
         # Run initial zero-shot evaluation
         print("\n" + "=" * 50)
         print("INITIAL ZERO-SHOT EVALUATION (BEFORE TRAINING)")
@@ -259,7 +323,7 @@ class DIETTrainer:
                 self._freeze_backbone()
                 backbone_frozen = True
                 print(
-                    f"Epoch {epoch+1}: Starting DIET-head-only phase "
+                    f"Epoch {epoch + 1}: Starting DIET-head-only phase "
                     f"(backbone frozen for {diet_head_only_epochs} epochs)"
                 )
             elif not diet_only_phase and backbone_frozen:
@@ -269,17 +333,17 @@ class DIETTrainer:
                 num_blocks = self.config.training.num_trained_blocks
                 if num_blocks == -1:
                     print(
-                        f"Epoch {epoch+1}: Starting full training phase "
+                        f"Epoch {epoch + 1}: Starting full training phase "
                         "(all backbone blocks unfrozen)"
                     )
                 elif num_blocks == 0:
                     print(
-                        f"Epoch {epoch+1}: Starting training phase "
+                        f"Epoch {epoch + 1}: Starting training phase "
                         "(all backbone blocks frozen)"
                     )
                 else:
                     print(
-                        f"Epoch {epoch+1}: Starting training phase "
+                        f"Epoch {epoch + 1}: Starting training phase "
                         f"(training last {num_blocks} backbone blocks)"
                     )
 
@@ -302,7 +366,7 @@ class DIETTrainer:
 
             print("\n==========================")
             print(
-                f"Starting epoch {epoch+1}/{start_epoch + num_epochs} "
+                f"Starting epoch {epoch + 1}/{start_epoch + num_epochs} "
                 f"at {time.strftime('%H:%M:%S')}"
             )
             print("==========================\n")
@@ -311,14 +375,14 @@ class DIETTrainer:
 
             # Iterate through training data (without tqdm)
             for i, batch in enumerate(train_loader):
-                assert (
-                    len(batch) == 3
-                ), f"Batch needs to contain data, label, diet_class, found {batch}"
+                assert len(batch) == 3, (
+                    f"Batch needs to contain data, label, diet_class, found {batch}"
+                )
                 x, y, diet_idx = batch
 
-                assert (
-                    diet_idx is not None
-                ), "DIET class indices are required for training"
+                assert diet_idx is not None, (
+                    "DIET class indices are required for training"
+                )
 
                 # Send tensors to device
                 x = x.to(self.device)
@@ -331,6 +395,13 @@ class DIETTrainer:
 
                 if diet_idx.dim() > 1:
                     diet_idx = diet_idx.view(-1)
+
+                # Apply mixup/cutmix if enabled
+                if self.mixup_cutmix_transform is not None:
+                    # Apply mixup/cutmix to images and labels
+                    x, y = self.mixup_cutmix_transform(x, y)
+                    # Also apply to diet_idx for DIET loss
+                    _, diet_idx = self.mixup_cutmix_transform(x, diet_idx)
 
                 # Forward pass
                 z = self.model(x)  # Original features
@@ -391,7 +462,7 @@ class DIETTrainer:
             # End of epoch processing
             epoch_time = time.time() - epoch_start
             epoch_times.append(epoch_time)
-            print(f"\nEpoch {epoch+1} completed in {epoch_time:.2f}s\n")
+            print(f"\nEpoch {epoch + 1} completed in {epoch_time:.2f}s\n")
 
             # Aggregate metrics for the epoch
             epoch_metrics = aggregate_metrics(
@@ -430,7 +501,7 @@ class DIETTrainer:
 
             # Print epoch summary
             print(
-                f"Epoch {epoch+1} Metrics - DIET Loss: "
+                f"Epoch {epoch + 1} Metrics - DIET Loss: "
                 f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
             )
 
@@ -443,7 +514,7 @@ class DIETTrainer:
                 log_evaluation_metrics(run, {"accuracy": test_acc}, epoch + 1)
 
             # Print epoch summary
-            print(f"Epoch {epoch+1}/{start_epoch + num_epochs} summary:")
+            print(f"Epoch {epoch + 1}/{start_epoch + num_epochs} summary:")
             print(
                 f"  Train - DIET loss: "
                 f"{epoch_metrics.get('train_batch_loss_diet', float('nan')):.4e}"
@@ -454,7 +525,7 @@ class DIETTrainer:
             if (
                 epoch + 1
             ) % eval_frequency == 0 or epoch == start_epoch + num_epochs - 1:
-                print(f"\nRunning zero-shot evaluation at epoch {epoch+1}...")
+                print(f"\nRunning zero-shot evaluation at epoch {epoch + 1}...")
 
                 try:
                     epoch_zero_shot = zero_shot_eval(
@@ -466,9 +537,9 @@ class DIETTrainer:
                         probe_lr=1e-3,
                         probe_steps=10000,
                     )
-                    self.metrics_history["zero_shot_metrics"][
-                        epoch + 1
-                    ] = epoch_zero_shot.copy()
+                    self.metrics_history["zero_shot_metrics"][epoch + 1] = (
+                        epoch_zero_shot.copy()
+                    )
 
                     # Log zero-shot metrics to wandb
                     if run is not None:

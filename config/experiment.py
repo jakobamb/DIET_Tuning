@@ -20,6 +20,12 @@ class TrainingConfig(BaseConfig):
     diet_head_only_epochs: float = 0.05
     num_trained_blocks: int = -1
 
+    # Mixup/CutMix augmentation parameters
+    mixup_alpha: float = 1.0
+    cutmix_alpha: float = 1.0
+    mixup_cutmix_prob: float = 0.8
+    mixup_cutmix_switch_prob: float = 0.5
+
     def validate(self) -> None:
         """Validate training configuration."""
         if self.num_epochs <= 0:
@@ -37,6 +43,19 @@ class TrainingConfig(BaseConfig):
         if self.num_trained_blocks < -1:
             raise ValueError(
                 f"num_trained_blocks must be >= -1, got {self.num_trained_blocks}"
+            )
+        if self.mixup_alpha < 0:
+            raise ValueError(f"mixup_alpha must be >= 0, got {self.mixup_alpha}")
+        if self.cutmix_alpha < 0:
+            raise ValueError(f"cutmix_alpha must be >= 0, got {self.cutmix_alpha}")
+        if not 0 <= self.mixup_cutmix_prob <= 1:
+            raise ValueError(
+                f"mixup_cutmix_prob must be in [0,1], got {self.mixup_cutmix_prob}"
+            )
+        if not 0 <= self.mixup_cutmix_switch_prob <= 1:
+            raise ValueError(
+                f"mixup_cutmix_switch_prob must be in [0,1], "
+                f"got {self.mixup_cutmix_switch_prob}"
             )
 
 
@@ -106,6 +125,11 @@ class ExperimentConfig(BaseConfig):
             "checkpoint_freq": self.training.checkpoint_freq,
             "diet_head_only_epochs": self.training.diet_head_only_epochs,
             "num_trained_blocks": self.training.num_trained_blocks,
+            # Mixup/CutMix parameters
+            "mixup_alpha": self.training.mixup_alpha,
+            "cutmix_alpha": self.training.cutmix_alpha,
+            "mixup_cutmix_prob": self.training.mixup_cutmix_prob,
+            "mixup_cutmix_switch_prob": self.training.mixup_cutmix_switch_prob,
             # Path parameters
             "checkpoint_dir": self.checkpoint_dir,
             "results_dir": self.results_dir,
@@ -147,6 +171,10 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
         checkpoint_freq=getattr(args, "checkpoint_freq", 500),
         diet_head_only_epochs=getattr(args, "diet_head_only_epochs", 0.05),
         num_trained_blocks=getattr(args, "num_trained_blocks", -1),
+        mixup_alpha=getattr(args, "mixup_alpha", 1.0),
+        cutmix_alpha=getattr(args, "cutmix_alpha", 1.0),
+        mixup_cutmix_prob=getattr(args, "mixup_cutmix_prob", 0.8),
+        mixup_cutmix_switch_prob=getattr(args, "mixup_cutmix_switch_prob", 0.5),
     )
 
     # Create complete configuration

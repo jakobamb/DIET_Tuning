@@ -2,6 +2,7 @@
 """
 Main entry point for running DIET finetuning experiments.
 """
+
 # Standard library imports
 import os
 import argparse
@@ -277,6 +278,32 @@ def parse_args():
         "--eval-on-test",
         action="store_true",
         help="Evaluate on test set instead of validation set",
+    )
+
+    # Mixup/CutMix augmentation arguments
+    parser.add_argument(
+        "--mixup-alpha",
+        type=float,
+        default=1.0,
+        help="Mixup alpha parameter (0.0 to disable mixup)",
+    )
+    parser.add_argument(
+        "--cutmix-alpha",
+        type=float,
+        default=1.0,
+        help="CutMix alpha parameter (0.0 to disable cutmix)",
+    )
+    parser.add_argument(
+        "--mixup-cutmix-prob",
+        type=float,
+        default=0.0,
+        help="Probability of applying mixup/cutmix augmentation",
+    )
+    parser.add_argument(
+        "--mixup-cutmix-switch-prob",
+        type=float,
+        default=0.0,
+        help="Probability of selecting cutmix over mixup when both are active",
     )
 
     # Logging and saving arguments
