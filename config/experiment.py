@@ -72,8 +72,8 @@ class ExperimentConfig(BaseConfig):
     results_dir: str = "results"
 
     # Logging
-    enable_wandb: bool = GLOBAL_DEFAULTS["enable_wandb"]
-    wandb_project: str = GLOBAL_DEFAULTS["wandb_project"]
+    enable_wandb: bool = True
+    wandb_project: str = "DIET-Finetuning"
     wandb_dir: str = "wandb"
     wandb_prefix: str = ""
 
@@ -107,7 +107,6 @@ class ExperimentConfig(BaseConfig):
             "backbone_type": self.model.backbone_type,
             "model_size": self.model.model_size,
             "embedding_dim": self.model.embedding_dim,
-            "temperature": self.model.temperature,
             # Dataset parameters
             "dataset_name": self.data.dataset_name,
             "num_classes": self.data.num_classes,
@@ -153,7 +152,7 @@ def create_experiment_config_from_args(args) -> ExperimentConfig:
     model_config = ModelConfig(
         backbone_type=args.backbone,
         model_size=args.model_size,
-        temperature=getattr(args, "temperature", GLOBAL_DEFAULTS["temperature"]),
+        temperature=getattr(args, "temperature", 1.0),
     )
 
     data_config = DataConfig(

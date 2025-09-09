@@ -53,10 +53,12 @@ class DIETTrainer:
         self.config = config
 
         # Extract all settings from config
-        self.num_classes = config.data.num_classes
+        import pdb
+
+        pdb.set_trace()
+        # self.num_diet_classes = config.
         self.label_smoothing = config.training.label_smoothing
         self.checkpoint_dir = config.checkpoint_dir
-        self.temperature = config.model.temperature
         self.is_diet_active = config.training.label_smoothing > 0
 
         self.criterion_diet = nn.CrossEntropyLoss(label_smoothing=self.label_smoothing)
